@@ -1,0 +1,35 @@
+# Dependencias
+node_modules/
+.pnpm-store/
+.npm/
+.yarn/
+
+# Build / cobertura
+dist/
+build/
+out/
+coverage/
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Variables de entorno
+.env
+.env.*
+!.env.example
+
+# Archivos del sistema / editor
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+.vscode/
+.idea/
+
+# Runtime
+*.pid
+*.seed

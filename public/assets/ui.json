@@ -1,0 +1,55 @@
+{
+  "textures": [
+    {
+      "type": "spritesheet",
+      "key": "basic_pack",
+      "url": "assets/sproutlands-ui/Sprite sheets/Sprite sheet for Basic Pack.png",
+      "frameConfig": { "frameWidth": 16, "frameHeight": 16 }
+    },
+    {
+      "type": "spritesheet",
+      "key": "teemo_emotes",
+      "url": "assets/sproutlands-ui/Sprite sheets/Dialouge UI/Emotes/Teemo Basic emote animations sprite sheet.png",
+      "frameConfig": { "frameWidth": 32, "frameHeight": 32 }
+    },
+    {
+      "type": "image",
+      "key": "settings_menu_bg",
+      "url": "assets/sproutlands-ui/Sprite sheets/Setting menu.png"
+    },
+    {
+      "type": "image",
+      "key": "play_button",
+      "url": "assets/sproutlands-ui/Sprite sheets/UI Big Play Button.png"
+    },
+    {
+      "type": "image",
+      "key": "settings_buttons",
+      "url": "assets/sproutlands-ui/Sprite sheets/UI Settings Buttons.png"
+    },
+    {
+      "type": "image",
+      "key": "special_icons",
+      "url": "assets/sproutlands-ui/Sprite sheets/Icons/special icons/Special Icons.png"
+    },
+    {
+      "type": "image",
+      "key": "dialog_medium",
+      "url": "assets/sproutlands-ui/Sprite sheets/Dialouge UI/dialog box medium.png"
+    },
+    {
+      "type": "image",
+      "key": "dialog_small",
+      "url": "assets/sproutlands-ui/Sprite sheets/Dialouge UI/dialog box small.png"
+    }
+  ],
+  "animations": [
+    { "key": "ui_char_idle",  "spriteKey": "basic_pack", "frames": [0],          "frameRate": 1,  "repeat": 0  },
+    { "key": "ui_char_walk",  "spriteKey": "basic_pack", "frames": [1, 2, 3, 4], "frameRate": 8,  "repeat": -1 },
+    { "key": "ui_plant_grow", "spriteKey": "basic_pack", "frames": [5, 6, 7, 8], "frameRate": 1,  "repeat": 0  },
+    { "key": "teemo_wave",    "spriteKey": "teemo_emotes","frames": [0,1,2,3],    "frameRate": 6,  "repeat": 0  },
+    { "key": "teemo_laugh",   "spriteKey": "teemo_emotes","frames": [4,5,6,7],    "frameRate": 6,  "repeat": 0  },
+    { "key": "teemo_angry",   "spriteKey": "teemo_emotes","frames": [8,9,10,11],  "frameRate": 6,  "repeat": 0  },
+    { "key": "teemo_dance",   "spriteKey": "teemo_emotes","frames": [12,13,14,15],"frameRate": 6,  "repeat": 0  }
+  ]
+}

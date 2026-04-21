@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Gatito</title>
+    <style>
+      @font-face {
+        font-family: 'SproutPixel';
+        src: url('assets/sproutlands-ui/fonts/pixelFont-7-8x14-sproutLands.ttf') format('truetype');
+        font-display: block;
+      }
+      html, body { margin: 0; padding: 0; background: #0e1116; color: #eee; font-family: ui-monospace, monospace; }
+      body { display: flex; align-items: center; justify-content: center; min-height: 100vh; gap: 24px; }
+      canvas { image-rendering: pixelated; display: block; order: 2; }
+      #panels      { order: 1; }
+      #queue       { order: 3; }
+      #editor-panel{ order: 4; }
+      #hud { position: fixed; top: 8px; left: 8px; font-size: 12px; background: rgba(0,0,0,.55); padding: 6px 8px; border-radius: 4px; pointer-events: none; z-index: 10; }
+      #hud b { color: #8ef; }
+
+      #panels, #editor-panel { display: none; flex-direction: column; gap: 12px; min-width: 220px; user-select: none; }
+      .panel, #editor-panel {
+        background: #141922; border: 1px solid #23304a; border-radius: 10px; padding: 10px;
+        display: flex; flex-direction: column; gap: 8px;
+      }
+      .panel h3, #editor-panel h3 { margin: 0 0 2px; font-size: 11px; color: #8ef; letter-spacing: 1px; text-transform: uppercase; }
+
+      /* Movement panel — pixel-art Setting menu background */
+      #dirs {
+        background-image: url('assets/sproutlands-ui/Sprite sheets/Setting menu.png');
+        background-size: 512px 480px;
+        background-repeat: no-repeat;
+        background-position: -256px 0;
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        width: 256px;
+        min-height: 480px;
+        padding: 48px 28px 32px;
+        image-rendering: pixelated;
+        box-sizing: border-box;
+      }
+      #dirs h3, #queue h3 { font-family: 'SproutPixel', monospace; font-size: 14px; letter-spacing: 0; text-transform: none; }
+      #dirs h3 { color: #5a3a1a; text-shadow: 0 1px 0 rgba(255,255,255,.3); }
+
+      /* Direction buttons — sprite icon + label */
+      #dirs button {
+        background: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 3px 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #3d2008;
+        font: 600 12px ui-monospace, monospace;
+        cursor: pointer;
+        touch-action: none;
+        transition: opacity .08s, transform .05s;
+      }
+      #dirs button:hover:not(:disabled) { opacity: .85; }
+      #dirs button:active:not(:disabled) { transform: translateY(1px); }
+      #dirs button:disabled { opacity: .4; cursor: not-allowed; }
+
+      .dir-icon {
+        width: 32px; height: 32px; flex-shrink: 0;
+        background-image: url('assets/sproutlands-ui/Sprite sheets/buttons/Small Square Buttons.png');
+        background-size: 64px 256px; /* 2× upscale */
+        background-position: 0 -96px; /* row 3, col 0 — tan button */
+        background-repeat: no-repeat;
+        image-rendering: pixelated;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; color: #3d2008; line-height: 1;
+      }
+      #dirs button:active:not(:disabled) .dir-icon {
+        background-position: -32px -96px; /* col 1 = pressed frame */
+      }
+      .dir-label { font-size: 14px; color: #3d2008; font-family: 'SproutPixel', monospace; }
+
+      /* Program panel — same Setting menu background */
+      #queue {
+        background-image: url('assets/sproutlands-ui/Sprite sheets/Setting menu.png');
+        background-size: 512px 480px;
+        background-repeat: no-repeat;
+        background-position: -256px 0;
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        width: 256px;
+        min-height: 480px;
+        padding: 48px 28px 32px;
+        image-rendering: pixelated;
+        box-sizing: border-box;
+        gap: 10px;
+      }
+      #queue h3 { color: #5a3a1a; text-shadow: 0 1px 0 rgba(255,255,255,.3); font-family: 'SproutPixel', monospace; }
+
+      /* Slots restyled to match warm panel */
+      #queue .slot {
+        background: rgba(255,220,160,.18);
+        border: 1px dashed rgba(90,58,26,.4);
+        border-radius: 4px;
+        color: rgba(90,58,26,.5);
+      }
+      #queue .slot.filled {
+        background: rgba(255,200,80,.25);
+        border-style: solid;
+        border-color: rgba(90,58,26,.7);
+        color: #5a3a1a;
+      }
+
+      /* Run / Clear buttons — sprite icon + label */
+      #queue button {
+        background: none !important;
+        border: none !important;
+        border-radius: 0 !important;
+        padding: 3px 0 !important;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #3d2008;
+        font: 600 12px ui-monospace, monospace;
+        cursor: pointer;
+        touch-action: none;
+        transition: opacity .08s, transform .05s;
+      }
+      #queue button:hover:not(:disabled) { opacity: .85; }
+      #queue button:active:not(:disabled) { transform: translateY(1px); }
+      #queue button:disabled { opacity: .4; cursor: not-allowed; }
+
+      .queue-icon {
+        width: 32px; height: 32px; flex-shrink: 0;
+        background-image: url('assets/sproutlands-ui/Sprite sheets/buttons/Small Square Buttons.png');
+        background-size: 64px 256px;
+        background-repeat: no-repeat;
+        image-rendering: pixelated;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 14px; color: #3d2008; line-height: 1;
+      }
+      /* run = tan square button + green tick, clear = light button + red cross */
+      #run .queue-icon   { background-position: 0 -96px; color: #2a8a2a; font-size: 16px; font-weight: bold; }
+      #clear .queue-icon { background-position: 0 -32px; color: #cc2222; font-size: 16px; font-weight: bold; }
+      #run:active:not(:disabled) .queue-icon   { background-position: -32px -96px; }
+      #clear:active:not(:disabled) .queue-icon { background-position: -32px -32px; }
+      #run.running .queue-icon { opacity: .6; }
+      #restart .queue-icon { background-position: 0 -64px; color: #5a3a1a; font-size: 16px; font-weight: bold; }
+      #restart:active:not(:disabled) .queue-icon { background-position: -32px -64px; }
+
+      .queue-label { font-size: 14px; color: #3d2008; font-family: 'SproutPixel', monospace; }
+
+      .panel button, #editor-panel button {
+        background: #1b2230; color: #8ef; border: 1px solid #2e3a55; border-radius: 8px;
+        padding: 8px 10px; font: 600 12px ui-monospace, monospace; text-align: left;
+        cursor: pointer; touch-action: none;
+        transition: background .08s, transform .05s, opacity .1s;
+      }
+      .panel button:hover:not(:disabled), #editor-panel button:hover:not(:disabled) { background: #243049; }
+      .panel button:active:not(:disabled), #editor-panel button:active:not(:disabled) { transform: translateY(1px); }
+      .panel button:disabled, #editor-panel button:disabled { opacity: .4; cursor: not-allowed; }
+
+      .slots { display: flex; flex-direction: column; gap: 4px; }
+      .slot {
+        height: 34px; width: 100%; border: 1px dashed rgba(90,58,26,.4); border-radius: 4px;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px; color: rgba(90,58,26,.4); background: rgba(255,220,160,.12);
+        transition: background .1s, border-color .1s; box-sizing: border-box;
+      }
+      .slot.filled { color: #5a3a1a; border-style: solid; border-color: rgba(90,58,26,.7); background: rgba(255,200,80,.25); }
+      .slot.drag-over { background: rgba(255,200,80,.45) !important; border-color: #a06020 !important; border-style: solid !important; }
+
+      /* Editor */
+      #editor-panel { width: 340px; max-height: 90vh; overflow: hidden; }
+      .ed-terrains { display: flex; flex-wrap: wrap; gap: 4px; }
+      .ed-terrains button { padding: 5px 8px !important; font-size: 11px !important; }
+      .ed-terrains button.active { background: #3b5488; color: #fff; border-color: #5a7ac0; }
+      #ed-title { color: #ffee88; }
+      .ed-layers { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+      .ed-layers button.active { background: #3b5488; color: #fff; border-color: #5a7ac0; }
+      .ed-tabs { display: flex; flex-wrap: wrap; gap: 4px; }
+      .ed-tabs button { padding: 5px 8px !important; font-size: 11px !important; }
+      .ed-tabs button.active { background: #3b5488; color: #fff; }
+      .ed-palette {
+        display: grid; gap: 2px; padding: 6px; background: #0b0f14;
+        border: 1px solid #23304a; border-radius: 6px;
+        max-height: 44vh; overflow-y: auto;
+        grid-template-columns: repeat(var(--cols, 11), 32px);
+      }
+      .ed-tile {
+        width: 32px; height: 32px; background-repeat: no-repeat; image-rendering: pixelated;
+        border: 1px solid transparent; cursor: pointer; box-sizing: border-box;
+      }
+      .ed-tile:hover { border-color: #5a7ac0; }
+      .ed-tile.selected { border-color: #ffee88; box-shadow: inset 0 0 0 1px #000; }
+      .ed-tile.eraser { background: repeating-linear-gradient(45deg, #2a1818, #2a1818 4px, #0b0f14 4px, #0b0f14 8px); color: #ff8; display: flex; align-items: center; justify-content: center; font-size: 10px; }
+      .ed-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; }
+      .ed-actions .save { grid-column: 1 / -1; background: #27323f; color: #ffee88; border-color: #6b5a20; }
+      .ed-actions .menu { grid-column: 1 / -1; }
+      .ed-status { font-size: 10px; color: #556; padding-top: 2px; }
+
+      /* Welcome dialog */
+      #level-dialog {
+        display: none; position: fixed; inset: 0; z-index: 500;
+        align-items: center; justify-content: center;
+        background: rgba(0,0,0,.45);
+      }
+      #level-dialog.visible { display: flex; }
+      #level-dialog-box {
+        width: 256px;
+        background-image: url('assets/sproutlands-ui/Sprite sheets/Setting menu.png');
+        background-size: 512px 480px;
+        background-position: -256px 0;
+        background-repeat: no-repeat;
+        image-rendering: pixelated;
+        display: flex; flex-direction: column; align-items: center;
+        padding: 36px 28px 28px; gap: 12px; box-sizing: border-box;
+        min-height: 340px;
+      }
+      #level-dialog-portrait {
+        width: 64px; height: 64px;
+        background-image: url('assets/sproutlands-ui/Sprite sheets/Dialouge UI/Emotes/Teemo Basic emote animations sprite sheet.png');
+        background-size: 320px 960px; /* 2× upscale: 160×480 → 320×960 */
+        background-position: 0 0;     /* frame 0 — wave pose */
+        background-repeat: no-repeat;
+        image-rendering: pixelated;
+        border: 2px solid rgba(90,58,26,.4);
+        border-radius: 6px;
+      }
+      #level-dialog-text {
+        font-family: 'SproutPixel', monospace;
+        font-size: 13px; color: #3d2008; text-align: center; line-height: 1.6;
+        white-space: pre-line;
+      }
+      #level-dialog-btn {
+        margin-top: 8px;
+        background: none !important; border: none !important;
+        display: flex; align-items: center; gap: 8px;
+        cursor: pointer; font-family: 'SproutPixel', monospace;
+        font-size: 13px; color: #3d2008;
+        transition: opacity .1s;
+      }
+      #level-dialog-btn:hover { opacity: .75; }
+      #level-dialog-btn-icon {
+        width: 32px; height: 32px;
+        background-image: url('assets/sproutlands-ui/Sprite sheets/buttons/Small Square Buttons.png');
+        background-size: 64px 256px; background-position: 0 -96px;
+        background-repeat: no-repeat; image-rendering: pixelated;
+        display: flex; align-items: center; justify-content: center;
+        font-size: 16px; color: #2a8a2a; font-weight: bold;
+      }
+      .ed-obj-type { display: flex; gap: 4px; margin-bottom: 4px; }
+      .ed-obj-type button { padding: 4px 8px !important; font-size: 11px !important; }
+      .ed-obj-type button.active { background: #3b5488; color: #fff; border-color: #5a7ac0; }
+      #ed-spawn.active { background: #3b5488; color: #fff; border-color: #5a7ac0; }
+    </style>
+  </head>
+  <body>
+    <div id="hud"><div><b>Gatito</b> · <kbd>Esc</kbd> back to menu</div></div>
+
+    <div id="panels">
+      <div class="panel" id="dirs">
+        <h3>Movement</h3>
+        <button data-dir="up"><span class="dir-icon">▲</span><span class="dir-label">move up</span></button>
+        <button data-dir="down"><span class="dir-icon">▼</span><span class="dir-label">move down</span></button>
+        <button data-dir="left"><span class="dir-icon">◀</span><span class="dir-label">move left</span></button>
+        <button data-dir="right"><span class="dir-icon">▶</span><span class="dir-label">move right</span></button>
+      </div>
+    </div>
+
+    <div class="panel" id="queue" style="display:none">
+      <h3>Program (max 5)</h3>
+      <div class="slots" id="slots">
+        <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
+      </div>
+      <button id="run" class="run"><span class="queue-icon">✓</span><span class="queue-label">ejecutar</span></button>
+      <button id="clear" class="clear"><span class="queue-icon">✕</span><span class="queue-label">borrar</span></button>
+      <button id="restart"><span class="queue-icon">↺</span><span class="queue-label">reiniciar</span></button>
+    </div>
+
+    <div id="level-dialog">
+      <div id="level-dialog-box">
+        <div id="level-dialog-portrait"></div>
+        <div id="level-dialog-text"></div>
+        <button id="level-dialog-btn">
+          <span id="level-dialog-btn-icon">✓</span>
+          <span>continuar</span>
+        </button>
+      </div>
+    </div>
+
+    <div id="editor-panel">
+      <div>
+        <h3 id="ed-title">Editor</h3>
+        <div class="ed-status" id="ed-status">—</div>
+      </div>
+      <div>
+        <h3>Layer</h3>
+        <div class="ed-layers" id="ed-layers">
+          <button data-layer="floor">[1] Floor</button>
+          <button data-layer="walls" class="active">[2] Walls</button>
+        </div>
+      </div>
+      <div>
+        <h3>Terrain brush</h3>
+        <div class="ed-terrains" id="ed-terrains"></div>
+      </div>
+      <div>
+        <h3>Tileset (manual)</h3>
+        <div class="ed-tabs" id="ed-tabs"></div>
+      </div>
+      <div class="ed-palette" id="ed-palette"></div>
+      <div>
+        <h3>Spawn</h3>
+        <button id="ed-spawn">📍 Set spawn tile  (S)</button>
+      </div>
+      <div>
+        <h3>Objects</h3>
+        <div class="ed-obj-type" id="ed-obj-type">
+          <button data-objtype="pickup" class="active">Pickup</button>
+          <button data-objtype="deco">Deco</button>
+        </div>
+        <div class="ed-tabs" id="ed-obj-tabs"></div>
+        <div class="ed-palette" id="ed-obj-palette"></div>
+      </div>
+      <div class="ed-actions">
+        <button class="save" id="ed-save">💾 Save  (Ctrl+S)</button>
+        <button id="ed-play">▶ Play  (P)</button>
+        <button id="ed-undo">↶ Undo</button>
+        <button id="ed-redo">↷ Redo</button>
+        <button id="ed-clear">Clear layer</button>
+        <button id="ed-revert">Revert to disk</button>
+        <button class="menu" id="ed-menu">← Menu  (Esc)</button>
+      </div>
+      <div class="ed-status">
+        Left-click paint · right-click erase · <kbd>E</kbd> eyedrop · <kbd>G</kbd> grid
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>
+    <script>
+      /* ---------- Movement / program panel ------------------------------- */
+      const MAX = 5;
+      const ARROW = { up: '▲', down: '▼', left: '◀', right: '▶' };
+      const LABEL = { up: 'move up', down: 'move down', left: 'move left', right: 'move right' };
+      const GYM = window.__GYM = { queue: [], running: false, onRun: null };
+
+      const slotsEl = document.getElementById('slots');
+      const dirsPanel = document.getElementById('dirs');
+      const runBtn = document.getElementById('run');
+      const clearBtn = document.getElementById('clear');
+
+      function renderSlots() {
+        [...slotsEl.children].forEach((el, i) => {
+          const v = GYM.queue[i];
+          el.innerHTML = v ? `<span class="dir-icon">${ARROW[v]}</span><span class="dir-label">${LABEL[v]}</span>` : '';
+          el.classList.toggle('filled', !!v);
+        });
+      }
+      function setRunning(on) {
+        GYM.running = on;
+        runBtn.classList.toggle('running', on);
+        runBtn.querySelector('.queue-label').textContent = on ? 'ejecutando…' : 'ejecutar';
+        runBtn.querySelector('.queue-icon').textContent  = on ? '⏵' : '✓';
+        dirsPanel.querySelectorAll('button').forEach(b => b.disabled = on);
+        clearBtn.disabled = on;
+      }
+      dirsPanel.querySelectorAll('button').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (GYM.running) return;
+          if (GYM.queue.length >= MAX) return;
+          GYM.queue.push(btn.dataset.dir);
+          renderSlots();
+        });
+      });
+      clearBtn.addEventListener('click', () => {
+        if (GYM.running) return;
+        GYM.queue.length = 0;
+        renderSlots();
+      });
+      runBtn.addEventListener('click', async () => {
+        if (GYM.running) return;
+        if (GYM.queue.length === 0) return;
+        if (typeof GYM.onRun !== 'function') return;
+        setRunning(true);
+        try { await GYM.onRun(GYM.queue.slice()); }
+        finally { GYM.queue.length = 0; renderSlots(); setRunning(false); }
+      });
+      renderSlots();
+
+      window.__setPanels = (visible) => {
+        document.getElementById('panels').style.display = visible ? 'flex' : 'none';
+        document.getElementById('queue').style.display  = visible ? 'flex' : 'none';
+      };
+
+      /* ---------- Restart button ----------------------------------------- */
+      document.getElementById('restart').addEventListener('click', () => {
+        if (GYM.running) return;
+        GYM.queue.length = 0;
+        renderSlots();
+        GYM.onRestart?.();
+      });
+
+      /* ---------- Welcome dialog ------------------------------------------ */
+      const levelDialog    = document.getElementById('level-dialog');
+      const levelDialogTxt = document.getElementById('level-dialog-text');
+      const levelDialogBtn = document.getElementById('level-dialog-btn');
+
+      function closeDialog() {
+        levelDialog.classList.remove('visible');
+      }
+      levelDialogBtn.addEventListener('click', closeDialog);
+      levelDialog.addEventListener('click', e => { if (e.target === levelDialog) closeDialog(); });
+
+      window.__showDialog = ({ message }) => {
+        levelDialogTxt.textContent = message;
+        levelDialog.classList.add('visible');
+      };
+
+      /* ---------- Drag-and-drop: direction buttons → slots --------------- */
+      dirsPanel.querySelectorAll('button').forEach(btn => {
+        btn.setAttribute('draggable', 'true');
+        btn.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('text/plain', btn.dataset.dir);
+          e.dataTransfer.effectAllowed = 'copy';
+        });
+      });
+
+      [...slotsEl.children].forEach((slot, i) => {
+        slot.addEventListener('dragover', e => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'copy';
+          slot.classList.add('drag-over');
+        });
+        slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+        slot.addEventListener('drop', e => {
+          e.preventDefault();
+          slot.classList.remove('drag-over');
+          if (GYM.running) return;
+          const dir = e.dataTransfer.getData('text/plain');
+          if (!dir || GYM.queue.length >= MAX) return;
+          GYM.queue.splice(Math.min(i, GYM.queue.length), 0, dir);
+          if (GYM.queue.length > MAX) GYM.queue.length = MAX;
+          renderSlots();
+        });
+      });
+
+      /* ---------- Editor panel ------------------------------------------ */
+      const edPanel    = document.getElementById('editor-panel');
+      const edTitle    = document.getElementById('ed-title');
+      const edStatus   = document.getElementById('ed-status');
+      const edTabs     = document.getElementById('ed-tabs');
+      const edPalette  = document.getElementById('ed-palette');
+      const edLayersBar = document.getElementById('ed-layers');
+      const edTerrains = document.getElementById('ed-terrains');
+
+      let edCfg = null;
+      let activeTilesetIdx = 0;
+      let selectedGid = 0;
+      let activeTerrainName = null;
+      let activeObjTabIdx = 0;
+      let activeObjType = 'pickup';
+
+      function hideEditor() {
+        edPanel.style.display = 'none';
+        edTabs.innerHTML = '';
+        edPalette.innerHTML = '';
+        edTerrains.innerHTML = '';
+        document.getElementById('ed-obj-tabs').innerHTML = '';
+        document.getElementById('ed-obj-palette').innerHTML = '';
+        edCfg = null;
+      }
+
+      function showEditor(cfg) {
+        edCfg = cfg;
+        edPanel.style.display = 'flex';
+        edTitle.textContent = `Editor — ${cfg.levelKey}`;
+        edStatus.textContent = `layer: ${cfg.getLayer()}`;
+
+        // Terrain brushes
+        edTerrains.innerHTML = '';
+        activeTerrainName = null;
+        const manualBtn = document.createElement('button');
+        manualBtn.textContent = 'Manual';
+        manualBtn.dataset.terrain = '';
+        manualBtn.addEventListener('click', () => { cfg.onTerrain(null); activeTerrainName = null; highlightTerrain(); });
+        edTerrains.appendChild(manualBtn);
+        cfg.terrains.forEach(t => {
+          const b = document.createElement('button');
+          b.textContent = t.label;
+          b.dataset.terrain = t.name;
+          b.addEventListener('click', () => { cfg.onTerrain(t); activeTerrainName = t.name; highlightTerrain(); });
+          edTerrains.appendChild(b);
+        });
+        highlightTerrain();
+
+        // Tabs
+        edTabs.innerHTML = '';
+        cfg.tilesets.forEach((t, i) => {
+          const b = document.createElement('button');
+          b.textContent = t.name;
+          b.dataset.idx = i;
+          b.addEventListener('click', () => { activeTilesetIdx = i; renderPalette(); });
+          edTabs.appendChild(b);
+        });
+        activeTilesetIdx = 0;
+        renderPalette();
+
+        // Layer bar
+        edLayersBar.querySelectorAll('button').forEach(b => {
+          b.onclick = () => cfg.onLayer(b.dataset.layer);
+        });
+        updateLayerHighlight(cfg.getLayer());
+
+        // Object tabs + palette
+        activeObjType = 'pickup';
+        activeObjTabIdx = 0;
+        document.getElementById('ed-obj-type').querySelectorAll('button').forEach(b => {
+          b.classList.toggle('active', b.dataset.objtype === activeObjType);
+          b.onclick = () => { activeObjType = b.dataset.objtype; highlightObjType(); };
+        });
+        const objTabsEl = document.getElementById('ed-obj-tabs');
+        objTabsEl.innerHTML = '';
+        cfg.objects.forEach((o, i) => {
+          const b = document.createElement('button');
+          b.textContent = o.label;
+          b.addEventListener('click', () => { activeObjTabIdx = i; renderObjPalette(); });
+          objTabsEl.appendChild(b);
+        });
+        renderObjPalette();
+
+        // Spawn button
+        document.getElementById('ed-spawn').onclick = () => cfg.onSpawnMode();
+      }
+
+      function highlightTerrain() {
+        edTerrains.querySelectorAll('button').forEach(b => {
+          b.classList.toggle('active', b.dataset.terrain === (activeTerrainName ?? ''));
+        });
+      }
+
+      function renderPalette() {
+        if (!edCfg) return;
+        edPalette.innerHTML = '';
+        edTabs.querySelectorAll('button').forEach((b, i) =>
+          b.classList.toggle('active', i === activeTilesetIdx));
+
+        const t = edCfg.tilesets[activeTilesetIdx];
+        edPalette.style.setProperty('--cols', t.cols);
+
+        // Eraser pseudo-tile
+        const eraser = document.createElement('div');
+        eraser.className = 'ed-tile eraser';
+        eraser.textContent = '✕';
+        eraser.title = 'Erase (GID 0)';
+        eraser.addEventListener('click', () => setSelected(0));
+        edPalette.appendChild(eraser);
+
+        for (let r = 0; r < t.rows; r++) {
+          for (let c = 0; c < t.cols; c++) {
+            const gid = t.firstgid + r * t.cols + c;
+            const d = document.createElement('div');
+            d.className = 'ed-tile';
+            d.dataset.gid = gid;
+            d.style.backgroundImage = `url(${t.url})`;
+            d.style.backgroundSize = `${t.cols * 32}px ${t.rows * 32}px`;
+            d.style.backgroundPosition = `-${c * 32}px -${r * 32}px`;
+            d.title = `${t.name} #${r * t.cols + c} (gid ${gid})`;
+            d.addEventListener('click', () => setSelected(gid));
+            edPalette.appendChild(d);
+          }
+        }
+        highlightSelected();
+      }
+
+      function setSelected(gid) {
+        selectedGid = gid;
+        activeTerrainName = null;
+        highlightSelected();
+        highlightTerrain();
+        edCfg?.onSelect(gid);
+      }
+
+      function highlightSelected() {
+        edPalette.querySelectorAll('.ed-tile').forEach(el => {
+          const g = el.dataset.gid ? +el.dataset.gid : 0;
+          el.classList.toggle('selected', g === selectedGid);
+        });
+      }
+
+      function updateLayerHighlight(name) {
+        edLayersBar.querySelectorAll('button').forEach(b =>
+          b.classList.toggle('active', b.dataset.layer === name));
+        if (edCfg) edStatus.textContent = `layer: ${name}  ·  gid: ${selectedGid}`;
+      }
+
+      function highlightObjType() {
+        document.getElementById('ed-obj-type').querySelectorAll('button').forEach(b => {
+          b.classList.toggle('active', b.dataset.objtype === activeObjType);
+        });
+      }
+
+      function renderObjPalette() {
+        if (!edCfg) return;
+        const objPalette = document.getElementById('ed-obj-palette');
+        const objTabsEl  = document.getElementById('ed-obj-tabs');
+        objPalette.innerHTML = '';
+        objTabsEl.querySelectorAll('button').forEach((b, i) =>
+          b.classList.toggle('active', i === activeObjTabIdx));
+        const o = edCfg.objects[activeObjTabIdx];
+        if (!o) return;
+        objPalette.style.setProperty('--cols', o.cols);
+        for (let r = 0; r < o.rows; r++) {
+          for (let c = 0; c < o.cols; c++) {
+            const frame = r * o.cols + c;
+            const d = document.createElement('div');
+            d.className = 'ed-tile';
+            d.style.backgroundImage = `url("${o.url}")`;
+            d.style.backgroundSize  = `${o.cols * 32}px ${o.rows * 32}px`;
+            d.style.backgroundPosition = `-${c * 32}px -${r * 32}px`;
+            d.title = `${o.label} frame ${frame}`;
+            d.addEventListener('click', () => {
+              edCfg.onObjectSelect(o.key, frame, activeObjType);
+            });
+            objPalette.appendChild(d);
+          }
+        }
+      }
+
+      // Public API — scene side
+      window.__setEditor = (cfg) => { if (!cfg) hideEditor(); else showEditor(cfg); };
+      window.__setEditor_updateLayer = (name) => updateLayerHighlight(name);
+      window.__setEditor_updateSelected = (gid) => { selectedGid = gid; activeTerrainName = null; highlightSelected(); highlightTerrain(); };
+      window.__setEditor_updateTerrain = (name) => { activeTerrainName = name; highlightTerrain(); };
+      window.__setEditor_updateMode = (mode) => {
+        document.getElementById('ed-spawn').classList.toggle('active', mode === 'spawn');
+      };
+
+      document.getElementById('ed-save').onclick   = () => edCfg?.onSave();
+      document.getElementById('ed-play').onclick   = () => edCfg?.onPlay();
+      document.getElementById('ed-menu').onclick   = () => edCfg?.onMenu();
+      document.getElementById('ed-clear').onclick  = () => edCfg?.onClear();
+      document.getElementById('ed-undo').onclick   = () => edCfg?.onUndo();
+      document.getElementById('ed-redo').onclick   = () => edCfg?.onRedo();
+      document.getElementById('ed-revert').onclick = () => edCfg?.onRevert();
+    </script>
+    <script type="module" src="./src/main.js"></script>
+  </body>
+</html>

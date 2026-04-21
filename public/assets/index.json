@@ -1,0 +1,84 @@
+{
+  "textures": [
+    {
+      "type": "spritesheet",
+      "key": "character_base",
+      "url": "assets/Basic Charakter Spritesheet.png",
+      "frameConfig": {
+        "frameWidth": 16,
+        "frameHeight": 16
+      }
+    },
+    {
+      "type": "spritesheet",
+      "key": "character_actions",
+      "url": "assets/Basic Charakter Actions.png",
+      "frameConfig": {
+        "frameWidth": 32,
+        "frameHeight": 32
+      }
+    },
+    {
+      "type": "spritesheet",
+      "key": "plants",
+      "url": "assets/Basic Plants.png",
+      "frameConfig": {
+        "frameWidth": 16,
+        "frameHeight": 16
+      }
+    },
+    {
+      "type": "spritesheet",
+      "key": "grass_biome_props",
+      "url": "assets/Basic Grass Biom things 1.png",
+      "frameConfig": {
+        "frameWidth": 16,
+        "frameHeight": 16
+      }
+    }
+  ],
+  "tilemaps": [
+    {
+      "type": "image",
+      "key": "tiles_grass",
+      "url": "assets/Grass.png"
+    },
+    {
+      "type": "image",
+      "key": "tiles_tilled_dirt",
+      "url": "assets/Tilled_Dirt.png"
+    },
+    {
+      "type": "image",
+      "key": "tiles_fences",
+      "url": "assets/Fences.png"
+    }
+  ],
+  "animations": {
+    "character": {
+      "walk_down":  { "key": "character_base", "frames": [0, 1, 2, 3], "frameRate": 8, "repeat": -1 },
+      "walk_up":    { "key": "character_base", "frames": [4, 5, 6, 7], "frameRate": 8, "repeat": -1 },
+      "walk_left":  { "key": "character_base", "frames": [8, 9, 10, 11], "frameRate": 8, "repeat": -1 },
+      "walk_right": { "key": "character_base", "frames": [12, 13, 14, 15], "frameRate": 8, "repeat": -1 },
+
+      "action_hoe_down":   { "key": "character_actions", "frames": [0, 1], "frameRate": 6, "repeat": 0 },
+      "action_hoe_up":     { "key": "character_actions", "frames": [2, 3], "frameRate": 6, "repeat": 0 },
+      "action_hoe_left":   { "key": "character_actions", "frames": [4, 5], "frameRate": 6, "repeat": 0 },
+      "action_hoe_right":  { "key": "character_actions", "frames": [6, 7], "frameRate": 6, "repeat": 0 },
+
+      "action_axe_down":   { "key": "character_actions", "frames": [8, 9], "frameRate": 6, "repeat": 0 },
+      "action_axe_up":     { "key": "character_actions", "frames": [10, 11], "frameRate": 6, "repeat": 0 },
+      "action_axe_left":   { "key": "character_actions", "frames": [12, 13], "frameRate": 6, "repeat": 0 },
+      "action_axe_right":  { "key": "character_actions", "frames": [14, 15], "frameRate": 6, "repeat": 0 },
+
+      "action_water_down":  { "key": "character_actions", "frames": [16, 17], "frameRate": 4, "repeat": 0 },
+      "action_water_up":    { "key": "character_actions", "frames": [18, 19], "frameRate": 4, "repeat": 0 },
+      "action_water_left":  { "key": "character_actions", "frames": [20, 21], "frameRate": 4, "repeat": 0 },
+      "action_water_right": { "key": "character_actions", "frames": [22, 23], "frameRate": 4, "repeat": 0 }
+    },
+    "plants": {
+      "corn_growth":   { "key": "plants", "frames": [1, 2, 3, 4], "frameRate": 0 },
+      "turnip_growth": { "key": "plants", "frames": [6, 7, 8, 9], "frameRate": 0 }
+    }
+  }
+}
