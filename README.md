@@ -3,6 +3,11 @@
 Juego educativo de programación con estética pixel-art. El jugador controla un personaje en un mapa de tiles, ejecutando secuencias de comandos (arriba, abajo, izquierda, derecha) para recolectar objetos. Y lo introducen a entender como funcionan los algoritmos de una forma mas didactica. 
 Ademas Incluye un editor visual de niveles.
 
+## Demo
+
+<!-- Reemplazá la ruta por tu GIF una vez que lo grabes -->
+![Demo del juego](assets/demo.gif)
+
 ## Stack
 
 - [Phaser 3.80.1](https://phaser.io/) — cargado desde CDN, sin bundler
@@ -20,7 +25,7 @@ Ademas Incluye un editor visual de niveles.
 
 ```bash
 # 1. Clonar o descargar el repositorio
-git clone <url-del-repo>
+git clone 'https://github.com/sanntzherrera1/GatitoCode.git'
 cd gatito-codev2
 
 # 2. Servir la carpeta public con cualquier servidor HTTP estático
