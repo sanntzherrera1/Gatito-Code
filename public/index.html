@@ -19,14 +19,18 @@
       #hud b { color: #8ef; }
 
       #panels, #editor-panel { display: none; flex-direction: column; gap: 12px; min-width: 220px; user-select: none; }
-      .panel, #editor-panel {
+      .panel {
         background: #141922; border: 1px solid #23304a; border-radius: 10px; padding: 10px;
         display: flex; flex-direction: column; gap: 8px;
       }
+      #editor-panel {
+        background: #141922; border: 1px solid #23304a; border-radius: 10px; padding: 10px;
+        display: none; flex-direction: column; gap: 8px;
+      }
       .panel h3, #editor-panel h3 { margin: 0 0 2px; font-size: 11px; color: #8ef; letter-spacing: 1px; text-transform: uppercase; }
 
-      /* Movement panel — pixel-art Setting menu background */
-      #dirs {
+      /* Sprout Lands Panel Design (Shared) */
+      .sprout-panel {
         background-image: url('assets/sproutlands-ui/Sprite sheets/Setting menu.png');
         background-size: 512px 480px;
         background-repeat: no-repeat;
@@ -35,16 +39,30 @@
         border: none;
         border-radius: 0;
         width: 256px;
-        min-height: 480px;
-        padding: 48px 28px 32px;
+        height: 480px;
+        padding: 42px 28px 24px;
         image-rendering: pixelated;
         box-sizing: border-box;
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+        overflow: hidden;
       }
-      #dirs h3, #queue h3 { font-family: 'SproutPixel', monospace; font-size: 14px; letter-spacing: 0; text-transform: none; }
-      #dirs h3 { color: #5a3a1a; text-shadow: 0 1px 0 rgba(255,255,255,.3); }
+      .sprout-panel h3 { 
+        font-family: 'SproutPixel', monospace; 
+        font-size: 14px; 
+        letter-spacing: 0; 
+        text-transform: uppercase; 
+        color: #5a3a1a; 
+        text-shadow: 0 1px 0 rgba(255,255,255,.3); 
+        margin: 0 0 15px 0;
+        display: block;
+        height: auto;
+      }
+      #queue-func1 h3 { color: #4b688a; text-shadow: none; }
 
-      /* Direction buttons — sprite icon + label */
-      #dirs button {
+      /* Direction and Queue buttons — sprite icon + label */
+      .sprout-panel button {
         background: none !important;
         border: none !important;
         border-radius: 0 !important;
@@ -57,96 +75,57 @@
         cursor: pointer;
         touch-action: none;
         transition: opacity .08s, transform .05s;
+        justify-content: flex-start;
       }
-      #dirs button:hover:not(:disabled) { opacity: .85; }
-      #dirs button:active:not(:disabled) { transform: translateY(1px); }
-      #dirs button:disabled { opacity: .4; cursor: not-allowed; }
+      .sprout-panel button:hover:not(:disabled) { opacity: .85; }
+      .sprout-panel button:active:not(:disabled) { transform: translateY(1px); }
+      .sprout-panel button:disabled { opacity: .4; cursor: not-allowed; }
 
-      .dir-icon {
+      .dir-icon, .queue-icon {
         width: 32px; height: 32px; flex-shrink: 0;
         background-image: url('assets/sproutlands-ui/Sprite sheets/buttons/Small Square Buttons.png');
         background-size: 64px 256px; /* 2× upscale */
-        background-position: 0 -96px; /* row 3, col 0 — tan button */
         background-repeat: no-repeat;
         image-rendering: pixelated;
         display: flex; align-items: center; justify-content: center;
         font-size: 14px; color: #3d2008; line-height: 1;
       }
-      #dirs button:active:not(:disabled) .dir-icon {
-        background-position: -32px -96px; /* col 1 = pressed frame */
-      }
-      .dir-label { font-size: 14px; color: #3d2008; font-family: 'SproutPixel', monospace; }
-
-      /* Program panel — same Setting menu background */
-      #queue {
-        background-image: url('assets/sproutlands-ui/Sprite sheets/Setting menu.png');
-        background-size: 512px 480px;
-        background-repeat: no-repeat;
-        background-position: -256px 0;
-        background-color: transparent;
-        border: none;
-        border-radius: 0;
-        width: 256px;
-        min-height: 480px;
-        padding: 48px 28px 32px;
-        image-rendering: pixelated;
-        box-sizing: border-box;
-        gap: 10px;
-      }
-      #queue h3 { color: #5a3a1a; text-shadow: 0 1px 0 rgba(255,255,255,.3); font-family: 'SproutPixel', monospace; }
+      .dir-icon { background-position: 0 -96px; }
+      .sprout-panel button:active:not(:disabled) .dir-icon { background-position: -32px -96px; }
 
       /* Slots restyled to match warm panel */
-      #queue .slot {
-        background: rgba(255,220,160,.18);
-        border: 1px dashed rgba(90,58,26,.4);
+      .sprout-panel .slot {
+        background: #d1ba9e !important;
+        border: 2px dashed #8c643c !important;
         border-radius: 4px;
         color: rgba(90,58,26,.5);
+        height: 34px !important;
+        margin-bottom: 4px;
+        display: flex !important;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        box-sizing: border-box;
+        position: relative;
+        transition: background .1s, border-color .1s;
       }
-      #queue .slot.filled {
-        background: rgba(255,200,80,.25);
+      .sprout-panel .slot.filled {
+        background: rgba(255,200,80,.25) !important;
         border-style: solid;
         border-color: rgba(90,58,26,.7);
         color: #5a3a1a;
       }
 
-      /* Run / Clear buttons — sprite icon + label */
-      #queue button {
-        background: none !important;
-        border: none !important;
-        border-radius: 0 !important;
-        padding: 3px 0 !important;
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        color: #3d2008;
-        font: 600 12px ui-monospace, monospace;
-        cursor: pointer;
-        touch-action: none;
-        transition: opacity .08s, transform .05s;
-      }
-      #queue button:hover:not(:disabled) { opacity: .85; }
-      #queue button:active:not(:disabled) { transform: translateY(1px); }
-      #queue button:disabled { opacity: .4; cursor: not-allowed; }
-
-      .queue-icon {
-        width: 32px; height: 32px; flex-shrink: 0;
-        background-image: url('assets/sproutlands-ui/Sprite sheets/buttons/Small Square Buttons.png');
-        background-size: 64px 256px;
-        background-repeat: no-repeat;
-        image-rendering: pixelated;
-        display: flex; align-items: center; justify-content: center;
-        font-size: 14px; color: #3d2008; line-height: 1;
-      }
-      /* run = tan square button + green tick, clear = light button + red cross */
-      #run .queue-icon   { background-position: 0 -96px; color: #2a8a2a; font-size: 16px; font-weight: bold; }
-      #clear .queue-icon { background-position: 0 -32px; color: #cc2222; font-size: 16px; font-weight: bold; }
-      #run:active:not(:disabled) .queue-icon   { background-position: -32px -96px; }
-      #clear:active:not(:disabled) .queue-icon { background-position: -32px -32px; }
-      #run.running .queue-icon { opacity: .6; }
+      /* Icons for specific actions */
+      .run .queue-icon   { background-position: 0 -96px; color: #2a8a2a; font-size: 16px; font-weight: bold; }
+      .clear .queue-icon { background-position: 0 -32px; color: #cc2222; font-size: 16px; font-weight: bold; }
+      .run:active:not(:disabled) .queue-icon   { background-position: -32px -96px; }
+      .clear:active:not(:disabled) .queue-icon { background-position: -32px -32px; }
+      .run.running .queue-icon { opacity: .6; }
       #restart .queue-icon { background-position: 0 -64px; color: #5a3a1a; font-size: 16px; font-weight: bold; }
       #restart:active:not(:disabled) .queue-icon { background-position: -32px -64px; }
 
-      .queue-label { font-size: 14px; color: #3d2008; font-family: 'SproutPixel', monospace; }
+      .dir-label, .queue-label { font-size: 14px; color: #3d2008; font-family: 'SproutPixel', monospace; text-transform: uppercase; }
 
       .panel button, #editor-panel button {
         background: #1b2230; color: #8ef; border: 1px solid #2e3a55; border-radius: 8px;
@@ -159,14 +138,79 @@
       .panel button:disabled, #editor-panel button:disabled { opacity: .4; cursor: not-allowed; }
 
       .slots { display: flex; flex-direction: column; gap: 4px; }
+      .slots.f1-slots { margin-bottom: 12px; gap: 8px; }
+
       .slot {
-        height: 34px; width: 100%; border: 1px dashed rgba(90,58,26,.4); border-radius: 4px;
+        height: 32px; width: 100%; border-radius: 4px;
         display: flex; align-items: center; justify-content: center;
-        font-size: 16px; color: rgba(90,58,26,.4); background: rgba(255,220,160,.12);
-        transition: background .1s, border-color .1s; box-sizing: border-box;
+        font-size: 16px; box-sizing: border-box;
+        position: relative; transition: background .1s, border-color .1s;
       }
-      .slot.filled { color: #5a3a1a; border-style: solid; border-color: rgba(90,58,26,.7); background: rgba(255,200,80,.25); }
-      .slot.drag-over { background: rgba(255,200,80,.45) !important; border-color: #a06020 !important; border-style: solid !important; }
+
+      /* Base Sprout Panel Slot (Main Program) */
+      .sprout-panel .slot {
+        background: rgba(255,220,160,.18);
+        border: 1px dashed rgba(90,58,26,.4);
+        color: rgba(90,58,26,.5);
+      }
+
+      /* --- Exact Function 1 Design from Screenshot --- */
+      #queue-func1 {
+        display: flex;
+        flex-direction: column;
+        height: 480px;
+        max-height: 480px;
+        padding: 42px 28px 24px;
+        gap: 0;
+        overflow: hidden;
+      }
+      #queue-func1 h3 { 
+        display: block;
+        margin: 0 0 20px 0;
+        height: auto;
+        color: #4b688a; 
+        text-shadow: none; 
+        font-size: 16px;
+        text-align: left;
+      }
+      .f1-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+        align-items: flex-start; /* Force alignment to the left */
+        border: none !important;
+        padding: 0 !important;
+      }
+      .f1-controls button {
+        height: 36px;
+        width: 100%; /* Stretch to allow internal icon/label alignment */
+        justify-content: flex-start; /* Align icon and text to the left */
+        padding: 0 !important;
+      }
+
+      .sprout-panel .slot.filled { color: #5a3a1a; border-style: solid; border-color: rgba(90,58,26,.7); background: rgba(255,200,80,.25) !important; }
+      .sprout-panel .slot.drag-over { background: rgba(255,200,80,.45) !important; border-color: #a06020 !important; border-style: solid !important; }
+
+      .f1-controls {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        border-top: 1px dashed rgba(90,58,26,0.2);
+        padding-top: 8px;
+        margin-bottom: 8px;
+      }
+      .f1-controls button { padding: 2px 0 !important; }
+
+      .var-label {
+        position: absolute;
+        bottom: 2px;
+        right: 4px;
+        font-size: 10px;
+        color: rgba(90,58,26,0.5);
+        font-family: 'SproutPixel', monospace;
+        pointer-events: none;
+      }
+      .slot { position: relative; }
 
       /* Editor */
       #editor-panel { width: 340px; max-height: 90vh; overflow: hidden; }
@@ -257,16 +301,33 @@
     <div id="hud"><div><b>Gatito</b> · <kbd>Esc</kbd> back to menu</div></div>
 
     <div id="panels">
-      <div class="panel" id="dirs">
+      <div class="sprout-panel" id="dirs">
         <h3>Movement</h3>
         <button data-dir="up"><span class="dir-icon">▲</span><span class="dir-label">move up</span></button>
         <button data-dir="down"><span class="dir-icon">▼</span><span class="dir-label">move down</span></button>
         <button data-dir="left"><span class="dir-icon">◀</span><span class="dir-label">move left</span></button>
         <button data-dir="right"><span class="dir-icon">▶</span><span class="dir-label">move right</span></button>
+        <button data-dir="func1"><span class="dir-icon" style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;">ƒ</span><span class="dir-label" style="color:#1a4a7a">FUNCTION 1</span></button>
+      </div>
+
+      <div class="sprout-panel" id="queue-func1" style="display:none">
+        <h3>FUNCION 1</h3>
+        <div class="slots f1-slots" id="slots-func1" style="margin-bottom: 12px; gap: 8px;">
+          <div class="slot"></div>
+          <div class="slot"></div>
+          <div class="slot"></div>
+        </div>
+        <div class="f1-controls" style="border-top: none; margin-top: 0; display: flex; flex-direction: column; gap: 8px;">
+          <button data-dir="up" class="f1-btn"><span class="dir-icon">▲</span><span class="dir-label">MOVE UP</span></button>
+          <button data-dir="down" class="f1-btn"><span class="dir-icon">▼</span><span class="dir-label">MOVE DOWN</span></button>
+          <button data-dir="left" class="f1-btn"><span class="dir-icon">◀</span><span class="dir-label">MOVE LEFT</span></button>
+          <button data-dir="right" class="f1-btn"><span class="dir-icon">▶</span><span class="dir-label">MOVE RIGHT</span></button>
+          <button id="clear-func1" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR F1</span></button>
+        </div>
       </div>
     </div>
 
-    <div class="panel" id="queue" style="display:none">
+    <div class="sprout-panel" id="queue" style="display:none">
       <h3>Program (max 5)</h3>
       <div class="slots" id="slots">
         <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
@@ -339,63 +400,102 @@
     <script>
       /* ---------- Movement / program panel ------------------------------- */
       const MAX = 5;
-      const ARROW = { up: '▲', down: '▼', left: '◀', right: '▶' };
-      const LABEL = { up: 'move up', down: 'move down', left: 'move left', right: 'move right' };
-      const GYM = window.__GYM = { queue: [], running: false, onRun: null };
+      const ARROW = { up: '▲', down: '▼', left: '◀', right: '▶', func1: 'ƒ' };
+      const LABEL = { up: 'move up', down: 'move down', left: 'move left', right: 'move right', func1: 'función 1' };
+      const GYM = window.__GYM = { queue: [], queueFunc1: [], running: false, onRun: null };
 
       const slotsEl = document.getElementById('slots');
+      const slotsFunc1El = document.getElementById('slots-func1');
       const dirsPanel = document.getElementById('dirs');
       const runBtn = document.getElementById('run');
       const clearBtn = document.getElementById('clear');
+      const clearFunc1Btn = document.getElementById('clear-func1');
 
-      function renderSlots() {
-        [...slotsEl.children].forEach((el, i) => {
-          const v = GYM.queue[i];
-          el.innerHTML = v ? `<span class="dir-icon">${ARROW[v]}</span><span class="dir-label">${LABEL[v]}</span>` : '';
+      function renderQueue(queue, container, isMain = true) {
+        if (!container) return;
+        [...container.children].forEach((el, i) => {
+          const v = queue[i];
+          const varText = v ? `<span class="var-label">${i === 0 ? 'i' : 'i+' + i}</span>` : '';
+          const iconStyle = v === 'func1' ? 'style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;"' : '';
+          const labelStyle = v === 'func1' ? 'style="color:#1a4a7a"' : '';
+          el.innerHTML = v ? `<span class="dir-icon" ${iconStyle}>${ARROW[v]}</span><span class="dir-label" ${labelStyle}>${LABEL[v]}</span>${varText}` : '';
           el.classList.toggle('filled', !!v);
         });
       }
+
+      function renderAllSlots() {
+        renderQueue(GYM.queue, slotsEl, true);
+        renderQueue(GYM.queueFunc1, slotsFunc1El, false);
+      }
+
       function setRunning(on) {
         GYM.running = on;
         runBtn.classList.toggle('running', on);
         runBtn.querySelector('.queue-label').textContent = on ? 'ejecutando…' : 'ejecutar';
         runBtn.querySelector('.queue-icon').textContent  = on ? '⏵' : '✓';
+        
         dirsPanel.querySelectorAll('button').forEach(b => b.disabled = on);
+        document.querySelectorAll('.f1-btn').forEach(b => b.disabled = on);
+        runBtn.disabled = on;
         clearBtn.disabled = on;
+        clearFunc1Btn.disabled = on;
       }
-      dirsPanel.querySelectorAll('button').forEach(btn => {
+
+      // Main movement buttons add to main queue
+      dirsPanel.querySelectorAll('button:not(.f1-btn)').forEach(btn => {
         btn.addEventListener('click', () => {
           if (GYM.running) return;
-          if (GYM.queue.length >= MAX) return;
-          GYM.queue.push(btn.dataset.dir);
-          renderSlots();
+          if (GYM.queue.length < MAX) {
+            GYM.queue.push(btn.dataset.dir);
+            renderAllSlots();
+          }
         });
       });
+
+      // F1 movement buttons add specifically to F1 queue
+      document.querySelectorAll('.f1-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          if (GYM.running) return;
+          if (GYM.queueFunc1.length < 3) {
+            GYM.queueFunc1.push(btn.dataset.dir);
+            renderAllSlots();
+          }
+        });
+      });
+
       clearBtn.addEventListener('click', () => {
         if (GYM.running) return;
         GYM.queue.length = 0;
-        renderSlots();
+        renderAllSlots();
       });
+
+      clearFunc1Btn.addEventListener('click', () => {
+        if (GYM.running) return;
+        GYM.queueFunc1.length = 0;
+        renderAllSlots();
+      });
+
       runBtn.addEventListener('click', async () => {
         if (GYM.running) return;
         if (GYM.queue.length === 0) return;
         if (typeof GYM.onRun !== 'function') return;
         setRunning(true);
         try { await GYM.onRun(GYM.queue.slice()); }
-        finally { GYM.queue.length = 0; renderSlots(); setRunning(false); }
+        finally { GYM.queue.length = 0; renderAllSlots(); setRunning(false); }
       });
-      renderSlots();
 
       window.__setPanels = (visible) => {
         document.getElementById('panels').style.display = visible ? 'flex' : 'none';
         document.getElementById('queue').style.display  = visible ? 'flex' : 'none';
+        document.getElementById('queue-func1').style.display = visible ? 'flex' : 'none';
       };
 
       /* ---------- Restart button ----------------------------------------- */
       document.getElementById('restart').addEventListener('click', () => {
         if (GYM.running) return;
         GYM.queue.length = 0;
-        renderSlots();
+        GYM.queueFunc1.length = 0;
+        renderAllSlots();
         GYM.onRestart?.();
       });
 
@@ -424,24 +524,33 @@
         });
       });
 
-      [...slotsEl.children].forEach((slot, i) => {
-        slot.addEventListener('dragover', e => {
-          e.preventDefault();
-          e.dataTransfer.dropEffect = 'copy';
-          slot.classList.add('drag-over');
+      function setupDropZone(container, queue) {
+        [...container.children].forEach((slot, i) => {
+          slot.addEventListener('dragover', e => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'copy';
+            slot.classList.add('drag-over');
+          });
+          slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
+          slot.addEventListener('drop', e => {
+            e.preventDefault();
+            slot.classList.remove('drag-over');
+            if (GYM.running) return;
+            const dir = e.dataTransfer.getData('text/plain');
+            if (!dir) return;
+            const maxAllowed = queue === GYM.queueFunc1 ? 3 : MAX;
+            if (queue.length >= maxAllowed) return;
+            queue.splice(Math.min(i, queue.length), 0, dir);
+            if (queue.length > maxAllowed) queue.length = maxAllowed;
+            renderAllSlots();
+          });
         });
-        slot.addEventListener('dragleave', () => slot.classList.remove('drag-over'));
-        slot.addEventListener('drop', e => {
-          e.preventDefault();
-          slot.classList.remove('drag-over');
-          if (GYM.running) return;
-          const dir = e.dataTransfer.getData('text/plain');
-          if (!dir || GYM.queue.length >= MAX) return;
-          GYM.queue.splice(Math.min(i, GYM.queue.length), 0, dir);
-          if (GYM.queue.length > MAX) GYM.queue.length = MAX;
-          renderSlots();
-        });
-      });
+      }
+
+      setupDropZone(slotsEl, GYM.queue);
+      setupDropZone(slotsFunc1El, GYM.queueFunc1);
+
+      renderAllSlots();
 
       /* ---------- Editor panel ------------------------------------------ */
       const edPanel    = document.getElementById('editor-panel');

@@ -130,7 +130,16 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   async runProgram(moves) {
-    for (const dir of moves) if (DIRS[dir]) await this.step(dir);
+    const bus = window.__GYM;
+    for (const dir of moves) {
+      if (dir === 'func1' && bus?.queueFunc1) {
+        for (const fdir of bus.queueFunc1) {
+          if (DIRS[fdir]) await this.step(fdir);
+        }
+      } else if (DIRS[dir]) {
+        await this.step(dir);
+      }
+    }
     this.player.anims.play(`idle_${this.facing}`, true);
   }
 
