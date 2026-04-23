@@ -364,7 +364,7 @@
         <button data-dir="left"><span class="dir-icon">◀</span><span class="dir-label">move left</span></button>
         <button data-dir="right"><span class="dir-icon">▶</span><span class="dir-label">move right</span></button>
         <button data-dir="func1"><span class="dir-icon" style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;">ƒ</span><span class="dir-label" style="color:#1a4a7a">FUNCTION 1</span></button>
-        <button data-dir="jump"><span class="dir-icon">⤴</span><span class="dir-label">jump</span></button>
+        <button data-dir="jump"><span class="dir-icon" style="color:#1a4a7a">▲</span><span class="dir-label">jump</span></button>
       </div>
 
       <div class="sprout-panel" id="queue-func1" style="display:none">
@@ -379,6 +379,7 @@
           <button data-dir="down" class="f1-btn"><span class="dir-icon">▼</span><span class="dir-label">MOVE DOWN</span></button>
           <button data-dir="left" class="f1-btn"><span class="dir-icon">◀</span><span class="dir-label">MOVE LEFT</span></button>
           <button data-dir="right" class="f1-btn"><span class="dir-icon">▶</span><span class="dir-label">MOVE RIGHT</span></button>
+          <button data-dir="jump" class="f1-btn"><span class="dir-icon" style="color:#1a4a7a">▲</span><span class="dir-label" style="color:#1a4a7a">JUMP</span></button>
           <button id="clear-func1" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR F1</span></button>
         </div>
       </div>
@@ -472,7 +473,7 @@
       const ARROW = {
         up: '▲', down: '▼', left: '◀', right: '▶',
         func1: 'ƒ',
-        jump: '⤴',
+        jump: '▲',
         jump_up: '▲', jump_down: '▼', jump_left: '◀', jump_right: '▶',
       };
       const LABEL = {
@@ -537,14 +538,28 @@
         jumpBtn.addEventListener('click', (e) => {
           if (GYM.running) return;
           e.stopPropagation();
-          showJumpPickerForEl(jumpBtn, null);
+          if (GYM.queue.length >= MAX) return;
+          const idx = GYM.queue.length;
+          GYM.queue.push('jump'); // default: jump in place
+          renderAllSlots();
+          showJumpPickerForEl(jumpBtn, idx, 'below', 'main');
         });
       }
 
       // F1 movement buttons add specifically to F1 queue
       document.querySelectorAll('.f1-btn').forEach(btn => {
-        btn.addEventListener('click', () => {
+        btn.addEventListener('click', (e) => {
           if (GYM.running) return;
+          if (btn.dataset.dir === 'jump') {
+            e.stopPropagation();
+            if (GYM.queueFunc1.length >= 3) return;
+            const idx = GYM.queueFunc1.length;
+            GYM.queueFunc1.push('jump'); // default: jump in place
+            renderAllSlots();
+            // Show joystick outside the Function 1 panel, on the left.
+            showJumpPickerForEl(btn, idx, 'left', 'func1');
+            return;
+          }
           if (GYM.queueFunc1.length < 3) {
             GYM.queueFunc1.push(btn.dataset.dir);
             renderAllSlots();
@@ -556,6 +571,7 @@
       const jumpPicker = document.getElementById('jump-picker');
       let jumpPickerOpen = false;
       let jumpPickerSlotIdx = -1;
+      let jumpPickerTarget = 'main'; // 'main' | 'func1' | 'slot'
 
       function isJumpCmd(cmd) {
         return cmd === 'jump' || (typeof cmd === 'string' && cmd.startsWith('jump_'));
@@ -571,22 +587,36 @@
           b.classList.toggle('active', b.dataset.jdir === activeDir);
         });
       }
-      function showJumpPickerForEl(el, idxOrNull) {
+      function showJumpPickerForEl(el, idxOrNull, placement = 'below', target = 'main') {
         jumpPickerSlotIdx = typeof idxOrNull === 'number' ? idxOrNull : -1;
+        jumpPickerTarget = target;
         const r = el.getBoundingClientRect();
         const w = 170, h = 190;
-        const left = Math.min(window.innerWidth - w - 8, Math.max(8, r.left + (r.width / 2) - (w / 2)));
-        const top = Math.min(window.innerHeight - h - 8, Math.max(8, r.bottom + 6));
+        const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
+        let left = r.left + (r.width / 2) - (w / 2);
+        let top = r.bottom + 6;
+        if (placement === 'left') {
+          left = r.left - w - 10;
+          top = r.top + (r.height / 2) - (h / 2);
+        }
+        left = clamp(left, 8, window.innerWidth - w - 8);
+        top = clamp(top, 8, window.innerHeight - h - 8);
         jumpPicker.style.left = `${left}px`;
         jumpPicker.style.top = `${top}px`;
         jumpPicker.style.display = 'block';
         jumpPickerOpen = true;
-        highlightJumpPicker(typeof idxOrNull === 'number' ? GYM.queue[idxOrNull] : null);
+        if (typeof idxOrNull === 'number') {
+          const cmd = (target === 'func1') ? GYM.queueFunc1[idxOrNull] : GYM.queue[idxOrNull];
+          highlightJumpPicker(cmd);
+        } else {
+          highlightJumpPicker(null);
+        }
       }
       function hideJumpPicker() {
         jumpPicker.style.display = 'none';
         jumpPickerOpen = false;
         jumpPickerSlotIdx = -1;
+        jumpPickerTarget = 'main';
       }
 
       jumpPicker.querySelectorAll('button[data-jdir]').forEach(btn => {
@@ -594,13 +624,13 @@
           e.stopPropagation();
           if (GYM.running) return;
           const d = btn.dataset.jdir;
-          if (jumpPickerSlotIdx >= 0) {
-            // If opened from a program slot (legacy), replace in-place.
-            GYM.queue[jumpPickerSlotIdx] = `jump_${d}`;
+          // Replace the last-enqueued in-place jump with a directed jump.
+          if (jumpPickerTarget === 'func1') {
+            if (jumpPickerSlotIdx < 0) return;
+            GYM.queueFunc1[jumpPickerSlotIdx] = `jump_${d}`;
           } else {
-            // Opened from Movement panel: enqueue.
-            if (GYM.queue.length >= MAX) return;
-            GYM.queue.push(`jump_${d}`);
+            if (jumpPickerSlotIdx < 0) return;
+            GYM.queue[jumpPickerSlotIdx] = `jump_${d}`;
           }
           renderAllSlots();
           hideJumpPicker();
@@ -687,7 +717,6 @@
             if (GYM.running) return;
             const dir = e.dataTransfer.getData('text/plain');
             if (!dir) return;
-            if (queue === GYM.queueFunc1 && (dir === 'jump' || dir.startsWith('jump_'))) return;
             const maxAllowed = queue === GYM.queueFunc1 ? 3 : MAX;
             if (queue.length >= maxAllowed) return;
             queue.splice(Math.min(i, queue.length), 0, dir);
