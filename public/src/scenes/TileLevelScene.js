@@ -129,13 +129,96 @@ export class TileLevelScene extends Phaser.Scene {
     });
   }
 
+  _baseFrameForDir(dir) {
+    if (dir === 'up') return 4;
+    if (dir === 'left') return 8;
+    if (dir === 'right') return 12;
+    return 0; // down
+  }
+
+  _idleFrameForDir(dir) {
+    return this._baseFrameForDir(dir);
+  }
+
+  _jumpFramesForDir(dir) {
+    const base = this._baseFrameForDir(dir);
+    return [base + 1, base + 2];
+  }
+
+  jumpInPlace() {
+    return this._jumpTween(this.facing, this.tx, this.ty, this.tx, this.ty);
+  }
+
+  jumpDir(dir) {
+    this.facing = dir;
+    const { dx, dy } = DIRS[dir] ?? { dx: 0, dy: 0 };
+
+    // Jump over the adjacent tile and land 2 tiles away.
+    const nx = this.tx + dx, ny = this.ty + dy;           // tile being jumped over (may be solid)
+    const lx = this.tx + dx * 2, ly = this.ty + dy * 2;   // landing tile (must be enterable)
+    const canMove = this.canEnter(lx, ly);
+
+    const fromTx = this.tx, fromTy = this.ty;
+    const toTx = canMove ? lx : this.tx;
+    const toTy = canMove ? ly : this.ty;
+
+    if (canMove) {
+      this.tx = lx;
+      this.ty = ly;
+    }
+
+    return this._jumpTween(dir, fromTx, fromTy, toTx, toTy, canMove ? { pickupTx: lx, pickupTy: ly } : null);
+  }
+
+  _jumpTween(dir, fromTx, fromTy, toTx, toTy, opts = null) {
+    return new Promise(resolve => {
+      const [startX, startY] = this.tileCenter(fromTx, fromTy);
+      const [endX, endY] = this.tileCenter(toTx, toTy);
+      this.player.anims.stop();
+      const [f1, f2] = this._jumpFramesForDir(dir);
+      this.player.setFrame(f1);
+      this.time.delayedCall(Math.floor(STEP_MS / 2), () => {
+        if (!this.player) return;
+        this.player.setFrame(f2);
+      });
+
+      const jumpHeight = 10;
+      const state = { t: 0 };
+      this.tweens.add({
+        targets: state,
+        t: 1,
+        duration: STEP_MS,
+        ease: 'Linear',
+        onUpdate: () => {
+          const t = state.t;
+          this.player.x = startX + (endX - startX) * t;
+          this.player.y = startY + (endY - startY) * t - Math.sin(Math.PI * t) * jumpHeight;
+        },
+        onComplete: () => {
+          this.player.x = endX;
+          this.player.y = endY;
+          if (opts?.pickupTx !== undefined) this.checkPickup(opts.pickupTx, opts.pickupTy);
+          this.player.anims.stop();
+          this.player.setFrame(this._idleFrameForDir(dir));
+          resolve();
+        },
+      });
+    });
+  }
+
   async runProgram(moves) {
     const bus = window.__GYM;
     for (const dir of moves) {
       if (dir === 'func1' && bus?.queueFunc1) {
         for (const fdir of bus.queueFunc1) {
-          if (DIRS[fdir]) await this.step(fdir);
+          if (fdir === 'jump') await this.jumpInPlace();
+          else if (typeof fdir === 'string' && fdir.startsWith('jump_')) await this.jumpDir(fdir.slice('jump_'.length));
+          else if (DIRS[fdir]) await this.step(fdir);
         }
+      } else if (dir === 'jump') {
+        await this.jumpInPlace();
+      } else if (typeof dir === 'string' && dir.startsWith('jump_')) {
+        await this.jumpDir(dir.slice('jump_'.length));
       } else if (DIRS[dir]) {
         await this.step(dir);
       }

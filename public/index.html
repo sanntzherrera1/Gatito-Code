@@ -29,6 +29,62 @@
       }
       .panel h3, #editor-panel h3 { margin: 0 0 2px; font-size: 11px; color: #8ef; letter-spacing: 1px; text-transform: uppercase; }
 
+      /* Jump joystick picker (Movement panel) */
+      #jump-picker {
+        position: fixed;
+        z-index: 9999;
+        display: none;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        padding: 0;
+        box-shadow: none;
+        backdrop-filter: none;
+      }
+      #jump-picker .jp-title {
+        display: none;
+      }
+      #jump-picker .joy {
+        width: 132px;
+        height: 132px;
+        border-radius: 999px;
+        background: transparent;
+        border: none;
+        position: relative;
+        display: grid;
+        place-items: center;
+        overflow: hidden;
+      }
+      #jump-picker .joy::after {
+        content: none;
+      }
+      #jump-picker .joy-btn {
+        position: absolute;
+        background: none;
+        border: none;
+        padding: 0;
+        width: 34px;
+        height: 34px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        user-select: none;
+        touch-action: none;
+        transition: opacity .08s, transform .05s;
+      }
+      #jump-picker .joy-btn:hover { opacity: .85; }
+      #jump-picker .joy-btn:active { transform: translateY(1px); }
+      #jump-picker .joy-btn:active .dir-icon { background-position: -32px -96px; }
+      #jump-picker .joy-btn.active .dir-icon { box-shadow: 0 0 0 2px rgba(255, 238, 136, 0.75); border-radius: 6px; }
+      #jump-picker .joy-btn[data-jdir="up"]    { top: 10px; left: 50%; transform: translateX(-50%); }
+      #jump-picker .joy-btn[data-jdir="down"]  { bottom: 10px; left: 50%; transform: translateX(-50%); }
+      #jump-picker .joy-btn[data-jdir="left"]  { left: 10px; top: 50%; transform: translateY(-50%); }
+      #jump-picker .joy-btn[data-jdir="right"] { right: 10px; top: 50%; transform: translateY(-50%); }
+      #jump-picker .joy-center {
+        display: none;
+      }
+
       /* Sprout Lands Panel Design (Shared) */
       .sprout-panel {
         background-image: url('assets/sproutlands-ui/Sprite sheets/Setting menu.png');
@@ -308,6 +364,7 @@
         <button data-dir="left"><span class="dir-icon">◀</span><span class="dir-label">move left</span></button>
         <button data-dir="right"><span class="dir-icon">▶</span><span class="dir-label">move right</span></button>
         <button data-dir="func1"><span class="dir-icon" style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;">ƒ</span><span class="dir-label" style="color:#1a4a7a">FUNCTION 1</span></button>
+        <button data-dir="jump"><span class="dir-icon">⤴</span><span class="dir-label">jump</span></button>
       </div>
 
       <div class="sprout-panel" id="queue-func1" style="display:none">
@@ -335,6 +392,18 @@
       <button id="run" class="run"><span class="queue-icon">✓</span><span class="queue-label">ejecutar</span></button>
       <button id="clear" class="clear"><span class="queue-icon">✕</span><span class="queue-label">borrar</span></button>
       <button id="restart"><span class="queue-icon">↺</span><span class="queue-label">reiniciar</span></button>
+    </div>
+
+    <!-- Jump joystick picker (shown when clicking JUMP in Movement panel) -->
+    <div id="jump-picker" role="dialog" aria-label="Jump direction">
+      <div class="jp-title">JUMP (choose direction)</div>
+      <div class="joy">
+        <button class="joy-btn" data-jdir="up" aria-label="Jump up"><span class="dir-icon">▲</span></button>
+        <button class="joy-btn" data-jdir="down" aria-label="Jump down"><span class="dir-icon">▼</span></button>
+        <button class="joy-btn" data-jdir="left" aria-label="Jump left"><span class="dir-icon">◀</span></button>
+        <button class="joy-btn" data-jdir="right" aria-label="Jump right"><span class="dir-icon">▶</span></button>
+        <div class="joy-center" title="Click outside to cancel">JUMP</div>
+      </div>
     </div>
 
     <div id="level-dialog">
@@ -400,8 +469,18 @@
     <script>
       /* ---------- Movement / program panel ------------------------------- */
       const MAX = 5;
-      const ARROW = { up: '▲', down: '▼', left: '◀', right: '▶', func1: 'ƒ' };
-      const LABEL = { up: 'move up', down: 'move down', left: 'move left', right: 'move right', func1: 'función 1' };
+      const ARROW = {
+        up: '▲', down: '▼', left: '◀', right: '▶',
+        func1: 'ƒ',
+        jump: '⤴',
+        jump_up: '▲', jump_down: '▼', jump_left: '◀', jump_right: '▶',
+      };
+      const LABEL = {
+        up: 'move up', down: 'move down', left: 'move left', right: 'move right',
+        func1: 'función 1',
+        jump: 'jump',
+        jump_up: 'jump up', jump_down: 'jump down', jump_left: 'jump left', jump_right: 'jump right',
+      };
       const GYM = window.__GYM = { queue: [], queueFunc1: [], running: false, onRun: null };
 
       const slotsEl = document.getElementById('slots');
@@ -442,7 +521,7 @@
       }
 
       // Main movement buttons add to main queue
-      dirsPanel.querySelectorAll('button:not(.f1-btn)').forEach(btn => {
+      dirsPanel.querySelectorAll('button:not(.f1-btn):not([data-dir="jump"])').forEach(btn => {
         btn.addEventListener('click', () => {
           if (GYM.running) return;
           if (GYM.queue.length < MAX) {
@@ -451,6 +530,16 @@
           }
         });
       });
+
+      // Jump button opens joystick picker (then enqueues jump_dir)
+      const jumpBtn = dirsPanel.querySelector('button[data-dir="jump"]');
+      if (jumpBtn) {
+        jumpBtn.addEventListener('click', (e) => {
+          if (GYM.running) return;
+          e.stopPropagation();
+          showJumpPickerForEl(jumpBtn, null);
+        });
+      }
 
       // F1 movement buttons add specifically to F1 queue
       document.querySelectorAll('.f1-btn').forEach(btn => {
@@ -462,6 +551,66 @@
           }
         });
       });
+
+      /* ---------- Jump picker (click a JUMP slot to choose direction) ------ */
+      const jumpPicker = document.getElementById('jump-picker');
+      let jumpPickerOpen = false;
+      let jumpPickerSlotIdx = -1;
+
+      function isJumpCmd(cmd) {
+        return cmd === 'jump' || (typeof cmd === 'string' && cmd.startsWith('jump_'));
+      }
+      function getJumpDir(cmd) {
+        if (typeof cmd !== 'string') return null;
+        if (!cmd.startsWith('jump_')) return null;
+        return cmd.slice('jump_'.length);
+      }
+      function highlightJumpPicker(cmd) {
+        const activeDir = getJumpDir(cmd);
+        jumpPicker.querySelectorAll('button[data-jdir]').forEach(b => {
+          b.classList.toggle('active', b.dataset.jdir === activeDir);
+        });
+      }
+      function showJumpPickerForEl(el, idxOrNull) {
+        jumpPickerSlotIdx = typeof idxOrNull === 'number' ? idxOrNull : -1;
+        const r = el.getBoundingClientRect();
+        const w = 170, h = 190;
+        const left = Math.min(window.innerWidth - w - 8, Math.max(8, r.left + (r.width / 2) - (w / 2)));
+        const top = Math.min(window.innerHeight - h - 8, Math.max(8, r.bottom + 6));
+        jumpPicker.style.left = `${left}px`;
+        jumpPicker.style.top = `${top}px`;
+        jumpPicker.style.display = 'block';
+        jumpPickerOpen = true;
+        highlightJumpPicker(typeof idxOrNull === 'number' ? GYM.queue[idxOrNull] : null);
+      }
+      function hideJumpPicker() {
+        jumpPicker.style.display = 'none';
+        jumpPickerOpen = false;
+        jumpPickerSlotIdx = -1;
+      }
+
+      jumpPicker.querySelectorAll('button[data-jdir]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          if (GYM.running) return;
+          const d = btn.dataset.jdir;
+          if (jumpPickerSlotIdx >= 0) {
+            // If opened from a program slot (legacy), replace in-place.
+            GYM.queue[jumpPickerSlotIdx] = `jump_${d}`;
+          } else {
+            // Opened from Movement panel: enqueue.
+            if (GYM.queue.length >= MAX) return;
+            GYM.queue.push(`jump_${d}`);
+          }
+          renderAllSlots();
+          hideJumpPicker();
+        });
+      });
+
+      // Close picker on outside click / ESC
+      jumpPicker.addEventListener('click', (e) => e.stopPropagation());
+      document.addEventListener('click', () => { if (jumpPickerOpen) hideJumpPicker(); });
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && jumpPickerOpen) hideJumpPicker(); });
 
       clearBtn.addEventListener('click', () => {
         if (GYM.running) return;
@@ -538,6 +687,7 @@
             if (GYM.running) return;
             const dir = e.dataTransfer.getData('text/plain');
             if (!dir) return;
+            if (queue === GYM.queueFunc1 && (dir === 'jump' || dir.startsWith('jump_'))) return;
             const maxAllowed = queue === GYM.queueFunc1 ? 3 : MAX;
             if (queue.length >= maxAllowed) return;
             queue.splice(Math.min(i, queue.length), 0, dir);
