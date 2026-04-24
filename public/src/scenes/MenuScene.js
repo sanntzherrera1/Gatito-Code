@@ -1,4 +1,5 @@
 import { TILE, COLS, ROWS } from '../main.js';
+import { getCustomLevels, addCustomLevel, createNewLevel } from '../level/TileLevel.js';
 
 export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
@@ -37,7 +38,8 @@ export class MenuScene extends Phaser.Scene {
     this.input.keyboard.on('keydown-ESC',      () => this.showScreen('main'));
     this.input.keyboard.on('keydown-BACKSPACE',() => this.showScreen('main'));
 
-    this.showScreen('main');
+    const initScreen = this.scene.settings.data?.screen ?? 'main';
+    this.showScreen(initScreen);
   }
 
   showScreen(screen) {
@@ -45,34 +47,71 @@ export class MenuScene extends Phaser.Scene {
     this.buttons = [];
     this.selected = 0;
 
-    const W = COLS * TILE;
-    const bx = W / 2, startY = 56, step = 22;
+    const bx = COLS * TILE / 2;
+    const STEP = 20;
 
     if (screen === 'main') {
       this.addLabel('main menu');
-      this.makeButton(bx, startY,          'Levels',       () => this.showScreen('levels'));
-      this.makeButton(bx, startY + step,   'Level Editor', () => this.showScreen('editor'));
-      this.makeButton(bx, startY + step*2, 'Credits',      () => this.showScreen('credits'));
+      let y = 60;
+      this.makeButton(bx, y, 'Levels',       () => this.showScreen('levels')); y += STEP + 2;
+      this.makeButton(bx, y, 'Level Editor', () => this.showScreen('editor')); y += STEP + 2;
+      this.makeButton(bx, y, 'Credits',      () => this.showScreen('credits'));
+
     } else if (screen === 'levels') {
       this.addLabel('levels');
-      this.makeButton(bx, startY,          'Main Level', () => this.scene.start('Main'));
-      this.makeButton(bx, startY + step,   'Gym',        () => this.scene.start('Gym'));
-      this.makeButton(bx, startY + step*2, '← Back',     () => this.showScreen('main'));
+      let y = 54;
+      this.makeButton(bx, y, 'Main Level', () => this.scene.start('Main')); y += STEP;
+      this.makeButton(bx, y, 'Gym',        () => this.scene.start('Gym'));  y += STEP;
+      for (const lv of getCustomLevels()) {
+        const key = lv.key;
+        this.makeButton(bx, y, lv.name, () => this.scene.start('Custom', { levelKey: key }));
+        y += STEP;
+      }
+      y += 4;
+      this.makeButton(bx, y, '← Back', () => this.showScreen('main'));
+
     } else if (screen === 'editor') {
       this.addLabel('level editor');
-      this.makeButton(bx, startY,          'Edit Gym',  () => this.scene.start('Editor', { levelKey: 'gym' }));
-      this.makeButton(bx, startY + step,   'Edit Main', () => this.scene.start('Editor', { levelKey: 'main' }));
-      this.makeButton(bx, startY + step*2, '← Back',    () => this.showScreen('main'));
+      let y = 50;
+      this.makeButton(bx, y, '+ Nuevo nivel', () => this.promptNewLevel(), 'accent');
+      y += STEP + 2;
+
+      const sep = this.add.text(bx, y - 5, '— editar existente —', {
+        fontFamily: 'monospace', fontSize: '6px', color: '#446',
+      }).setOrigin(0.5);
+      this.dynamicGroup.add(sep);
+
+      for (const lv of [{ key: 'gym', name: 'Gym' }, { key: 'main', name: 'Main' }, ...getCustomLevels()]) {
+        const key = lv.key;
+        this.makeButton(bx, y, `Edit ${lv.name}`, () => this.scene.start('Editor', { levelKey: key, returnScreen: 'editor' }));
+        y += STEP;
+      }
+      y += 4;
+      this.makeButton(bx, y, '← Back', () => this.showScreen('main'));
+
     } else if (screen === 'credits') {
       this.addLabel('credits');
-      const tx = this.add.text(bx, startY + step * 0.8, 'Coming Soon', {
+      const tx = this.add.text(bx, 84, 'Coming Soon', {
         fontFamily: 'monospace', fontSize: '10px', color: '#ffee88',
       }).setOrigin(0.5);
       this.dynamicGroup.add(tx);
-      this.makeButton(bx, startY + step*2, '← Back', () => this.showScreen('main'));
+      this.makeButton(bx, 120, '← Back', () => this.showScreen('main'));
     }
 
     this.refresh();
+  }
+
+  promptNewLevel() {
+    window.__showNameDialog?.((name) => {
+      const key = name.toLowerCase()
+        .normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/\s+/g, '_')
+        .replace(/[^a-z0-9_]/g, '')
+        .slice(0, 20) || 'nivel';
+      createNewLevel(key);
+      addCustomLevel(key, name);
+      this.scene.start('Editor', { levelKey: key, returnScreen: 'editor' });
+    });
   }
 
   addLabel(text) {
@@ -82,16 +121,20 @@ export class MenuScene extends Phaser.Scene {
     this.dynamicGroup.add(tx);
   }
 
-  makeButton(x, y, label, action) {
-    const bg = this.add.rectangle(x, y, 120, 18, 0x1b2230).setStrokeStyle(1, 0x2e3a55);
+  makeButton(x, y, label, action, type = 'normal') {
+    const fillBase   = type === 'accent' ? 0x1a3318 : 0x1b2230;
+    const strokeBase = type === 'accent' ? 0x2e6032 : 0x2e3a55;
+    const textColor  = type === 'accent' ? '#8fdf8f' : '#8ef';
+
+    const bg = this.add.rectangle(x, y, 120, 16, fillBase).setStrokeStyle(1, strokeBase);
     const tx = this.add.text(x, y, label, {
-      fontFamily: 'monospace', fontSize: '10px', color: '#8ef',
+      fontFamily: 'monospace', fontSize: '9px', color: textColor,
     }).setOrigin(0.5);
     bg.setInteractive({ useHandCursor: true });
     const idx = this.buttons.length;
     bg.on('pointerover', () => { this.selected = idx; this.refresh(); });
     bg.on('pointerdown', () => action());
-    this.buttons.push({ bg, tx, action });
+    this.buttons.push({ bg, tx, action, type, textColor });
     this.dynamicGroup.add(bg);
     this.dynamicGroup.add(tx);
   }
@@ -104,8 +147,8 @@ export class MenuScene extends Phaser.Scene {
   refresh() {
     this.buttons.forEach((b, i) => {
       const on = i === this.selected;
-      b.bg.setFillStyle(on ? 0x3b5488 : 0x1b2230);
-      b.tx.setColor(on ? '#ffffff' : '#8ef');
+      b.bg.setFillStyle(on ? 0x3b5488 : (b.type === 'accent' ? 0x1a3318 : 0x1b2230));
+      b.tx.setColor(on ? '#ffffff' : b.textColor);
     });
   }
 }

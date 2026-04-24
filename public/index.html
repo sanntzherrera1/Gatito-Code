@@ -280,6 +280,40 @@
       .ed-obj-type button { padding: 4px 8px !important; font-size: 11px !important; }
       .ed-obj-type button.active { background: #3b5488; color: #fff; border-color: #5a7ac0; }
       #ed-spawn.active { background: #3b5488; color: #fff; border-color: #5a7ac0; }
+
+      /* Name dialog */
+      #name-dialog {
+        display: none; position: fixed; inset: 0; z-index: 600;
+        align-items: center; justify-content: center;
+        background: rgba(0,0,0,.6);
+      }
+      #name-dialog.visible { display: flex; }
+      #name-dialog-box {
+        background: #141922; border: 1px solid #23304a; border-radius: 12px;
+        padding: 22px 26px; display: flex; flex-direction: column; gap: 14px;
+        min-width: 260px;
+      }
+      #name-dialog-box h3 {
+        margin: 0; font-family: 'SproutPixel', monospace;
+        font-size: 14px; color: #ffee88;
+      }
+      #name-dialog-input {
+        background: #0b0f14; border: 1px solid #2e3a55; border-radius: 6px;
+        color: #eee; font-family: ui-monospace, monospace; font-size: 13px;
+        padding: 8px 10px; outline: none; width: 100%; box-sizing: border-box;
+      }
+      #name-dialog-input:focus { border-color: #5a7ac0; }
+      #name-dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+      #name-dialog-actions button {
+        background: #1b2230; color: #8ef; border: 1px solid #2e3a55;
+        border-radius: 6px; padding: 6px 14px;
+        font-family: ui-monospace, monospace; font-size: 12px; cursor: pointer;
+      }
+      #name-dialog-actions button:hover { background: #243049; }
+      #name-dialog-actions .confirm {
+        background: #1a3318; color: #8fdf8f; border-color: #2e6032;
+      }
+      #name-dialog-actions .confirm:hover { background: #243d24; }
     </style>
   </head>
   <body>
@@ -317,6 +351,17 @@
           <span id="level-dialog-btn-icon">✓</span>
           <span>continuar</span>
         </button>
+      </div>
+    </div>
+
+    <div id="name-dialog">
+      <div id="name-dialog-box">
+        <h3>Nuevo nivel</h3>
+        <input id="name-dialog-input" type="text" maxlength="30" placeholder="Nombre del nivel…" autocomplete="off" />
+        <div id="name-dialog-actions">
+          <button id="name-dialog-cancel">Cancelar</button>
+          <button id="name-dialog-confirm" class="confirm">Crear</button>
+        </div>
       </div>
     </div>
 
@@ -487,6 +532,41 @@
           renderSlots();
         });
       });
+
+      /* ---------- Name dialog -------------------------------------------- */
+      (function () {
+        const dialog   = document.getElementById('name-dialog');
+        const input    = document.getElementById('name-dialog-input');
+        const confirmBtn = document.getElementById('name-dialog-confirm');
+        const cancelBtn  = document.getElementById('name-dialog-cancel');
+        let _cb = null;
+
+        function close() {
+          dialog.classList.remove('visible');
+          _cb = null;
+        }
+        function confirm() {
+          const name = input.value.trim();
+          if (!name) { input.focus(); return; }
+          const cb = _cb;
+          close();
+          cb?.(name);
+        }
+        confirmBtn.addEventListener('click', confirm);
+        cancelBtn.addEventListener('click', close);
+        dialog.addEventListener('click', e => { if (e.target === dialog) close(); });
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') confirm();
+          if (e.key === 'Escape') close();
+        });
+
+        window.__showNameDialog = (onConfirm) => {
+          _cb = onConfirm;
+          input.value = '';
+          dialog.classList.add('visible');
+          setTimeout(() => input.focus(), 60);
+        };
+      })();
 
       /* ---------- Editor panel ------------------------------------------ */
       const edPanel    = document.getElementById('editor-panel');

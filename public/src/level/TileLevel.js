@@ -159,6 +159,39 @@ export function clearLevelOverride(levelKey) {
   localStorage.removeItem(`level:${levelKey}`);
 }
 
+// ── Custom level registry ────────────────────────────────────────────────────
+
+export const CUSTOM_LEVELS_KEY = 'gatito_custom_levels';
+
+export function getCustomLevels() {
+  try { return JSON.parse(localStorage.getItem(CUSTOM_LEVELS_KEY) || '[]'); }
+  catch { return []; }
+}
+
+export function addCustomLevel(key, name) {
+  const levels = getCustomLevels();
+  if (!levels.find(l => l.key === key)) {
+    levels.push({ key, name });
+    localStorage.setItem(CUSTOM_LEVELS_KEY, JSON.stringify(levels));
+  }
+}
+
+export function createNewLevel(key) {
+  const cols = 16, rows = 12;
+  const data = {
+    version: 1, cols, rows, tile: 16,
+    tilesets: TILESETS.map(t => t.name),
+    layers: {
+      floor: new Array(cols * rows).fill(13),
+      walls: new Array(cols * rows).fill(0),
+    },
+    spawn: { tx: 8, ty: 6 },
+    objects: [],
+  };
+  writeLevelJson(key, data);
+  return data;
+}
+
 /**
  * Build a Phaser tilemap for the level. Returns handles the caller needs.
  * Safe to call from scene.create() — Boot has already preloaded tileset
