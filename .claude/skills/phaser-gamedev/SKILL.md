@@ -1,3 +1,8 @@
+---
+name: phaser-gamedev
+description: Build 2D browser games using Phaser 3's scene-based architecture and physics systems.
+---
+
 # Phaser Game Development
 
 Build 2D browser games using Phaser 3's scene-based architecture and physics systems.
