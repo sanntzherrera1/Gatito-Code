@@ -37,3 +37,4 @@ Thumbs.db
 # Herramientas de IA
 .claude/
 .agents/
+.claude/skills/
