@@ -43,8 +43,10 @@ export class TileLevelScene extends Phaser.Scene {
       bus.onRestart = () => this.resetPlayer();
     }
     window.__setPanels?.(true);
+    if (this.missionText) window.__setMission?.(this.missionText);
     this.events.once('shutdown', () => {
       window.__setPanels?.(false);
+      window.__setMission?.(null);
       if (window.__GYM) { window.__GYM.onRun = null; window.__GYM.onRestart = null; }
     });
 

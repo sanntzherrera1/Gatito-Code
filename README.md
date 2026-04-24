@@ -8,6 +8,10 @@ Ademas Incluye un editor visual de niveles.
 <!-- Reemplazá la ruta por tu GIF una vez que lo grabes -->
 ![Demo del juego](public/assets/demo.gif)
 
+## Documentacion
+
+- Tecnica: [docs/documentacion-tecnica.md](docs/documentacion-tecnica.md)
+
 ## Stack
 
 - [Phaser 3.80.1](https://phaser.io/) — cargado desde CDN, sin bundler

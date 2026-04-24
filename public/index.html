@@ -10,8 +10,8 @@
         font-display: block;
       }
       html, body { margin: 0; padding: 0; background: #0e1116; color: #eee; font-family: ui-monospace, monospace; }
-      body { display: flex; align-items: center; justify-content: center; min-height: 100vh; gap: 24px; }
-      canvas { image-rendering: pixelated; display: block; order: 2; }
+      body { display: flex; align-items: flex-start; justify-content: center; min-height: 100vh; gap: 24px; padding-top: 16px; box-sizing: border-box; }
+      canvas { image-rendering: pixelated; display: block; order: 2; align-self: center; }
       #panels      { order: 1; }
       #queue       { order: 3; }
       #editor-panel{ order: 4; }
@@ -148,6 +148,29 @@
       }
       .dir-icon { background-position: 0 -96px; }
       .sprout-panel button:active:not(:disabled) .dir-icon { background-position: -32px -96px; }
+      #dirs button:active:not(:disabled) .dir-icon {
+        background-position: -32px -96px; /* col 1 = pressed frame */
+      }
+      .dir-label { font-size: 14px; color: #3d2008; font-family: 'SproutPixel', monospace; }
+
+      /* Program panel — same Setting menu background */
+      #queue {
+        background-image: url('assets/sproutlands-ui/Sprite sheets/Setting menu.png');
+        background-size: 512px 480px;
+        background-repeat: no-repeat;
+        background-position: -256px 0;
+        background-color: transparent;
+        border: none;
+        border-radius: 0;
+        width: 256px;
+        min-height: 480px;
+        padding: 48px 28px 32px;
+        margin-right: 28px;
+        image-rendering: pixelated;
+        box-sizing: border-box;
+        gap: 10px;
+      }
+      #queue h3 { color: #5a3a1a; text-shadow: 0 1px 0 rgba(255,255,255,.3); font-family: 'SproutPixel', monospace; }
 
       /* Slots restyled to match warm panel */
       .sprout-panel .slot {
@@ -268,6 +291,34 @@
       }
       .slot { position: relative; }
 
+      /* Mission box */
+      #mission {
+        background: #0d2544;
+        border: 1px solid #2357a0;
+        border-radius: 10px;
+        padding: 10px 12px;
+        display: none;
+        flex-direction: column;
+        gap: 6px;
+        width: 256px;
+        box-sizing: border-box;
+      }
+      #mission h3 {
+        margin: 0;
+        font-size: 11px;
+        color: #88ccff;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+        font-family: ui-monospace, monospace;
+      }
+      #mission p {
+        margin: 0;
+        font-family: 'SproutPixel', monospace;
+        font-size: 12px;
+        color: #c0e0ff;
+        line-height: 1.6;
+      }
+
       /* Editor */
       #editor-panel { width: 340px; max-height: 90vh; overflow: hidden; }
       .ed-terrains { display: flex; flex-wrap: wrap; gap: 4px; }
@@ -351,6 +402,40 @@
       .ed-obj-type button { padding: 4px 8px !important; font-size: 11px !important; }
       .ed-obj-type button.active { background: #3b5488; color: #fff; border-color: #5a7ac0; }
       #ed-spawn.active { background: #3b5488; color: #fff; border-color: #5a7ac0; }
+
+      /* Name dialog */
+      #name-dialog {
+        display: none; position: fixed; inset: 0; z-index: 600;
+        align-items: center; justify-content: center;
+        background: rgba(0,0,0,.6);
+      }
+      #name-dialog.visible { display: flex; }
+      #name-dialog-box {
+        background: #141922; border: 1px solid #23304a; border-radius: 12px;
+        padding: 22px 26px; display: flex; flex-direction: column; gap: 14px;
+        min-width: 260px;
+      }
+      #name-dialog-box h3 {
+        margin: 0; font-family: 'SproutPixel', monospace;
+        font-size: 14px; color: #ffee88;
+      }
+      #name-dialog-input {
+        background: #0b0f14; border: 1px solid #2e3a55; border-radius: 6px;
+        color: #eee; font-family: ui-monospace, monospace; font-size: 13px;
+        padding: 8px 10px; outline: none; width: 100%; box-sizing: border-box;
+      }
+      #name-dialog-input:focus { border-color: #5a7ac0; }
+      #name-dialog-actions { display: flex; gap: 8px; justify-content: flex-end; }
+      #name-dialog-actions button {
+        background: #1b2230; color: #8ef; border: 1px solid #2e3a55;
+        border-radius: 6px; padding: 6px 14px;
+        font-family: ui-monospace, monospace; font-size: 12px; cursor: pointer;
+      }
+      #name-dialog-actions button:hover { background: #243049; }
+      #name-dialog-actions .confirm {
+        background: #1a3318; color: #8fdf8f; border-color: #2e6032;
+      }
+      #name-dialog-actions .confirm:hover { background: #243d24; }
     </style>
   </head>
   <body>
@@ -382,6 +467,10 @@
           <button data-dir="jump" class="f1-btn"><span class="dir-icon" style="color:#1a4a7a">▲</span><span class="dir-label" style="color:#1a4a7a">JUMP</span></button>
           <button id="clear-func1" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR F1</span></button>
         </div>
+      </div>
+      <div id="mission">
+        <h3>Misión</h3>
+        <p id="mission-text"></p>
       </div>
     </div>
 
@@ -415,6 +504,17 @@
           <span id="level-dialog-btn-icon">✓</span>
           <span>continuar</span>
         </button>
+      </div>
+    </div>
+
+    <div id="name-dialog">
+      <div id="name-dialog-box">
+        <h3>Nuevo nivel</h3>
+        <input id="name-dialog-input" type="text" maxlength="30" placeholder="Nombre del nivel…" autocomplete="off" />
+        <div id="name-dialog-actions">
+          <button id="name-dialog-cancel">Cancelar</button>
+          <button id="name-dialog-confirm" class="confirm">Crear</button>
+        </div>
       </div>
     </div>
 
@@ -667,6 +767,18 @@
         document.getElementById('panels').style.display = visible ? 'flex' : 'none';
         document.getElementById('queue').style.display  = visible ? 'flex' : 'none';
         document.getElementById('queue-func1').style.display = visible ? 'flex' : 'none';
+        if (!visible) document.getElementById('mission').style.display = 'none';
+      };
+
+      window.__setMission = (text) => {
+        const box = document.getElementById('mission');
+        const txt = document.getElementById('mission-text');
+        if (text) {
+          txt.textContent = text;
+          box.style.display = 'flex';
+        } else {
+          box.style.display = 'none';
+        }
       };
 
       /* ---------- Restart button ----------------------------------------- */
@@ -730,6 +842,41 @@
       setupDropZone(slotsFunc1El, GYM.queueFunc1);
 
       renderAllSlots();
+
+      /* ---------- Name dialog -------------------------------------------- */
+      (function () {
+        const dialog   = document.getElementById('name-dialog');
+        const input    = document.getElementById('name-dialog-input');
+        const confirmBtn = document.getElementById('name-dialog-confirm');
+        const cancelBtn  = document.getElementById('name-dialog-cancel');
+        let _cb = null;
+
+        function close() {
+          dialog.classList.remove('visible');
+          _cb = null;
+        }
+        function confirm() {
+          const name = input.value.trim();
+          if (!name) { input.focus(); return; }
+          const cb = _cb;
+          close();
+          cb?.(name);
+        }
+        confirmBtn.addEventListener('click', confirm);
+        cancelBtn.addEventListener('click', close);
+        dialog.addEventListener('click', e => { if (e.target === dialog) close(); });
+        input.addEventListener('keydown', e => {
+          if (e.key === 'Enter') confirm();
+          if (e.key === 'Escape') close();
+        });
+
+        window.__showNameDialog = (onConfirm) => {
+          _cb = onConfirm;
+          input.value = '';
+          dialog.classList.add('visible');
+          setTimeout(() => input.focus(), 60);
+        };
+      })();
 
       /* ---------- Editor panel ------------------------------------------ */
       const edPanel    = document.getElementById('editor-panel');

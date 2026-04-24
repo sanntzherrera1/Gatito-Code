@@ -33,3 +33,8 @@ Thumbs.db
 # Runtime
 *.pid
 *.seed
+
+# Herramientas de IA
+.claude/
+.agents/
+.claude/skills/
