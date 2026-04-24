@@ -10,7 +10,7 @@ Ademas Incluye un editor visual de niveles.
 
 ## Documentacion
 
-- Tecnica: [docs/documentacion-tecnica.md](/Users/iarabaya/Programacion/Gatito-Code/docs/documentacion-tecnica.md)
+- Tecnica: [docs/documentacion-tecnica.md](docs/documentacion-tecnica.md)
 
 ## Stack
 
