@@ -8,7 +8,7 @@
 - Un editor visual de niveles integrado en la misma aplicacion.
 - Persistencia local en `localStorage` para iterar niveles sin backend.
 
-La aplicacion corre enteramente en el navegador y se sirve como sitio estatico desde la carpeta [`public/`](/Users/iarabaya/Programacion/Gatito-Code/public).
+La aplicacion corre enteramente en el navegador y se sirve como sitio estatico desde la carpeta [`public/`](../public/).
 
 ## 2. Objetivo funcional
 
