@@ -1,6 +1,7 @@
 import { TILE } from '../main.js';
 import { loadLevel } from '../level/TileLevel.js';
-import { Player, DIRS } from '../character/Player.js';
+import { Player } from '../character/Player.js';
+import { executeProgram, DIRS } from '../program/ProgramExecutor.js';
 
 export const STEP_MS = 160;
 
@@ -195,23 +196,16 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   async runProgram(moves) {
-    const bus = window.__GYM;
-    for (const dir of moves) {
-      if (dir === 'func1' && bus?.queueFunc1) {
-        for (const fdir of bus.queueFunc1) {
-          if (fdir === 'jump') await this.jumpInPlace();
-          else if (typeof fdir === 'string' && fdir.startsWith('jump_')) await this.jumpDir(fdir.slice('jump_'.length));
-          else if (DIRS[fdir]) await this.step(fdir);
-        }
-      } else if (dir === 'jump') {
-        await this.jumpInPlace();
-      } else if (typeof dir === 'string' && dir.startsWith('jump_')) {
-        await this.jumpDir(dir.slice('jump_'.length));
-      } else if (DIRS[dir]) {
-        await this.step(dir);
+    const context = {
+      step: (dir) => this.step(dir),
+      jumpInPlace: () => this.jumpInPlace(),
+      jumpDir: (dir) => this.jumpDir(dir),
+      onComplete: () => {
+        this.player.anims.play(`idle_${this.playerModel.facing}`, true);
       }
-    }
-    this.player.anims.play(`idle_${this.playerModel.facing}`, true);
+    };
+
+    await executeProgram(moves, context, window.__GYM);
   }
 
   checkPickup(tx, ty) {
