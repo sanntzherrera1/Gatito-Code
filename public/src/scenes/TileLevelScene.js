@@ -1,13 +1,8 @@
 import { TILE } from '../main.js';
 import { loadLevel } from '../level/TileLevel.js';
+import { executeProgram, DIRS } from '../program/ProgramExecutor.js';
 
 export const STEP_MS = 160;
-export const DIRS = {
-  up:    { dx:  0, dy: -1 },
-  down:  { dx:  0, dy:  1 },
-  left:  { dx: -1, dy:  0 },
-  right: { dx:  1, dy:  0 },
-};
 
 /**
  * Gameplay scene driven by the program-queue d-pad.
@@ -44,7 +39,7 @@ export class TileLevelScene extends Phaser.Scene {
 
     const bus = window.__GYM;
     if (bus) {
-      bus.onRun     = (moves) => this.runProgram(moves);
+      bus.onRun = (moves) => this.runProgram(moves);
       bus.onRestart = () => this.resetPlayer();
     }
     window.__setPanels?.(true);
@@ -86,7 +81,7 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   /** Subclass hook — pickups, props, non-tilemap decor. */
-  decorate() {}
+  decorate() { }
 
   resetPlayer() {
     this.tx = this.spawnTx;
@@ -117,7 +112,7 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   tileCenter(tx, ty) { return [tx * TILE + TILE / 2, ty * TILE + TILE / 2]; }
-  canEnter(tx, ty)   { return tx >= 0 && ty >= 0 && tx < this.cols && ty < this.rows && !this.solid[ty][tx]; }
+  canEnter(tx, ty) { return tx >= 0 && ty >= 0 && tx < this.cols && ty < this.rows && !this.solid[ty][tx]; }
 
   step(dir) {
     return new Promise(resolve => {
@@ -220,23 +215,16 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   async runProgram(moves) {
-    const bus = window.__GYM;
-    for (const dir of moves) {
-      if (dir === 'func1' && bus?.queueFunc1) {
-        for (const fdir of bus.queueFunc1) {
-          if (fdir === 'jump') await this.jumpInPlace();
-          else if (typeof fdir === 'string' && fdir.startsWith('jump_')) await this.jumpDir(fdir.slice('jump_'.length));
-          else if (DIRS[fdir]) await this.step(fdir);
-        }
-      } else if (dir === 'jump') {
-        await this.jumpInPlace();
-      } else if (typeof dir === 'string' && dir.startsWith('jump_')) {
-        await this.jumpDir(dir.slice('jump_'.length));
-      } else if (DIRS[dir]) {
-        await this.step(dir);
+    const context = {
+      step: (dir) => this.step(dir),
+      jumpInPlace: () => this.jumpInPlace(),
+      jumpDir: (dir) => this.jumpDir(dir),
+      onComplete: () => {
+        this.player.anims.play(`idle_${this.facing}`, true);
       }
-    }
-    this.player.anims.play(`idle_${this.facing}`, true);
+    };
+
+    await executeProgram(moves, context, window.__GYM);
   }
 
   checkPickup(tx, ty) {
