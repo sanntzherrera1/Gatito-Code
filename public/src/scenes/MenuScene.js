@@ -31,12 +31,12 @@ export class MenuScene extends Phaser.Scene {
     this.buttons = [];
     this.selected = 0;
 
-    this.input.keyboard.on('keydown-UP', () => this.select(-1));
-    this.input.keyboard.on('keydown-DOWN', () => this.select(1));
-    this.input.keyboard.on('keydown-ENTER', () => this.buttons[this.selected]?.action());
-    this.input.keyboard.on('keydown-SPACE', () => this.buttons[this.selected]?.action());
-    this.input.keyboard.on('keydown-ESC', () => this.showScreen('main'));
-    this.input.keyboard.on('keydown-BACKSPACE', () => this.showScreen('main'));
+    this.input.keyboard.on('keydown-UP',       () => this.select(-1));
+    this.input.keyboard.on('keydown-DOWN',     () => this.select(1));
+    this.input.keyboard.on('keydown-ENTER',    () => this.buttons[this.selected]?.action());
+    this.input.keyboard.on('keydown-SPACE',    () => this.buttons[this.selected]?.action());
+    this.input.keyboard.on('keydown-ESC',      () => this.showScreen('main'));
+    this.input.keyboard.on('keydown-BACKSPACE',() => this.showScreen('main'));
 
     const initScreen = this.scene.settings.data?.screen ?? 'main';
     this.showScreen(initScreen);

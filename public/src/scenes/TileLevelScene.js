@@ -55,6 +55,7 @@ export class TileLevelScene extends Phaser.Scene {
 
     this.events.once('shutdown', () => {
       destroyWeather(this);
+      destroyWeather(this);
       window.__setPanels?.(false);
       window.__setMission?.(null);
       window.__setMission?.(null);
