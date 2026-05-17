@@ -1,6 +1,5 @@
 import { TILE, COLS, ROWS } from '../main.js';
 import { getCustomLevels, addCustomLevel, createNewLevel } from '../level/TileLevel.js';
-import { getCustomLevels, addCustomLevel, createNewLevel } from '../level/TileLevel.js';
 
 export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
@@ -32,12 +31,12 @@ export class MenuScene extends Phaser.Scene {
     this.buttons = [];
     this.selected = 0;
 
-    this.input.keyboard.on('keydown-UP',       () => this.select(-1));
-    this.input.keyboard.on('keydown-DOWN',     () => this.select(1));
-    this.input.keyboard.on('keydown-ENTER',    () => this.buttons[this.selected]?.action());
-    this.input.keyboard.on('keydown-SPACE',    () => this.buttons[this.selected]?.action());
-    this.input.keyboard.on('keydown-ESC',      () => this.showScreen('main'));
-    this.input.keyboard.on('keydown-BACKSPACE',() => this.showScreen('main'));
+    this.input.keyboard.on('keydown-UP', () => this.select(-1));
+    this.input.keyboard.on('keydown-DOWN', () => this.select(1));
+    this.input.keyboard.on('keydown-ENTER', () => this.buttons[this.selected]?.action());
+    this.input.keyboard.on('keydown-SPACE', () => this.buttons[this.selected]?.action());
+    this.input.keyboard.on('keydown-ESC', () => this.showScreen('main'));
+    this.input.keyboard.on('keydown-BACKSPACE', () => this.showScreen('main'));
 
     const initScreen = this.scene.settings.data?.screen ?? 'main';
     this.showScreen(initScreen);
@@ -50,12 +49,12 @@ export class MenuScene extends Phaser.Scene {
     this.buttons = [];
     this.selected = 0;
 
-    this.input.keyboard.on('keydown-UP',       () => this.select(-1));
-    this.input.keyboard.on('keydown-DOWN',     () => this.select(1));
-    this.input.keyboard.on('keydown-ENTER',    () => this.buttons[this.selected]?.action());
-    this.input.keyboard.on('keydown-SPACE',    () => this.buttons[this.selected]?.action());
-    this.input.keyboard.on('keydown-ESC',      () => this.showScreen('main'));
-    this.input.keyboard.on('keydown-BACKSPACE',() => this.showScreen('main'));
+    this.input.keyboard.on('keydown-UP', () => this.select(-1));
+    this.input.keyboard.on('keydown-DOWN', () => this.select(1));
+    this.input.keyboard.on('keydown-ENTER', () => this.buttons[this.selected]?.action());
+    this.input.keyboard.on('keydown-SPACE', () => this.buttons[this.selected]?.action());
+    this.input.keyboard.on('keydown-ESC', () => this.showScreen('main'));
+    this.input.keyboard.on('keydown-BACKSPACE', () => this.showScreen('main'));
 
     const initScreen = this.scene.settings.data?.screen ?? 'main';
     this.showScreen(initScreen);
@@ -73,14 +72,14 @@ export class MenuScene extends Phaser.Scene {
     if (screen === 'main') {
       this.addLabel('main menu');
       let y = 60;
-      this.makeButton(bx, y, 'Levels',       () => this.showScreen('levels')); y += STEP + 2;
+      this.makeButton(bx, y, 'Levels', () => this.showScreen('levels')); y += STEP + 2;
       this.makeButton(bx, y, 'Level Editor', () => this.showScreen('editor')); y += STEP + 2;
-      this.makeButton(bx, y, 'Credits',      () => this.showScreen('credits'));
+      this.makeButton(bx, y, 'Credits', () => this.showScreen('credits'));
     } else if (screen === 'levels') {
       this.addLabel('levels');
       let y = 54;
       this.makeButton(bx, y, 'Main Level', () => this.scene.start('Main')); y += STEP;
-      this.makeButton(bx, y, 'Gym',        () => this.scene.start('Gym'));  y += STEP;
+      this.makeButton(bx, y, 'Gym', () => this.scene.start('Gym')); y += STEP;
       for (const lv of getCustomLevels()) {
         const key = lv.key;
         this.makeButton(bx, y, lv.name, () => this.scene.start('Custom', { levelKey: key }));
@@ -139,9 +138,9 @@ export class MenuScene extends Phaser.Scene {
   }
 
   makeButton(x, y, label, action, type = 'normal') {
-    const fillBase   = type === 'accent' ? 0x1a3318 : 0x1b2230;
+    const fillBase = type === 'accent' ? 0x1a3318 : 0x1b2230;
     const strokeBase = type === 'accent' ? 0x2e6032 : 0x2e3a55;
-    const textColor  = type === 'accent' ? '#8fdf8f' : '#8ef';
+    const textColor = type === 'accent' ? '#8fdf8f' : '#8ef';
 
     const bg = this.add.rectangle(x, y, 120, 16, fillBase).setStrokeStyle(1, strokeBase);
     const tx = this.add.text(x, y, label, {

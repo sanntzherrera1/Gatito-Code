@@ -1,13 +1,9 @@
 import { TILE } from '../main.js';
 import { loadLevel } from '../level/TileLevel.js';
+import { Player } from '../character/Player.js';
+import { executeProgram, DIRS } from '../program/ProgramExecutor.js';
 
 export const STEP_MS = 160;
-export const DIRS = {
-  up:    { dx:  0, dy: -1 },
-  down:  { dx:  0, dy:  1 },
-  left:  { dx: -1, dy:  0 },
-  right: { dx:  1, dy:  0 },
-};
 
 /**
  * Gameplay scene driven by the program-queue d-pad.
@@ -28,23 +24,21 @@ export class TileLevelScene extends Phaser.Scene {
     this.solid = level.solid;
     this.levelMap = level.map;
 
+    // Domain model for player state & collision logic
+    this.playerModel = new Player(level.cols, level.rows, level.solid, level.spawn.tx, level.spawn.ty);
+
     this.pickups = new Map();
     this.collected = 0;
-    this.spawnTx = level.spawn.tx;
-    this.spawnTy = level.spawn.ty;
-    this.tx = this.spawnTx;
-    this.ty = this.spawnTy;
-    this.facing = 'down';
 
     this.loadObjects(level.objects);
     this.decorate();
 
-    this.player = this.add.sprite(...this.tileCenter(this.tx, this.ty), 'character_base', 0).setDepth(40);
-    this.player.anims.play(`idle_${this.facing}`);
+    this.player = this.add.sprite(...this.tileCenter(this.playerModel.tx, this.playerModel.ty), 'character_base', 0).setDepth(40);
+    this.player.anims.play(`idle_${this.playerModel.facing}`);
 
     const bus = window.__GYM;
     if (bus) {
-      bus.onRun     = (moves) => this.runProgram(moves);
+      bus.onRun = (moves) => this.runProgram(moves);
       bus.onRestart = () => this.resetPlayer();
     }
     window.__setPanels?.(true);
@@ -86,15 +80,13 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   /** Subclass hook — pickups, props, non-tilemap decor. */
-  decorate() {}
+  decorate() { }
 
   resetPlayer() {
-    this.tx = this.spawnTx;
-    this.ty = this.spawnTy;
-    this.facing = 'down';
-    const [x, y] = this.tileCenter(this.tx, this.ty);
+    this.playerModel.reset();
+    const [x, y] = this.tileCenter(this.playerModel.tx, this.playerModel.ty);
     this.player.setPosition(x, y);
-    this.player.anims.play('idle_down', true);
+    this.player.anims.play(`idle_${this.playerModel.facing}`, true);
   }
 
   loadObjects(objects) {
@@ -117,70 +109,54 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   tileCenter(tx, ty) { return [tx * TILE + TILE / 2, ty * TILE + TILE / 2]; }
-  canEnter(tx, ty)   { return tx >= 0 && ty >= 0 && tx < this.cols && ty < this.rows && !this.solid[ty][tx]; }
 
   step(dir) {
     return new Promise(resolve => {
-      this.facing = dir;
-      const { dx, dy } = DIRS[dir];
-      const nx = this.tx + dx, ny = this.ty + dy;
+      const moveResult = this.playerModel.tryMove(dir);
 
-      if (!this.canEnter(nx, ny)) {
-        this.player.anims.play(`idle_${dir}`, true);
+      if (!moveResult.success) {
+        this.player.anims.play(`idle_${moveResult.facing}`, true);
         this.time.delayedCall(STEP_MS, resolve);
         return;
       }
 
-      this.tx = nx; this.ty = ny;
-      const [x, y] = this.tileCenter(nx, ny);
-      this.player.anims.play(`walk_${dir}`, true);
+      const [x, y] = this.tileCenter(moveResult.tx, moveResult.ty);
+      this.player.anims.play(`walk_${moveResult.facing}`, true);
       this.tweens.add({
         targets: this.player, x, y,
         duration: STEP_MS, ease: 'Linear',
-        onComplete: () => { this.checkPickup(nx, ny); resolve(); },
+        onComplete: () => { this.checkPickup(moveResult.tx, moveResult.ty); resolve(); },
       });
     });
   }
 
   _baseFrameForDir(dir) {
-    if (dir === 'up') return 4;
-    if (dir === 'left') return 8;
-    if (dir === 'right') return 12;
-    return 0; // down
+    return Player.getBaseFrameForDir(dir);
   }
 
   _idleFrameForDir(dir) {
-    return this._baseFrameForDir(dir);
+    return Player.getIdleFrameForDir(dir);
   }
 
   _jumpFramesForDir(dir) {
-    const base = this._baseFrameForDir(dir);
-    return [base + 1, base + 2];
+    return Player.getJumpFramesForDir(dir);
   }
 
   jumpInPlace() {
-    return this._jumpTween(this.facing, this.tx, this.ty, this.tx, this.ty);
+    return this._jumpTween(this.playerModel.facing, this.playerModel.tx, this.playerModel.ty, this.playerModel.tx, this.playerModel.ty);
   }
 
   jumpDir(dir) {
-    this.facing = dir;
-    const { dx, dy } = DIRS[dir] ?? { dx: 0, dy: 0 };
-
-    // Jump over the adjacent tile and land 2 tiles away.
-    const nx = this.tx + dx, ny = this.ty + dy;           // tile being jumped over (may be solid)
-    const lx = this.tx + dx * 2, ly = this.ty + dy * 2;   // landing tile (must be enterable)
-    const canMove = this.canEnter(lx, ly);
-
-    const fromTx = this.tx, fromTy = this.ty;
-    const toTx = canMove ? lx : this.tx;
-    const toTy = canMove ? ly : this.ty;
-
-    if (canMove) {
-      this.tx = lx;
-      this.ty = ly;
-    }
-
-    return this._jumpTween(dir, fromTx, fromTy, toTx, toTy, canMove ? { pickupTx: lx, pickupTy: ly } : null);
+    const jumpResult = this.playerModel.tryJump(dir);
+    const opts = jumpResult.success ? { pickupTx: jumpResult.toTx, pickupTy: jumpResult.toTy } : null;
+    return this._jumpTween(
+      jumpResult.facing,
+      jumpResult.fromTx,
+      jumpResult.fromTy,
+      jumpResult.toTx,
+      jumpResult.toTy,
+      opts
+    );
   }
 
   _jumpTween(dir, fromTx, fromTy, toTx, toTy, opts = null) {
@@ -220,23 +196,16 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   async runProgram(moves) {
-    const bus = window.__GYM;
-    for (const dir of moves) {
-      if (dir === 'func1' && bus?.queueFunc1) {
-        for (const fdir of bus.queueFunc1) {
-          if (fdir === 'jump') await this.jumpInPlace();
-          else if (typeof fdir === 'string' && fdir.startsWith('jump_')) await this.jumpDir(fdir.slice('jump_'.length));
-          else if (DIRS[fdir]) await this.step(fdir);
-        }
-      } else if (dir === 'jump') {
-        await this.jumpInPlace();
-      } else if (typeof dir === 'string' && dir.startsWith('jump_')) {
-        await this.jumpDir(dir.slice('jump_'.length));
-      } else if (DIRS[dir]) {
-        await this.step(dir);
+    const context = {
+      step: (dir) => this.step(dir),
+      jumpInPlace: () => this.jumpInPlace(),
+      jumpDir: (dir) => this.jumpDir(dir),
+      onComplete: () => {
+        this.player.anims.play(`idle_${this.playerModel.facing}`, true);
       }
-    }
-    this.player.anims.play(`idle_${this.facing}`, true);
+    };
+
+    await executeProgram(moves, context, window.__GYM);
   }
 
   checkPickup(tx, ty) {
@@ -277,11 +246,11 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   update() {
-    this.crosshair.setPosition(this.tx * TILE, this.ty * TILE);
+    this.crosshair.setPosition(this.playerModel.tx * TILE, this.playerModel.ty * TILE);
     if (this.fpsVisible) {
       const fps = this.game.loop.actualFps.toFixed(0);
       this.debugText.setText(
-        `fps ${fps}  tile ${this.tx},${this.ty}  face ${this.facing}  picked ${this.collected}/${this.collected + this.pickups.size}`
+        `fps ${fps}  tile ${this.playerModel.tx},${this.playerModel.ty}  face ${this.playerModel.facing}  picked ${this.collected}/${this.collected + this.pickups.size}`
       );
     }
   }
