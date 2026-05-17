@@ -3,6 +3,7 @@ import { loadLevel } from '../level/TileLevel.js';
 import { createWeather, destroyWeather } from '../level/WeatherSystem.js';
 import { Player } from '../character/Player.js';
 import { executeProgram, DIRS } from '../program/ProgramExecutor.js';
+import { PickupManager } from '../game/PickupManager.js';
 
 export const STEP_MS = 160;
 
@@ -28,8 +29,8 @@ export class TileLevelScene extends Phaser.Scene {
     // Domain model for player state & collision logic
     this.playerModel = new Player(level.cols, level.rows, level.solid, level.spawn.tx, level.spawn.ty);
 
-    this.pickups = new Map();
-    this.collected = 0;
+    // Pickup management
+    this.pickupManager = new PickupManager(this);
 
     this.loadObjects(level.objects);
     this.decorate();
@@ -91,6 +92,7 @@ export class TileLevelScene extends Phaser.Scene {
 
   resetPlayer() {
     this.playerModel.reset();
+    this.pickupManager.reset();
     const [x, y] = this.tileCenter(this.playerModel.tx, this.playerModel.ty);
     this.player.setPosition(x, y);
     this.player.anims.play(`idle_${this.playerModel.facing}`, true);
@@ -99,20 +101,12 @@ export class TileLevelScene extends Phaser.Scene {
   loadObjects(objects) {
     for (const obj of objects) {
       if (obj.type === 'pickup') {
-        this.addPickup(obj.tx, obj.ty, obj.frame, obj.key, true);
+        this.pickupManager.addPickup(obj.tx, obj.ty, obj.frame, obj.key, true);
       } else {
         const [cx, cy] = this.tileCenter(obj.tx, obj.ty);
         this.add.sprite(cx, cy, obj.key, obj.frame).setDepth(10);
       }
     }
-  }
-
-  addPickup(tx, ty, frame, textureKey = 'plants', force = false) {
-    if (!force && this.solid[ty]?.[tx]) return;
-    const [cx, cy] = this.tileCenter(tx, ty);
-    const s = this.add.sprite(cx, cy, textureKey, frame).setDepth(50);
-    this.tweens.add({ targets: s, y: cy - 2, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
-    this.pickups.set(`${tx},${ty}`, s);
   }
 
   tileCenter(tx, ty) { return [tx * TILE + TILE / 2, ty * TILE + TILE / 2]; }
@@ -132,7 +126,7 @@ export class TileLevelScene extends Phaser.Scene {
       this.tweens.add({
         targets: this.player, x, y,
         duration: STEP_MS, ease: 'Linear',
-        onComplete: () => { this.checkPickup(moveResult.tx, moveResult.ty); resolve(); },
+        onComplete: () => { this.pickupManager.checkPickup(moveResult.tx, moveResult.ty); resolve(); },
       });
     });
   }
@@ -193,7 +187,7 @@ export class TileLevelScene extends Phaser.Scene {
         onComplete: () => {
           this.player.x = endX;
           this.player.y = endY;
-          if (opts?.pickupTx !== undefined) this.checkPickup(opts.pickupTx, opts.pickupTy);
+          if (opts?.pickupTx !== undefined) this.pickupManager.checkPickup(opts.pickupTx, opts.pickupTy);
           this.player.anims.stop();
           this.player.setFrame(this._idleFrameForDir(dir));
           resolve();
@@ -215,36 +209,6 @@ export class TileLevelScene extends Phaser.Scene {
     await executeProgram(moves, context, window.__GYM);
   }
 
-  checkPickup(tx, ty) {
-    const key = `${tx},${ty}`;
-    const s = this.pickups.get(key);
-    if (!s) return;
-    this.pickups.delete(key);
-    this.tweens.killTweensOf(s);
-
-    this.tweens.add({
-      targets: s, y: s.y - 14, scale: 1.8, alpha: 0,
-      duration: 380, ease: 'Cubic.easeOut',
-      onComplete: () => s.destroy(),
-    });
-    const ring = this.add.circle(s.x, s.y, 4, 0xffffff, 0).setStrokeStyle(2, 0xffee88).setDepth(60);
-    this.tweens.add({
-      targets: ring, scale: 3, alpha: { from: 1, to: 0 },
-      duration: 380, ease: 'Cubic.easeOut',
-      onComplete: () => ring.destroy(),
-    });
-    const txt = this.add.text(s.x, s.y - 6, '+1', {
-      fontFamily: 'monospace', fontSize: '9px', color: '#ffee88', stroke: '#000', strokeThickness: 2,
-    }).setOrigin(0.5).setDepth(61);
-    this.tweens.add({
-      targets: txt, y: txt.y - 16, alpha: 0,
-      duration: 500, ease: 'Cubic.easeOut',
-      onComplete: () => txt.destroy(),
-    });
-
-    this.collected++;
-  }
-
   drawGrid() {
     this.grid.clear();
     this.grid.lineStyle(1, 0x000000, 0.18);
@@ -257,7 +221,7 @@ export class TileLevelScene extends Phaser.Scene {
     if (this.fpsVisible) {
       const fps = this.game.loop.actualFps.toFixed(0);
       this.debugText.setText(
-        `fps ${fps}  tile ${this.playerModel.tx},${this.playerModel.ty}  face ${this.playerModel.facing}  picked ${this.collected}/${this.collected + this.pickups.size}`
+        `fps ${fps}  tile ${this.playerModel.tx},${this.playerModel.ty}  face ${this.playerModel.facing}  picked ${this.pickupManager.getCollected()}/${this.pickupManager.getTotalPickups()}`
       );
     }
   }
