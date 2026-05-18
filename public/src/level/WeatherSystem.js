@@ -21,7 +21,7 @@ export const DEFAULT_WEATHER = {
 };
 
 const COLORS = {
-  rain: 0xaaccff,
+  rain: 0xddeeff,
   snow: 0xffffff,
   pollen: 0xfff0aa,
   leaves: 0x8b5a2b,
@@ -95,8 +95,25 @@ export function createWeather(scene, config = DEFAULT_WEATHER) {
       _createWindEffect(scene, intensity, W, H);
     } else {
       const cfg = _particleConfig(type, intensity, W, H);
-      const emitter = scene.add.particles(0, 0, 'pixel', cfg).setDepth(200);
-      scene.__weatherEmitters.push(emitter);
+      // El sistema de particulas de Phaser 3.60+ crea internamente un manager
+      // en la display list, pero no expone una API estable para acceder a el.
+      // Detectamos el objeto recien creado comparando la lista de hijos antes
+      // y despues de crear el emitter.
+      const before = scene.children.list.length;
+      const emitter = scene.add.particles(0, 0, 'pixel', cfg);
+      const after = scene.children.list.length;
+
+      if (after > before) {
+        // El ultimo objeto anadido es el manager/contenedor real
+        const manager = scene.children.list[after - 1];
+        manager.setDepth(200);
+        manager.setScrollFactor(0);
+        scene.__weatherEmitters.push(manager);
+      } else {
+        emitter.setDepth(200);
+        emitter.setScrollFactor(0);
+        scene.__weatherEmitters.push(emitter);
+      }
     }
   }
 }
@@ -135,7 +152,7 @@ function _createWindEffect(scene, intensity, mapW, mapH) {
     const phase = Math.random() * Math.PI * 2;
     const segments = 40;
 
-    const gfx = scene.add.graphics().setDepth(200);
+    const gfx = scene.add.graphics().setDepth(200).setScrollFactor(0);
 
     const windObj = {
       gfx,
@@ -296,14 +313,15 @@ function _particleConfig(type, intensity, mapW, mapH) {
     case 'rain':
       return {
         ...base,
-        y: -4,
-        lifespan: 700 + Math.floor(i * 300),
-        speedY: { min: 220 + i * 180, max: 280 + i * 220 },
+        y: -12,
+        lifespan: 500 + Math.floor(i * 300),
+        speedY: { min: 160 + i * 120, max: 220 + i * 160 },
         speedX: { min: 5 + i * 10, max: 15 + i * 25 },
-        scale: { start: 0.35 + i * 0.15, end: 0.35 + i * 0.15 },
-        quantity: 1 + Math.floor(i * 4),
-        frequency: 120 - Math.floor(i * 100),
-        alpha: { start: 0.7 + i * 0.3, end: 0.2 },
+        scaleX: { start: 0.3 + i * 0.2, end: 0.3 + i * 0.2 },
+        scaleY: { start: 1.2 + i * 0.8, end: 1.2 + i * 0.8 },
+        quantity: 2 + Math.floor(i * 5),
+        frequency: 100 - Math.floor(i * 80),
+        alpha: { start: 1.0, end: 0.85 },
       };
 
     case 'snow':

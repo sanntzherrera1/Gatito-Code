@@ -1,4 +1,4 @@
-let edPanel, edTitle, edStatus, edTabs, edPalette, edLayersBar, edTerrains;
+let edPanel, edTitle, edStatus, edTabs, edPalette, edLayersBar;
 let edCfg = null;
 let activeTilesetIdx = 0;
 let activeTilesetCategory = 'grass';
@@ -17,7 +17,6 @@ export function initEditor() {
   edTabs = document.getElementById('ed-tabs');
   edPalette = document.getElementById('ed-palette');
   edLayersBar = document.getElementById('ed-layers');
-  edTerrains = document.getElementById('ed-terrains');
 
   document.getElementById('ed-save').onclick = () => edCfg?.onSave();
   document.getElementById('ed-play').onclick = () => edCfg?.onPlay();
@@ -40,7 +39,6 @@ function hideEditor() {
   edPanel.style.display = 'none';
   edTabs.innerHTML = '';
   edPalette.innerHTML = '';
-  edTerrains.innerHTML = '';
   document.getElementById('ed-tileset-categories').innerHTML = '';
   document.getElementById('ed-obj-tabs').innerHTML = '';
   document.getElementById('ed-obj-palette').innerHTML = '';
@@ -54,21 +52,8 @@ function showEditor(cfg) {
   edTitle.textContent = `Editor — ${cfg.levelKey}`;
   edStatus.textContent = `layer: ${cfg.getLayer()}`;
 
-  edTerrains.innerHTML = '';
   activeTerrainName = null;
-  const manualBtn = document.createElement('button');
-  manualBtn.textContent = 'Manual';
-  manualBtn.dataset.terrain = '';
-  manualBtn.addEventListener('click', () => { cfg.onTerrain(null); activeTerrainName = null; highlightTerrain(); });
-  edTerrains.appendChild(manualBtn);
-  cfg.terrains.forEach(t => {
-    const b = document.createElement('button');
-    b.textContent = t.label;
-    b.dataset.terrain = t.name;
-    b.addEventListener('click', () => { cfg.onTerrain(t); activeTerrainName = t.name; highlightTerrain(); });
-    edTerrains.appendChild(b);
-  });
-  highlightTerrain();
+  selectedGid = 0;
 
   activeTilesetCategory = 'grass';
   activeTilesetIdx = cfg.tilesets.findIndex(t => t.category === 'grass');
@@ -96,10 +81,40 @@ function showEditor(cfg) {
   renderWeatherControls(cfg);
 }
 
+function updateAutotileButton(cfg) {
+  const row = document.getElementById('ed-autotile-row');
+  const btn = document.getElementById('ed-autotile-btn');
+  if (!row || !btn) return;
+
+  const tileset = cfg.tilesets[activeTilesetIdx];
+  const terrain = cfg.terrains.find(t => t.tilesetName === tileset?.name);
+  if (!terrain) {
+    row.style.display = 'none';
+    btn.classList.remove('active');
+    btn.dataset.terrain = '';
+    btn.onclick = null;
+    return;
+  }
+
+  row.style.display = 'flex';
+  btn.dataset.terrain = terrain.name;
+  btn.onclick = () => {
+    if (activeTerrainName === terrain.name) {
+      activeTerrainName = null;
+      cfg.onTerrain(null);
+    } else {
+      activeTerrainName = terrain.name;
+      cfg.onTerrain(terrain);
+    }
+    highlightTerrain();
+  };
+  highlightTerrain();
+}
+
 function highlightTerrain() {
-  edTerrains.querySelectorAll('button').forEach(b => {
-    b.classList.toggle('active', b.dataset.terrain === (activeTerrainName ?? ''));
-  });
+  const btn = document.getElementById('ed-autotile-btn');
+  if (!btn) return;
+  btn.classList.toggle('active', btn.dataset.terrain === (activeTerrainName ?? ''));
 }
 
 function renderPalette() {
@@ -163,10 +178,25 @@ function renderTilesetTabs(cfg) {
     const b = document.createElement('button');
     b.textContent = t.label;
     b.dataset.idx = i;
-    b.addEventListener('click', () => { activeTilesetIdx = i; renderPalette(); });
+    b.addEventListener('click', () => {
+      activeTilesetIdx = i;
+      renderPalette();
+      if (activeTerrainName) {
+        activeTerrainName = null;
+        edCfg?.onTerrain(null);
+      }
+      updateAutotileButton(cfg);
+    });
     edTabs.appendChild(b);
   });
   renderPalette();
+
+  // Changing tileset disables terrain mode to avoid mismatch
+  if (activeTerrainName) {
+    activeTerrainName = null;
+    edCfg?.onTerrain(null);
+  }
+  updateAutotileButton(cfg);
 }
 
 function setSelected(gid) {

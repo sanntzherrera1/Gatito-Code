@@ -33,7 +33,7 @@ export class EditorScene extends Phaser.Scene {
     }
 
     this.activeLayer = 'walls';
-    this.selectedGid = 105;
+    this.selectedGid = 0;
     this.activeTerrain = null;
     this.painting = null;
     this.history = [];
