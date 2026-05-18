@@ -103,17 +103,19 @@ export function createWeather(scene, config = DEFAULT_WEATHER) {
       const emitter = scene.add.particles(0, 0, 'pixel', cfg);
       const after = scene.children.list.length;
 
+      let target;
       if (after > before) {
         // El ultimo objeto anadido es el manager/contenedor real
         const manager = scene.children.list[after - 1];
         manager.setDepth(200);
         manager.setScrollFactor(0);
-        scene.__weatherEmitters.push(manager);
+        target = manager;
       } else {
         emitter.setDepth(200);
         emitter.setScrollFactor(0);
-        scene.__weatherEmitters.push(emitter);
+        target = emitter;
       }
+      scene.__weatherEmitters.push(target);
     }
   }
 }
@@ -136,80 +138,93 @@ function _createLightningTimer(scene, intensity, mapW, mapH) {
   scene.__weatherTimers.push(timer);
 }
 
-/** Efecto de viento realista: lineas largas, finas y onduladas con rafagas. */
+/** Efecto de viento con pool de sprites: lineas que cruzan con movimiento ondulado. */
 function _createWindEffect(scene, intensity, mapW, mapH) {
   const i = Math.max(0, Math.min(1, intensity));
+  const POOL_SIZE = 12;
+  const pool = [];
+
+  for (let p = 0; p < POOL_SIZE; p++) {
+    const sprite = scene.add.sprite(-200, -200, 'wind_streak')
+      .setDepth(200)
+      .setScrollFactor(0)
+      .setVisible(false)
+      .setAlpha(0);
+    pool.push({ sprite, active: false, tweens: [] });
+  }
+
+  scene.__weatherEmitters.push({
+    destroy() {
+      for (const item of pool) {
+        item.tweens.forEach(t => t.stop());
+        item.sprite.destroy();
+      }
+    }
+  });
 
   function spawnLine() {
-    const lineLength = 120 + Math.random() * 100; // 120-220 px
+    const item = pool.find(p => !p.active);
+    if (!item) return;
+
+    item.active = true;
+    item.tweens.forEach(t => t.stop());
+    item.tweens = [];
+
     const startY = Math.random() * mapH;
-    const speed = 400 + Math.random() * 300 + i * 200; // 400-900 px/s
-    const duration = ((mapW + lineLength) / speed) * 1000;
-    const baseAlpha = 0.05 + Math.random() * 0.05 + i * 0.03; // 0.05-0.13
-    const color = COLORS.wind;
-    const amp = 1.5 + Math.random() * 2.0; // amplitud ondulacion
-    const waveCount = 2 + Math.random() * 2; // ondas a lo largo de la linea
-    const phase = Math.random() * Math.PI * 2;
-    const segments = 40;
+    const duration = 800 + Math.random() * 400 - i * 200;
+    const baseAlpha = 0.05 + Math.random() * 0.05 + i * 0.03;
 
-    const gfx = scene.add.graphics().setDepth(200).setScrollFactor(0);
+    const sprite = item.sprite;
+    sprite.setPosition(-150, startY);
+    sprite.setVisible(true);
+    sprite.setAlpha(0);
+    sprite.setScale(1 + i * 0.5, 1);
+    sprite.setAngle((Math.random() - 0.5) * 6);
 
-    const windObj = {
-      gfx,
-      tween: null,
-      destroy() {
-        this.tween?.stop();
-        this.gfx.destroy();
-      }
-    };
-
-    const state = { progress: 0 };
-
-    windObj.tween = scene.tweens.add({
-      targets: state,
-      progress: 1,
-      duration: duration,
+    // Tween horizontal principal
+    const t1 = scene.tweens.add({
+      targets: sprite,
+      x: mapW + 150,
+      duration,
       ease: 'Linear',
-      onUpdate: (tween) => {
-        if (!windObj.gfx.active) return;
-        const elapsed = tween.elapsed / duration;
-
-        // Fade in / fade out
-        let alpha = baseAlpha;
-        if (elapsed < 0.12) alpha *= elapsed / 0.12;
-        else if (elapsed > 0.88) alpha *= (1 - elapsed) / 0.12;
-
-        const x = -lineLength + elapsed * (mapW + lineLength * 1.5);
-        const y = startY;
-
-        windObj.gfx.clear();
-        windObj.gfx.lineStyle(1, color, alpha);
-
-        const timeOffset = elapsed * 8; // flujo de la onda
-
-        for (let s = 0; s <= segments; s++) {
-          const t = s / segments;
-          const px = t * lineLength;
-          const envelope = Math.sin(t * Math.PI); // 0 en extremos, 1 en centro
-          const py = Math.sin(t * waveCount * Math.PI * 2 + timeOffset + phase) * amp * envelope;
-          if (s === 0) windObj.gfx.moveTo(px, py);
-          else windObj.gfx.lineTo(px, py);
-        }
-        windObj.gfx.strokePath();
-        windObj.gfx.setPosition(x, y);
-      },
       onComplete: () => {
-        const idx = scene.__weatherEmitters.indexOf(windObj);
-        if (idx !== -1) scene.__weatherEmitters.splice(idx, 1);
-        windObj.destroy();
+        sprite.setVisible(false);
+        item.active = false;
       }
     });
 
-    scene.__weatherEmitters.push(windObj);
+    // Tween de oscilacion Y (simula ondulacion)
+    const t2 = scene.tweens.add({
+      targets: sprite,
+      y: startY + (Math.random() - 0.5) * 20,
+      duration: duration * 0.3,
+      yoyo: true,
+      repeat: 2,
+      ease: 'Sine.easeInOut'
+    });
+
+    // Fade in / hold / fade out
+    const t3 = scene.tweens.add({
+      targets: sprite,
+      alpha: baseAlpha,
+      duration: duration * 0.12,
+      ease: 'Linear',
+      onComplete: () => {
+        scene.tweens.add({
+          targets: sprite,
+          alpha: 0,
+          duration: duration * 0.12,
+          delay: duration * 0.64,
+          ease: 'Linear'
+        });
+      }
+    });
+
+    item.tweens.push(t1, t2, t3);
   }
 
-  // Rafagas periodicas
-  const baseDelay = 900 - Math.floor(i * 300); // 900ms - 600ms
+  const baseDelay = 900 - Math.floor(i * 300);
+  const variance = Math.floor(baseDelay * 0.5);
   const timer = scene.time.addEvent({
     delay: baseDelay,
     loop: true,
@@ -219,8 +234,7 @@ function _createWindEffect(scene, intensity, mapW, mapH) {
       for (let c = 0; c < count; c++) {
         scene.time.delayedCall(c * 50, spawnLine);
       }
-      // Variar proximo delay
-      timer.delay = baseDelay + Math.floor(Math.random() * 400 - 200);
+      timer.delay = baseDelay + Math.floor(Math.random() * variance * 2 - variance);
     }
   });
 

@@ -48,23 +48,23 @@ export class EditorScene extends Phaser.Scene {
 
     this.spawnMarker = this.add.rectangle(
       this.spawn.tx * TILE, this.spawn.ty * TILE, TILE, TILE
-    ).setStrokeStyle(1, 0x66ff99, 0.9).setOrigin(0).setDepth(90);
+    ).setStrokeStyle(1, 0x66ff99, 0.9).setOrigin(0).setDepth(90).setScrollFactor(0);
     this.spawnLabel = this.add.text(this.spawn.tx * TILE + 2, this.spawn.ty * TILE + 2, 'S', {
       fontFamily: 'monospace', fontSize: '8px', color: '#66ff99',
-    }).setDepth(91);
+    }).setDepth(91).setScrollFactor(0);
 
     // Hover + grid overlays
-    this.grid = this.add.graphics().setDepth(100);
+    this.grid = this.add.graphics().setDepth(100).setScrollFactor(0);
     this.drawGrid();
     this.gridVisible = true;
     this.hoverRect = this.add.rectangle(0, 0, TILE, TILE)
-      .setStrokeStyle(1, 0xffee88, 1).setOrigin(0).setDepth(101).setVisible(false);
+      .setStrokeStyle(1, 0xffee88, 1).setOrigin(0).setDepth(101).setVisible(false).setScrollFactor(0);
     this.activeLayerRect = this.add.rectangle(0, 0, TILE, TILE, 0xffee88, 0.18)
-      .setOrigin(0).setDepth(99).setVisible(false);
+      .setOrigin(0).setDepth(99).setVisible(false).setScrollFactor(0);
 
     this.hudText = this.add.text(4, 4, '', {
       fontFamily: 'monospace', fontSize: '8px', color: '#ffee88', backgroundColor: '#000a',
-    }).setDepth(102).setPadding(2, 1, 2, 1);
+    }).setDepth(102).setPadding(2, 1, 2, 1).setScrollFactor(0);
 
     // DOM palette -----------------------------------------------------------
     window.__setEditor?.({

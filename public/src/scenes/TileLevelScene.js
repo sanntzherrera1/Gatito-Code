@@ -73,14 +73,14 @@ export class TileLevelScene extends Phaser.Scene {
     });
     this.keys.ESC.on('down', () => this.scene.start('Menu', { screen: this.returnScreen }));
 
-    this.grid = this.add.graphics().setDepth(100);
+    this.grid = this.add.graphics().setDepth(100).setScrollFactor(0);
     this.drawGrid();
     this.gridVisible = true;
     this.debugText = this.add.text(4, 4, '', {
       fontFamily: 'monospace', fontSize: '8px', color: '#8ef', backgroundColor: '#000a',
-    }).setDepth(101).setPadding(2, 1, 2, 1);
+    }).setDepth(101).setPadding(2, 1, 2, 1).setScrollFactor(0);
     this.fpsVisible = true;
-    this.crosshair = this.add.rectangle(0, 0, TILE, TILE).setStrokeStyle(1, 0xffcc33, 0.8).setOrigin(0).setDepth(99);
+    this.crosshair = this.add.rectangle(0, 0, TILE, TILE).setStrokeStyle(1, 0xffcc33, 0.8).setOrigin(0).setDepth(99).setScrollFactor(0);
 
     this.keys.G.on('down', () => { this.gridVisible = !this.gridVisible; this.grid.setVisible(this.gridVisible); });
     this.keys.F.on('down', () => { this.fpsVisible = !this.fpsVisible; this.debugText.setVisible(this.fpsVisible); });

@@ -39,6 +39,15 @@ export class BootScene extends Phaser.Scene {
     ctx.fillRect(0, 0, 2, 2);
     this.textures.addCanvas('pixel', canvas);
 
+    // Textura de línea horizontal para viento: 128×1 píxeles.
+    const windCanvas = document.createElement('canvas');
+    windCanvas.width = 128;
+    windCanvas.height = 1;
+    const wctx = windCanvas.getContext('2d');
+    wctx.fillStyle = '#ffffff';
+    wctx.fillRect(0, 0, 128, 1);
+    this.textures.addCanvas('wind_streak', windCanvas);
+
     const walk = (key, frames) => this.anims.create({
       key,
       frames: this.anims.generateFrameNumbers('character_base', { frames }),
