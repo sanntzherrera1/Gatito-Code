@@ -1,4 +1,4 @@
-import { TileLevelScene } from './TileLevelScene.js';
+import { TileLevelScene } from '../scenes/TileLevelScene.js';
 
 export class MainScene extends TileLevelScene {
   constructor() {

@@ -1,10 +1,5 @@
 const BASE = 'assets/SproutLands-Sprites/Tilesets';
 
-/**
- * Canonical tileset registry. GIDs are assigned once per tileset and never
- * change; adding a new tileset should claim a new unused firstgid block.
- * `key` is the Phaser texture key, `name` is what level JSONs reference.
- */
 export const TILESET_CATEGORIES = {
   grass:     { label: 'Grass' },
   soil:      { label: 'Soil' },
@@ -195,6 +190,96 @@ export const OBJECTS = [
   { key: 'fence_gates_anim', label: 'Fence Gates',   url: 'assets/SproutLands-Sprites/Tilesets/Building parts/Fence gates animation sprites .png',     cols: 10,rows: 3, frameW: 16, frameH: 16, category: 'structures' },
   { key: 'mailbox_anim',     label: 'Mailbox',       url: 'assets/SproutLands-Sprites/Tilesets/Building parts/Mailbox Animation Frames.png',         cols: 11,rows: 21,frameW: 16, frameH: 16, category: 'structures' },
   { key: 'wooden_bridge_v2', group: 'bridge', variant: {version: 'v2'}, label: 'Bridge v2',     url: 'assets/SproutLands-Sprites/Tilesets/Building parts/Wooden_Bridge_v2.png',                 cols: 4, rows: 3, frameW: 16, frameH: 16, category: 'structures' },
+
+  // ── Items ──
+
+  { key: 'egg_items',          label: 'Egg',            url: 'assets/SproutLands-Sprites/Objects/Items/Egg items.png',                  cols: 5, rows: 1,  frameW: 16, frameH: 16, category: 'items' },
+  { key: 'farming_plants_items', group: 'farming_items', variant: {version: 'v1'}, label: 'Farming',        url: 'assets/SproutLands-Sprites/Objects/Items/Farming Plants items.png',       cols: 2, rows: 15, frameW: 16, frameH: 16, category: 'items' },
+  { key: 'fruit_berries_items',label: 'Fruit',         url: 'assets/SproutLands-Sprites/Objects/Items/fruit and berries items.png',    cols: 4, rows: 2,  frameW: 16, frameH: 16, category: 'items' },
+  { key: 'grass_ground_items',  label: 'Ground',         url: 'assets/SproutLands-Sprites/Objects/Items/grass-n-ground-tile-items.png',  cols: 6, rows: 2,  frameW: 16, frameH: 16, category: 'items' },
+  { key: 'item_shadow',        label: 'Item Shadow',    url: 'assets/SproutLands-Sprites/Objects/Items/item shadow.png',                cols: 1, rows: 1,  frameW: 16, frameH: 16, category: 'items' },
+  { key: 'milk_items',         label: 'Milk',           url: 'assets/SproutLands-Sprites/Objects/Items/milk-items.png',                  cols: 4, rows: 11, frameW: 16, frameH: 16, category: 'items' },
+  { key: 'tools_items',        label: 'Tools',          url: 'assets/SproutLands-Sprites/Objects/Items/tools and meterials.png',       cols: 4, rows: 3,  frameW: 16, frameH: 16, category: 'items' },
+
+  // ═══════════════════════════════════════════════════════════════
+  //  SORRYSPRITES ASSETS
+  // ═══════════════════════════════════════════════════════════════
+
+  // ── Dungeon Pack ──
+  { key: 'bat_animations', group: 'bat', variant: {'size':'normal'}, label: 'Bat',            url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/bat_animations.png',       cols: 12, rows: 4, frameW: 16, frameH: 16, category: 'animals' },
+  { key: 'small_bat_animations', group: 'bat', variant: {'size':'small'}, label: 'Small Bat',      url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/small_bat_animations.png', cols: 12, rows: 4, frameW: 16, frameH: 16, category: 'animals' },
+  { key: 'small_green_slime',    label: 'Green Slime',    url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/small_green_slime_animations.png', cols: 12, rows: 8, frameW: 38, frameH: 38, category: 'animals' },
+  { key: 'dungeon_probs',        label: 'Dungeon Props',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Dungeon_probs.png',          cols: 8,  rows: 4, frameW: 16, frameH: 16, category: 'objects' },
+  { key: 'dungeon_carts_obj',    label: 'Dungeon Carts',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Carts.png',                  cols: 3,  rows: 2, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'dungeon_rocks_obj',    label: 'Dungeon Rocks',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                  cols: 4,  rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'dungeon_switch_obj',   label: 'Dungeon Switch', url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/switch.png',                 cols: 3,  rows: 1, frameW: 16, frameH: 16, category: 'structures' },
+
+  // ── Ocean Pack ──
+  { key: 'big_fish_2', group: 'fish', variant: {'size':'big'}, label: 'Big Fish',       url: 'assets/SproutLands-SorrySprites/Early Access/Ocean Pack/big fish 2 swimming in cirkels.png', cols: 15, rows: 1, frameW: 16, frameH: 16, category: 'animals' },
+  { key: 'fish_sprites',    label: 'Fish Sprites',   url: 'assets/SproutLands-SorrySprites/Early Access/Ocean Pack/Fish Sprites.png',                   cols: 10, rows: 5, frameW: 16, frameH: 16, category: 'animals' },
+  { key: 'fishing_back', group: 'fishing', variant: {'direction':'back'}, label: 'Fishing Back',   url: 'assets/SproutLands-SorrySprites/Early Access/Ocean Pack/fishing animation back.png',         cols: 96, rows: 18,frameW: 16, frameH: 16, category: 'characters' },
+  { key: 'fishing_front', group: 'fishing', variant: {'direction':'front'}, label: 'Fishing Front',  url: 'assets/SproutLands-SorrySprites/Early Access/Ocean Pack/fishing animation front.png',        cols: 96, rows: 18,frameW: 16, frameH: 16, category: 'characters' },
+  { key: 'fishing_side', group: 'fishing', variant: {'direction':'side'}, label: 'Fishing Side',   url: 'assets/SproutLands-SorrySprites/Early Access/Ocean Pack/fishing animation side.png',         cols: 96, rows: 18,frameW: 16, frameH: 16, category: 'characters' },
+  { key: 'fishing_splash',  label: 'Fishing Splash', url: 'assets/SproutLands-SorrySprites/Early Access/Ocean Pack/fishing water splash frames and rod.png', cols: 12, rows: 15,frameW: 16, frameH: 16, category: 'objects' },
+  { key: 'medium_fish', group: 'fish', variant: {'size':'medium'}, label: 'Medium Fish',    url: 'assets/SproutLands-SorrySprites/Early Access/Ocean Pack/mediuml fish.png',                   cols: 15, rows: 1, frameW: 16, frameH: 16, category: 'animals' },
+  { key: 'small_fish', group: 'fish', variant: {'size':'small'}, label: 'Small Fish',     url: 'assets/SproutLands-SorrySprites/Early Access/Ocean Pack/small fish.png',                     cols: 15, rows: 1, frameW: 16, frameH: 16, category: 'animals' },
+
+
+  // ── Plant update 2 ──
+  { key: 'birch_biom', group: 'biom', variant: {'type':'birch'}, label: 'Birch Biom',             url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Birch wood Biom.png',                      cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'birch_water_plants', group: 'water_plants', variant: {'type':'birch'}, label: 'Birch Water Plants',     url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Birch wood Biom water plants.png',          cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'cherry_biom', group: 'biom', variant: {'type':'cherry'}, label: 'Cherry Biom',            url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Cherry Blossom Biom.png',                   cols: 10, rows: 5, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'cherry_water_plants', group: 'water_plants', variant: {'type':'cherry'}, label: 'Cherry Water Plants',    url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Cherry Blossom Biom water plants.png',      cols: 10, rows: 5, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'farming_items_v2', group: 'farming_items', variant: {version: 'v2'}, label: 'Farming Items v2',       url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Farming Plants items v2.png',               cols: 5,  rows: 14,frameW: 16, frameH: 16, category: 'items' },
+  { key: 'farming_v2', group: 'farming_v2', variant: {'watered':'no'}, label: 'Farming v2',             url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Farming Plants v2.png',                    cols: 7,  rows: 33,frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'farming_v2_watered', group: 'farming_v2', variant: {'watered':'yes'}, label: 'Farming v2 Watered',     url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Farming Plants v2 watered.png',             cols: 7,  rows: 33,frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'pine_biom', group: 'biom', variant: {'type':'pine'}, label: 'Pine Biom',              url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Pine Tree Biome.png',                       cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'pine_water_plants', group: 'water_plants', variant: {'type':'pine'}, label: 'Pine Water Plants',      url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Pine Tree Biome water plants.png',        cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'trees_v2',                   label: 'Trees v2',               url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Trees, stumps and bushes v2.png',         cols: 12, rows: 8, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'wood_shrooms',               label: 'Wood & Shrooms',         url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/wood n shroms.png',                         cols: 6,  rows: 5, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'birch_chest', group: 'chest', variant: {'type':'birch'}, label: 'Birch Chest',            url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Furniture/Birch_Chest.png',                 cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'cherry_chest', group: 'chest', variant: {'type':'cherry'}, label: 'Cherry Chest',           url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Furniture/Cherry_Chest.png',                cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'golden_chest', group: 'chest', variant: {'type':'golden'}, label: 'Golden Chest',           url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Furniture/Golden_Chest.png',                cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'oak_chest', group: 'chest', variant: {'type':'oak'}, label: 'Oak Chest',              url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Furniture/Oak_Chest.png',                   cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'pine_chest', group: 'chest', variant: {'type':'pine'}, label: 'Pine Chest',             url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Furniture/Pine_Chest.png',                  cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'silver_chest', group: 'chest', variant: {'type':'silver'}, label: 'Silver Chest',           url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Furniture/Silver_Chest.png',                cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'new_wooden_furniture', group: 'furniture', variant: {version: 'new'}, label: 'New Furniture',          url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Furniture/new Wooden Furniture.png',        cols: 15, rows: 8, frameW: 16, frameH: 16, category: 'objects' },
+  { key: 'new_wooden_furniture_items', group: 'furniture', variant: {version: 'new_2'}, label: 'New Furniture Items',    url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Furniture/new Wooden Furniture items.png',   cols: 12, rows: 5, frameW: 16, frameH: 16, category: 'objects' },
+
+  // ── Winter ──
+  { key: 'campfire',        label: 'Campfire',        url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/campfire.png',          cols: 7,  rows: 3, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'christmas_tree',  label: 'Christmas Tree',  url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/christmas tree.png',      cols: 24, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'fire_animation',  label: 'Fire Animation',  url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/fire animation.png',    cols: 16, rows: 1, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'present_green', group: 'present', variant: {'color':'green','variant':'default'}, label: 'Present Green',   url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/present green.png',      cols: 10, rows: 1, frameW: 16, frameH: 16, category: 'items' },
+  { key: 'present_green_2', group: 'present', variant: {'color':'green','variant':'2'}, label: 'Present Green 2', url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/present green 2.png',    cols: 10, rows: 1, frameW: 16, frameH: 16, category: 'items' },
+  { key: 'present_red', group: 'present', variant: {'color':'red','variant':'default'}, label: 'Present Red',     url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/present red.png',         cols: 10, rows: 1, frameW: 16, frameH: 16, category: 'items' },
+  { key: 'present_red_2', group: 'present', variant: {'color':'red','variant':'2'}, label: 'Present Red 2',   url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/present red 2.png',       cols: 10, rows: 1, frameW: 16, frameH: 16, category: 'items' },
+  { key: 'present_red_3', group: 'present', variant: {'color':'red','variant':'3'}, label: 'Present Red 3',   url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/present red 3.png',       cols: 10, rows: 1, frameW: 16, frameH: 16, category: 'items' },
+  { key: 'snowflakes',      label: 'Snowflakes',      url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/snomwflakes.png',          cols: 1,  rows: 3, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'winter_items',    label: 'Winter',          url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/winter items.png',        cols: 2,  rows: 4, frameW: 16, frameH: 16, category: 'items' },
+  { key: 'winter_sprites',  label: 'Winter Sprites',  url: 'assets/SproutLands-SorrySprites/Early Access/Sprout winter/winter sprites.png',      cols: 15, rows: 9, frameW: 16, frameH: 16, category: 'objects' },
+
+  // ── Village pack ──
+  { key: 'wooden_door_spritesheet',      label: 'Wooden Door',           url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/wooden_door_spritesheet.png',                                cols: 24, rows: 3, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'grey_brick_houses', group: 'brick_house', variant: {'door':'no','grass':'no'}, label: 'Grey Brick House',      url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Grey brick house/grey_brick_houses.png',                      cols: 18, rows: 5, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'grey_brick_houses_doors', group: 'brick_house', variant: {'door':'yes','grass':'no'}, label: 'Grey Brick + Door',     url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Grey brick house/grey_brick_houses_with_doors.png',          cols: 18, rows: 5, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'grey_brick_houses_doors_grass', group: 'brick_house', variant: {'door':'yes','grass':'yes'}, label: 'Grey Brick Door Grass', url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Grey brick house/grey_brick_houses_with_doors_grass.png',  cols: 18, rows: 5, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'grey_brick_houses_grass', group: 'brick_house', variant: {'door':'no','grass':'yes'}, label: 'Grey Brick Grass',      url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Grey brick house/grey_brick_houses_with_grass.png',          cols: 18, rows: 5, frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house', group: 'small_house', variant: {'light':'off','door':'no','grass':'no'}, label: 'Small House',           url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House.png',                                cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house_light', group: 'small_house', variant: {'light':'on','door':'no','grass':'no'}, label: 'Small House Light',     url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House_light.png',                          cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house_door', group: 'small_house', variant: {'light':'off','door':'yes','grass':'no'}, label: 'Small House + Door',    url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House_with_door.png',                        cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house_door_grass', group: 'small_house', variant: {'light':'off','door':'yes','grass':'yes'}, label: 'Small House Door Grass',url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House_with_door_grass.png',                  cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house_grass', group: 'small_house', variant: {'light':'off','door':'no','grass':'yes'}, label: 'Small House Grass',     url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House_with_grass.png',                     cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house_light_door', group: 'small_house', variant: {'light':'on','door':'yes','grass':'no'}, label: 'Small House Lt Door',   url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House_light_with_door.png',                 cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house_light_door_grass', group: 'small_house', variant: {'light':'on','door':'yes','grass':'yes'}, label: 'Small House Lt D Grs',  url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House_light_with_door_grass.png',          cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house_light_grass', group: 'small_house', variant: {'light':'on','door':'no','grass':'yes'}, label: 'Small House Lt Grass',  url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House_light_with_grass.png',              cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_house_shadow', group: 'house_shadow', variant: {house: 'small_house'}, label: 'Small House Shadow',    url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small house/small_House_shadow.png',                           cols: 4,  rows: 1, frameW: 16, frameH: 16, category: 'shadow' },
+  { key: 'small_huts', group: 'small_hut', variant: {'door':'no','grass':'no'}, label: 'Small Huts',            url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_huts.png',                                     cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_huts_doors', group: 'small_hut', variant: {'door':'yes','grass':'no'}, label: 'Small Huts + Doors',    url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_huts_with_doors.png',                        cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_huts_doors_grass', group: 'small_hut', variant: {'door':'yes','grass':'yes'}, label: 'Small Huts Doors Grass',url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_huts_with_doors_grass.png',                  cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_huts_grass', group: 'small_hut', variant: {'door':'no','grass':'yes'}, label: 'Small Huts Grass',      url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_huts_with_grass.png',                       cols: 12, rows: 12,frameW: 16, frameH: 16, category: 'structures' },
+  { key: 'small_hut_shadow', group: 'house_shadow', variant: {house: 'small_hut'}, label: 'Small Hut Shadow',      url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_hut_shadow.png',                             cols: 4,  rows: 1, frameW: 16, frameH: 16, category: 'shadow' },
+  { key: 'brick_houses_shadow', group: 'house_shadow', variant: {house: 'brick_house'}, label: 'Brick House Shadow',    url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Grey brick house/brick_houses_shadow.png',                     cols: 6,  rows: 2, frameW: 16, frameH: 16, category: 'shadow' },
 
   // ── Tests (NPCs decorativos) ──
   { key: 'teemo_8dir', group: 'test_npc', variant: {'character':'teemo'}, label: 'Teemo NPC',         url: 'assets/SproutLands-SorrySprites/Tests/teemo 8 directions.png',                   cols: 8, rows: 3, frameW: 16, frameH: 16, category: 'characters' },
@@ -721,6 +806,7 @@ export function flatToRows(flat, cols, rows) {
   return out;
 }
 
+/** localStorage overrides disk; editor writes here on save. */
 export const VARIANT_DEFS = {
   chicken: {
     label: 'Chicken',
