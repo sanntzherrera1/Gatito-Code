@@ -48,6 +48,19 @@ export class BootScene extends Phaser.Scene {
     wctx.fillRect(0, 0, 128, 1);
     this.textures.addCanvas('wind_streak', windCanvas);
 
+    // Textura de bruma difusa para viento: 256×32 píxeles con gradiente horizontal.
+    const hazeCanvas = document.createElement('canvas');
+    hazeCanvas.width = 256;
+    hazeCanvas.height = 32;
+    const hctx = hazeCanvas.getContext('2d');
+    const grad = hctx.createLinearGradient(0, 0, 256, 0);
+    grad.addColorStop(0, 'rgba(255,255,255,0)');
+    grad.addColorStop(0.5, 'rgba(255,255,255,1)');
+    grad.addColorStop(1, 'rgba(255,255,255,0)');
+    hctx.fillStyle = grad;
+    hctx.fillRect(0, 0, 256, 32);
+    this.textures.addCanvas('wind_haze', hazeCanvas);
+
     const walk = (key, frames) => this.anims.create({
       key,
       frames: this.anims.generateFrameNumbers('character_base', { frames }),

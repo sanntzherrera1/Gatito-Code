@@ -138,107 +138,150 @@ function _createLightningTimer(scene, intensity, mapW, mapH) {
   scene.__weatherTimers.push(timer);
 }
 
-/** Efecto de viento con pool de sprites: lineas que cruzan con movimiento ondulado. */
+/** Efecto de viento multicapa: bruma + viento lejano + viento cercano sincronizados. */
 function _createWindEffect(scene, intensity, mapW, mapH) {
   const i = Math.max(0, Math.min(1, intensity));
-  const POOL_SIZE = 12;
-  const pool = [];
 
-  for (let p = 0; p < POOL_SIZE; p++) {
-    const sprite = scene.add.sprite(-200, -200, 'wind_streak')
-      .setDepth(200)
-      .setScrollFactor(0)
-      .setVisible(false)
-      .setAlpha(0);
-    pool.push({ sprite, active: false, tweens: [] });
-  }
-
-  scene.__weatherEmitters.push({
-    destroy() {
-      for (const item of pool) {
-        item.tweens.forEach(t => t.stop());
-        item.sprite.destroy();
-      }
+  const layerDefs = [
+    {
+      key: 'haze', texture: 'wind_haze', depth: 15, poolSize: 4,
+      baseScaleX: 1.0, scaleXVar: 0.4,
+      baseScaleY: 1.0,
+      baseAlpha: 0.05, alphaVar: 0.02,
+      speedFactor: 1.5, durationBase: 550,
+      hasWobble: false, wobbleAmp: 0,
+      count: { min: 1, max: Math.max(1, Math.round(1 + i)) }
+    },
+    {
+      key: 'far', texture: 'wind_streak', depth: 25, poolSize: 8,
+      baseScaleX: 2.0, scaleXVar: 0.5,
+      baseScaleY: 2.0,
+      baseAlpha: 0.05, alphaVar: 0.02,
+      speedFactor: 0.7, durationBase: 1400,
+      hasWobble: true, wobbleAmp: 8,
+      count: { min: 1, max: Math.max(1, Math.round(1 + i * 2)) }
+    },
+    {
+      key: 'near', texture: 'wind_streak', depth: 210, poolSize: 12,
+      baseScaleX: 0.9, scaleXVar: 0.3,
+      baseScaleY: 2.0,
+      baseAlpha: 0.14, alphaVar: 0.04,
+      speedFactor: 1.3, durationBase: 850,
+      hasWobble: true, wobbleAmp: 15,
+      count: { min: 1, max: Math.max(1, Math.round(1 + i * 3)) }
     }
-  });
+  ];
 
-  function spawnLine() {
-    const item = pool.find(p => !p.active);
-    if (!item) return;
+  const layers = layerDefs.map(def => {
+    const pool = [];
+    for (let p = 0; p < def.poolSize; p++) {
+      const sprite = scene.add.sprite(-300, -300, def.texture)
+        .setDepth(def.depth)
+        .setScrollFactor(0)
+        .setVisible(false)
+        .setAlpha(0);
+      pool.push({ sprite, active: false, tweens: [] });
+    }
 
-    item.active = true;
-    item.tweens.forEach(t => t.stop());
-    item.tweens = [];
+    return {
+      ...def,
+      pool,
+      spawn() {
+        const count = def.count.min + Math.floor(Math.random() * (def.count.max - def.count.min + 1));
+        for (let c = 0; c < count; c++) {
+          const item = this.pool.find(p => !p.active);
+          if (!item) continue;
 
-    const startY = Math.random() * mapH;
-    const duration = 800 + Math.random() * 400 - i * 200;
-    const baseAlpha = 0.05 + Math.random() * 0.05 + i * 0.03;
+          item.active = true;
+          item.tweens.forEach(t => t.stop());
+          item.tweens = [];
 
-    const sprite = item.sprite;
-    sprite.setPosition(-150, startY);
-    sprite.setVisible(true);
-    sprite.setAlpha(0);
-    sprite.setScale(1 + i * 0.5, 1);
-    sprite.setAngle((Math.random() - 0.5) * 6);
+          const startY = Math.random() * mapH;
+          const scaleX = def.baseScaleX * (1 - def.scaleXVar / 2 + Math.random() * def.scaleXVar);
+          const duration = def.durationBase / def.speedFactor * (0.85 + Math.random() * 0.3);
+          const alpha = def.baseAlpha + (Math.random() - 0.5) * def.alphaVar * 2;
 
-    // Tween horizontal principal
-    const t1 = scene.tweens.add({
-      targets: sprite,
-      x: mapW + 150,
-      duration,
-      ease: 'Linear',
-      onComplete: () => {
-        sprite.setVisible(false);
-        item.active = false;
-      }
-    });
+          const sprite = item.sprite;
+          sprite.setPosition(-180 - Math.random() * 80, startY);
+          sprite.setVisible(true);
+          sprite.setAlpha(0);
+          sprite.setScale(scaleX, def.baseScaleY);
+          sprite.setAngle((Math.random() - 0.5) * 8);
 
-    // Tween de oscilacion Y (simula ondulacion)
-    const t2 = scene.tweens.add({
-      targets: sprite,
-      y: startY + (Math.random() - 0.5) * 20,
-      duration: duration * 0.3,
-      yoyo: true,
-      repeat: 2,
-      ease: 'Sine.easeInOut'
-    });
+          // Tween horizontal principal
+          const t1 = scene.tweens.add({
+            targets: sprite,
+            x: mapW + 180 + Math.random() * 80,
+            duration,
+            ease: 'Linear',
+            onComplete: () => {
+              sprite.setVisible(false);
+              item.active = false;
+            }
+          });
 
-    // Fade in / hold / fade out
-    const t3 = scene.tweens.add({
-      targets: sprite,
-      alpha: baseAlpha,
-      duration: duration * 0.12,
-      ease: 'Linear',
-      onComplete: () => {
-        scene.tweens.add({
-          targets: sprite,
-          alpha: 0,
-          duration: duration * 0.12,
-          delay: duration * 0.64,
-          ease: 'Linear'
+          // Wobble Y
+          if (def.hasWobble) {
+            const t2 = scene.tweens.add({
+              targets: sprite,
+              y: startY + (Math.random() - 0.5) * def.wobbleAmp,
+              duration: duration * 0.25,
+              yoyo: true,
+              repeat: 3,
+              ease: 'Sine.easeInOut'
+            });
+            item.tweens.push(t2);
+          }
+
+          // Fade in
+          const t3a = scene.tweens.add({
+            targets: sprite,
+            alpha: Math.max(0, alpha),
+            duration: duration * 0.1,
+            ease: 'Linear'
+          });
+
+          // Fade out
+          const t3b = scene.tweens.add({
+            targets: sprite,
+            alpha: 0,
+            duration: duration * 0.12,
+            delay: Math.max(0, duration * 0.68),
+            ease: 'Linear'
+          });
+
+          item.tweens.push(t1, t3a, t3b);
+        }
+      },
+      destroy() {
+        this.pool.forEach(item => {
+          item.tweens.forEach(t => t.stop());
+          item.sprite.destroy();
         });
       }
-    });
+    };
+  });
 
-    item.tweens.push(t1, t2, t3);
-  }
-
-  const baseDelay = 900 - Math.floor(i * 300);
+  // Timer maestro de rafagas sincronizadas
+  const baseDelay = 1800 - Math.floor(i * 600);
   const variance = Math.floor(baseDelay * 0.5);
+
   const timer = scene.time.addEvent({
     delay: baseDelay,
     loop: true,
     callback: () => {
-      const roll = Math.random();
-      const count = roll < 0.15 ? 1 : roll < 0.55 ? 2 : roll < 0.85 ? 3 : 4;
-      for (let c = 0; c < count; c++) {
-        scene.time.delayedCall(c * 50, spawnLine);
-      }
+      layers.forEach(layer => layer.spawn());
       timer.delay = baseDelay + Math.floor(Math.random() * variance * 2 - variance);
     }
   });
 
   scene.__weatherTimers.push(timer);
+
+  scene.__weatherEmitters.push({
+    destroy() {
+      layers.forEach(l => l.destroy());
+    }
+  });
 }
 
 /** Dibuja un relampago realista: overlay tenue + glow local + linea zigzag con ramas. */
