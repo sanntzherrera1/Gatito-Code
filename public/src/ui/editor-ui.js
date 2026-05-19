@@ -71,7 +71,11 @@ function showEditor(cfg) {
   activeVariant = {};
   document.getElementById('ed-obj-type').querySelectorAll('button').forEach(b => {
     b.classList.toggle('active', b.dataset.objtype === activeObjType);
-    b.onclick = () => { activeObjType = b.dataset.objtype; highlightObjType(); };
+    b.onclick = () => {
+      activeObjType = b.dataset.objtype;
+      highlightObjType();
+      edCfg?.onObjectTypeChange?.(activeObjType);
+    };
   });
   renderObjCategories(cfg);
   renderObjTabs(cfg);

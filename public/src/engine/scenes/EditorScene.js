@@ -93,6 +93,7 @@ export class EditorScene extends Phaser.Scene {
       onRevert:       () => this.revertToDisk(),
       getLayer:       () => this.activeLayer,
       onObjectSelect: (key, frame, type) => { this.selectedObject = { key, frame, type }; this.setMode('object'); },
+      onObjectTypeChange: (type) => { this.selectedObject.type = type; this.updateHud(); },
       onSpawnMode:    () => this.setMode('spawn'),
       getMode:        () => this.edMode,
       getWeather:     () => this.weather,
