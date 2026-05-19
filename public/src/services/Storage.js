@@ -1,4 +1,4 @@
-import { TILESETS } from '../level/TileLevel.js';
+import { TILESETS } from '../engine/level/TileRegistry.js';
 
 /** localStorage overrides disk; editor writes here on save. */
 export function readLevelJson(scene, levelKey) {
