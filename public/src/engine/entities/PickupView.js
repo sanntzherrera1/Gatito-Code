@@ -4,17 +4,19 @@ import { TILE } from '../../config/game.js';
  * Visual representation of a pickup item — floating sprite + collection effect.
  */
 export class PickupView {
-  constructor(scene, tx, ty, frame, textureKey = 'plants') {
+  constructor(scene, tx, ty, frame, textureKey = 'plants', animated = true) {
     this.scene = scene;
     this.tx = tx;
     this.ty = ty;
     const cx = tx * TILE + TILE / 2;
     const cy = ty * TILE + TILE / 2;
     this.sprite = scene.add.sprite(cx, cy, textureKey, frame).setDepth(50);
-    this.floatTween = scene.tweens.add({
-      targets: this.sprite, y: cy - 2,
-      duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
-    });
+    if (animated) {
+      this.floatTween = scene.tweens.add({
+        targets: this.sprite, y: cy - 2,
+        duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+      });
+    }
   }
 
   /**

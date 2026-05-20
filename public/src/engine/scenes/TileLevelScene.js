@@ -98,8 +98,9 @@ export class TileLevelScene extends Phaser.Scene {
 
   loadObjects(objects) {
     for (const obj of objects) {
-      if (obj.type === 'pickup') {
-        this.addPickup(obj.tx, obj.ty, obj.frame, obj.key, true);
+      if (obj.type === 'pickup' || obj.type === 'pickup_with_animation') {
+        const animated = obj.type === 'pickup_with_animation';
+        this.addPickup(obj.tx, obj.ty, obj.frame, obj.key, true, animated);
       } else {
         const [cx, cy] = this.tileCenter(obj.tx, obj.ty);
         this.add.sprite(cx, cy, obj.key, obj.frame).setDepth(10);
@@ -107,9 +108,9 @@ export class TileLevelScene extends Phaser.Scene {
     }
   }
 
-  addPickup(tx, ty, frame, textureKey = 'plants', force = false) {
+  addPickup(tx, ty, frame, textureKey = 'plants', force = false, animated = true) {
     if (!force && this.level.isSolid(tx, ty)) return;
-    const pickup = new PickupView(this, tx, ty, frame, textureKey);
+    const pickup = new PickupView(this, tx, ty, frame, textureKey, animated);
     this.pickups.set(`${tx},${ty}`, pickup);
   }
 

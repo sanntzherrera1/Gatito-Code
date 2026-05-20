@@ -48,7 +48,7 @@ export class EditorScene extends Phaser.Scene {
     this.edMode = 'tile';             // 'tile' | 'object' | 'spawn'
     this.objects = (level.objects ?? []).slice();
     this.objectSprites = new Map();   // "tx,ty" → Phaser sprite
-    this.selectedObject = { key: 'plants', frame: 0, type: 'pickup' };
+    this.selectedObject = { key: 'plants', frame: 0, type: 'pickup_with_animation' };
     this._renderAllObjects();
 
     this.spawnMarker = this.add.rectangle(
@@ -417,7 +417,7 @@ export class EditorScene extends Phaser.Scene {
   _renderObject(obj) {
     const [cx, cy] = [obj.tx * TILE + TILE / 2, obj.ty * TILE + TILE / 2];
     const s = this.add.sprite(cx, cy, obj.key, obj.frame).setDepth(50);
-    if (obj.type === 'pickup') {
+    if (obj.type === 'pickup_with_animation') {
       this.tweens.add({ targets: s, y: cy - 2, duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut' });
     }
     this.objectSprites.set(`${obj.tx},${obj.ty}`, s);

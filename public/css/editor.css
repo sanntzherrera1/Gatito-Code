@@ -201,14 +201,25 @@
 
 .ed-obj-type {
   display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
   background: #151c26;
   border: 1px solid #2e3a4f;
   border-radius: 999px;
   padding: 3px;
   gap: 0;
 }
+.ed-obj-type-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6a7d99;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 0 8px;
+  white-space: nowrap;
+}
 .ed-obj-type button {
-  padding: 4px 14px !important;
+  padding: 4px 10px !important;
   font-size: 10px !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
