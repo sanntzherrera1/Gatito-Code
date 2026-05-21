@@ -5,6 +5,7 @@ import { Player } from '../../domain/Player.js';
 import { executeProgram } from '../../engine/program/ProgramExecutor.js';
 import { PlayerView } from '../../engine/entities/PlayerView.js';
 import { PickupView } from '../../engine/entities/PickupView.js';
+import { WorldObjectView } from '../../engine/entities/WorldObjectView.js';
 
 /**
  * Gameplay scene driven by the program-queue d-pad.
@@ -102,8 +103,7 @@ export class TileLevelScene extends Phaser.Scene {
         const animated = obj.type === 'pickup_with_animation';
         this.addPickup(obj.tx, obj.ty, obj.frame, obj.key, true, animated);
       } else {
-        const [cx, cy] = this.tileCenter(obj.tx, obj.ty);
-        this.add.sprite(cx, cy, obj.key, obj.frame).setDepth(10);
+        new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame);
       }
     }
   }

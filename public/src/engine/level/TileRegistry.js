@@ -206,8 +206,8 @@ export const OBJECTS = [
   // ═══════════════════════════════════════════════════════════════
 
   // ── Dungeon Pack ──
-  { key: 'bat_animations', group: 'bat', variant: {'size':'normal'}, label: 'Bat',            url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/bat_animations.png',       cols: 12, rows: 4, frameW: 16, frameH: 16, category: 'animals' },
-  { key: 'small_bat_animations', group: 'bat', variant: {'size':'small'}, label: 'Small Bat',      url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/small_bat_animations.png', cols: 12, rows: 4, frameW: 16, frameH: 16, category: 'animals' },
+  { key: 'bat_animations', group: 'bat', variant: {'size':'normal'}, label: 'Bat',            url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/bat_animations.png',       cols: 6, rows: 2, frameW: 32, frameH: 32, category: 'animals' },
+  { key: 'small_bat_animations', group: 'bat', variant: {'size':'small'}, label: 'Small Bat',      url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/small_bat_animations.png', cols: 6, rows: 2, frameW: 32, frameH: 32, category: 'animals' },
   { key: 'small_green_slime',    label: 'Green Slime',    url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/small_green_slime_animations.png', cols: 12, rows: 8, frameW: 38, frameH: 38, category: 'animals' },
   { key: 'dungeon_probs',        label: 'Dungeon Props',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Dungeon_probs.png',          cols: 8,  rows: 4, frameW: 16, frameH: 16, category: 'objects' },
   { key: 'dungeon_carts_obj',    label: 'Dungeon Carts',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Carts.png',                  cols: 3,  rows: 2, frameW: 16, frameH: 16, category: 'structures' },

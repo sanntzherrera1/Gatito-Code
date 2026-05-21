@@ -11,7 +11,11 @@ export class PickupView {
     const cx = tx * TILE + TILE / 2;
     const cy = ty * TILE + TILE / 2;
     this.sprite = scene.add.sprite(cx, cy, textureKey, frame).setDepth(50);
-    if (animated) {
+
+    const idleKey = `${textureKey}_idle`;
+    if (scene.anims.exists(idleKey)) {
+      this.sprite.anims.play(idleKey);
+    } else if (animated) {
       this.floatTween = scene.tweens.add({
         targets: this.sprite, y: cy - 2,
         duration: 600, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',

@@ -1,4 +1,5 @@
 import { preloadAssets, OBJECTS } from '../../engine/level/TileRegistry.js';
+import { createObjectAnimations } from '../../engine/level/ObjectAnimations.js';
 
 const BASE = 'assets/SproutLands-Sprites';
 
@@ -78,6 +79,8 @@ export class BootScene extends Phaser.Scene {
     idle('idle_up', 4);
     idle('idle_left', 8);
     idle('idle_right', 12);
+
+    createObjectAnimations(this);
 
     this._loadUIAssets();
   }
