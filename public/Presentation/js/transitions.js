@@ -29,7 +29,7 @@ export async function transitionTo(oldSlide, newSlide, direction = 1) {
 
   // Load sprite sheet
   const spriteSheet = new Image();
-  spriteSheet.src = '../../assets/SproutLands-Sprites/Characters/Basic Charakter Spritesheet.png';
+  spriteSheet.src = '../assets/SproutLands-Sprites/Characters/Basic Charakter Spritesheet.png';
   
   await new Promise(resolve => {
     if (spriteSheet.complete) resolve();

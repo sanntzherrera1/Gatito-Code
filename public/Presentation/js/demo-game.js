@@ -16,7 +16,7 @@ class DemoScene extends Phaser.Scene {
     this.load.json('level_main', '../../levels/main.json');
     
     // Load needed tilesets
-    const base = '../../assets/SproutLands-Sprites/Tilesets';
+    const base = '../assets/SproutLands-Sprites/Tilesets';
     this.load.image('grass', `${base}/Grass.png`);
     this.load.image('fences', `${base}/Fences.png`);
     this.load.image('dirt', `${base}/Tilled_Dirt.png`);
@@ -24,12 +24,12 @@ class DemoScene extends Phaser.Scene {
     this.load.image('water', `${base}/Water.png`);
 
     // Load sprites
-    this.load.spritesheet('character_base', '../../assets/SproutLands-Sprites/Characters/Basic Charakter Spritesheet.png', { frameWidth: 48, frameHeight: 48 });
-    this.load.spritesheet('plants', '../../assets/SproutLands-Sprites/Objects/Basic Plants.png', { frameWidth: 16, frameHeight: 16 });
+    this.load.spritesheet('character_base', '../assets/SproutLands-Sprites/Characters/Basic Charakter Spritesheet.png', { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet('plants', '../assets/SproutLands-Sprites/Objects/Basic Plants.png', { frameWidth: 16, frameHeight: 16 });
 
     // Load sounds
-    this.load.audio('squick', '../../assets/SproutLands-SorrySprites/Audio/squick_1.wav');
-    this.load.audio('blup', '../../assets/SproutLands-SorrySprites/Audio/blup_2.wav');
+    this.load.audio('squick', '../assets/SproutLands-SorrySprites/Audio/squick_1.wav');
+    this.load.audio('blup', '../assets/SproutLands-SorrySprites/Audio/blup_2.wav');
   }
 
   create() {
