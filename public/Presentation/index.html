@@ -6,15 +6,13 @@
   <link rel="stylesheet" href="css/presentation.css">
 </head>
 <body>
-  <!-- Escala el contenedor completo (256x192 base pero lo hacemos 768x576) -->
   <div id="presentation-container">
-    
     <!-- Slides inyectadas por JS -->
     
     <div id="nav-ui">
-      <button class="nav-btn" id="btn-prev">◀ ANT</button>
-      <span id="slide-counter">1 / 7</span>
-      <button class="nav-btn" id="btn-next">SIG ▶</button>
+      <button class="nav-btn" id="btn-prev">◄</button>
+      <div id="slide-counter-display"><span id="slide-counter">1</span><span class="sep">/</span><span>7</span></div>
+      <button class="nav-btn" id="btn-next">►</button>
     </div>
 
     <!-- Elementos de transición -->
@@ -22,6 +20,10 @@
       <canvas id="transition-canvas"></canvas>
     </div>
   </div>
+
+  <!-- Overlays globales: scanlines + vignette -->
+  <div id="scanlines-overlay"></div>
+  <div id="vignette-overlay"></div>
 
   <!-- Phaser para la demo interactiva -->
   <script src="https://cdn.jsdelivr.net/npm/phaser@3.80.1/dist/phaser.min.js"></script>

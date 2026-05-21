@@ -114,9 +114,9 @@ async function goToSlide(index, immediate = false) {
 }
 
 function updateCounter() {
-  const counter = document.getElementById('slide-counter');
-  if (counter) {
-    counter.innerText = `${currentSlideIndex + 1} / ${SLIDES.length}`;
+  const display = document.getElementById('slide-counter-display');
+  if (display) {
+    display.innerHTML = `<span id="slide-counter">${currentSlideIndex + 1}</span><span class="sep">/</span><span>${SLIDES.length}</span>`;
   }
 }
 

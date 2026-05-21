@@ -2,28 +2,57 @@ import { playSound } from './sound.js';
 import { startDemo, stopDemo } from './demo-game.js';
 import { schedule, scheduleSession } from './timers.js';
 
+/*
+  Spritesheet: 576x576 px, 12 cols x 12 rows, frame=48px.
+  Avatar container: 56x56 px.
+  background-size = 56 * 12 = 672px.
+  Each frame in the container is exactly 56px.
+  Positions (col*56, row*56) negative:
+    Brian  → (0,0)    down idle
+    Inti   → (2*56,0) down walk2
+    Iara   → (0,1*56) up idle
+    Luis   → (1*56,1*56) up walk1
+    Lisett → (2*56,1*56) up walk2
+    Lucas  → (0,2*56) left idle
+*/
+const AVATARS = [
+  { pos: '0 0' },
+  { pos: '-112px 0' },
+  { pos: '0 -56px' },
+  { pos: '-56px -56px' },
+  { pos: '-112px -56px' },
+  { pos: '0 -112px' }
+];
+
+const CORNERS = `
+  <div class="corner-ornament tl"></div>
+  <div class="corner-ornament tr"></div>
+  <div class="corner-ornament bl"></div>
+  <div class="corner-ornament br"></div>
+`;
+
 export const SLIDES = [
-  // Slide 1: Portada y Presentacion del Proyecto
+  // ========================================================
+  // Slide 1: Portada
+  // ========================================================
   {
     id: 'slide-1',
     html: `
       <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;">
-        <div style="position: absolute; top: -50px; left: -50px; right: -50px; bottom: -50px; background: url('../../assets/SproutLands-Sprites/Tilesets/Grass.png'); background-size: 176px 112px; opacity: 0.1; z-index: 0; image-rendering: pixelated;"></div>
+        <div style="position: absolute; inset: 0; background: url('../../assets/SproutLands-Sprites/Tilesets/Grass.png'); background-size: 176px 112px; opacity: 0.15; z-index: 0; image-rendering: pixelated; mix-blend-mode: overlay;"></div>
         
         <div style="z-index: 1; text-align: center;">
-          <div id="cover-sprite" style="width: 144px; height: 144px; margin: 0 auto; background: url('../../assets/SproutLands-Sprites/Characters/Basic Charakter Spritesheet.png'); background-size: 576px 576px; background-position: 0 0; image-rendering: pixelated; animation: walkDown 0.5s steps(4) infinite;"></div>
+          <div id="cover-sprite"></div>
           <h1>GATITO CODE</h1>
-          <p style="font-size: clamp(16px, 2vw, 24px);">Un juego para aprender programacion</p>
+          <p style="font-size: clamp(16px, 2vw, 24px); text-shadow: 0 0 8px var(--glow-cyan);">Un juego para aprender programacion</p>
         </div>
         
         <div class="dialog-box" style="z-index: 1; margin-top: 40px; width: 80%; max-width: 900px;">
-          <p style="color: var(--accent-warm); margin-bottom: 8px;">Sobre el proyecto:</p>
+          <p style="color: var(--accent-warm); margin-bottom: 8px; text-shadow: 1px 1px 0 #000;">Sobre el proyecto:</p>
           <div id="typewriter-text" style="font-size: clamp(12px, 1.5vw, 18px); line-height: 1.8; color: var(--text-primary); min-height: 50px;"></div>
         </div>
       </div>
-      <style>
-        @keyframes walkDown { from { background-position: 0 0; } to { background-position: -576px 0; } }
-      </style>
+      ${CORNERS}
     `,
     onEnter: (sessionId) => {
       const text = "Gatito-Code es un videojuego educativo de pensamiento computacional con estetica pixel-art, destinado a ninos y ninas de 8 a 10 anos sin conocimientos previos de programacion. El jugador guia a un gatito en un mapa de tiles, construyendo programas mediante bloques de instrucciones arrastrables (arriba, abajo, izquierda, derecha) para recolectar objetos y completar niveles.";
@@ -43,15 +72,17 @@ export const SLIDES = [
     }
   },
 
-  // Slide 2: Equipo de Desarrollo
+  // ========================================================
+  // Slide 2: Equipo (Party Select)
+  // ========================================================
   {
     id: 'slide-2',
     html: `
       <h2>Equipo de Desarrollo</h2>
-      <p class="text-center">Conoce a los integrantes que hicieron posible Gatito Code.</p>
+      <p class="text-center" style="margin-bottom: 24px;">Conoce a los integrantes que hicieron posible Gatito Code.</p>
       
-      <div class="team-list" id="team-list">
-      </div>
+      <div class="party-grid" id="party-grid"></div>
+      ${CORNERS}
     `,
     onEnter: (sessionId) => {
       const members = [
@@ -63,83 +94,84 @@ export const SLIDES = [
         { name: "Lucas Gimenez", role: "QA & Documentacion — Diseno de casos de prueba, control de calidad y redaccion de documentacion tecnica." }
       ];
       
-      const list = document.getElementById('team-list');
-      if (!list) return;
-      list.innerHTML = '';
+      const grid = document.getElementById('party-grid');
+      if (!grid) return;
+      grid.innerHTML = '';
       
       members.forEach((m, idx) => {
-        const row = document.createElement('div');
-        row.className = 'team-row';
-        row.innerHTML = `
-          <div class="team-name">${m.name}</div>
-          <div class="team-role">${m.role}</div>
+        const slot = document.createElement('div');
+        slot.className = 'party-slot';
+        const av = AVATARS[idx % AVATARS.length];
+        slot.innerHTML = `
+          <div class="party-avatar" style="background-position: ${av.pos};"></div>
+          <div class="party-card">
+            <div class="party-name">${m.name}</div>
+            <div class="party-role">${m.role}</div>
+          </div>
         `;
-        list.appendChild(row);
+        grid.appendChild(slot);
         
         scheduleSession(() => {
-          row.classList.add('show');
+          slot.classList.add('show');
           playSound('blup');
-        }, 200 + idx * 200, sessionId);
+        }, 200 + idx * 180, sessionId);
       });
     }
   },
 
-  // Slide 3: Metodología Ágil — SCRUM
+  // ========================================================
+  // Slide 3: Metodologia SCRUM (Quest Log)
+  // ========================================================
   {
     id: 'slide-3',
     html: `
-      <h2>Metodologia agil — SCRUM</h2>
+      <h2>Metodologia Agil — SCRUM</h2>
       <p class="text-center">Organizacion del trabajo en iteraciones cortas y enfocadas en la entrega de valor.</p>
       
       <div class="scrum-container">
-        <div class="scrum-panel">
+        <div class="scrum-panel" id="scrum-panel-left">
           <h3>Flujo de Trabajo</h3>
           <ul class="scrum-list">
-            <li>
-              <span class="label">Sprint Planning</span>
-              Al inicio de cada ciclo se seleccionan las historias de usuario del Product Backlog y se definen las tareas del Sprint Backlog.
-            </li>
-            <li>
-              <span class="label">Daily Standups</span>
-              Reuniones breves de 15 minutos, dos veces por semana, para sincronizar avances y remover impedimentos.
-            </li>
-            <li>
-              <span class="label">Sprint Review</span>
-              Demostracion del incremento funcional al final del sprint para recibir feedback y ajustar prioridades.
-            </li>
-            <li>
-              <span class="label">Retrospective</span>
-              Espacio de mejora continua donde el equipo identifica que funciono, que no y que acciones tomaran en el siguiente ciclo.
-            </li>
+            <li><span class="icon">⧉</span><span class="label">Sprint Planning</span>Al inicio de cada ciclo se seleccionan las historias de usuario del Product Backlog y se definen las tareas del Sprint Backlog.</li>
+            <li><span class="icon">⏳</span><span class="label">Daily Standups</span>Reuniones breves de 15 minutos, dos veces por semana, para sincronizar avances y remover impedimentos.</li>
+            <li><span class="icon">★</span><span class="label">Sprint Review</span>Demostracion del incremento funcional al final del sprint para recibir feedback y ajustar prioridades.</li>
+            <li><span class="icon">⚙</span><span class="label">Retrospective</span>Espacio de mejora continua donde el equipo identifica que funciono, que no y que acciones tomaran en el siguiente ciclo.</li>
           </ul>
         </div>
         
-        <div class="scrum-panel">
+        <div class="scrum-panel" id="scrum-panel-right">
           <h3>Artefactos y Control</h3>
           <ul class="scrum-list">
-            <li>
-              <span class="label">Historias de Usuario</span>
-              Cada funcionalidad se describe desde la perspectiva del jugador, incluyendo criterios de aceptacion claros y medibles.
-            </li>
-            <li>
-              <span class="label">Criterios de Aceptacion</span>
-              Condiciones minimas para considerar una historia completa: comportamiento esperado, casos limite y validacion visual.
-            </li>
-            <li>
-              <span class="label">Casos de Prueba</span>
-              Escenarios documentados antes de la implementacion para garantizar que la funcionalidad cumpla los requisitos.
-            </li>
-            <li>
-              <span class="label">Registro en Notion</span>
-              Tablero centralizado con el estado de cada tarea (Pendiente, En progreso, Testing, Done) vinculado a su historia y tests.
-            </li>
+            <li><span class="icon">❖</span><span class="label">Historias de Usuario</span>Cada funcionalidad se describe desde la perspectiva del jugador, incluyendo criterios de aceptacion claros y medibles.</li>
+            <li><span class="icon">✓</span><span class="label">Criterios de Aceptacion</span>Condiciones minimas para considerar una historia completa: comportamiento esperado, casos limite y validacion visual.</li>
+            <li><span class="icon">⚡</span><span class="label">Casos de Prueba</span>Escenarios documentados antes de la implementacion para garantizar que la funcionalidad cumpla los requisitos.</li>
+            <li><span class="icon">✎</span><span class="label">Registro en Notion</span>Tablero centralizado con el estado de cada tarea (Pendiente, En progreso, Testing, Done) vinculado a su historia y tests.</li>
           </ul>
         </div>
       </div>
-    `
+      ${CORNERS}
+    `,
+    onEnter: (sessionId) => {
+      const leftH3 = document.querySelector('#scrum-panel-left h3');
+      const rightH3 = document.querySelector('#scrum-panel-right h3');
+      const leftItems = document.querySelectorAll('#scrum-panel-left .scrum-list li');
+      const rightItems = document.querySelectorAll('#scrum-panel-right .scrum-list li');
+      
+      scheduleSession(() => { if (leftH3) leftH3.classList.add('animate-underline'); }, 300, sessionId);
+      scheduleSession(() => { if (rightH3) rightH3.classList.add('animate-underline'); }, 500, sessionId);
+      
+      [...leftItems, ...rightItems].forEach((li, idx) => {
+        scheduleSession(() => {
+          li.classList.add('show');
+          if (idx % 2 === 0) playSound('bip');
+        }, 600 + idx * 120, sessionId);
+      });
+    }
   },
 
+  // ========================================================
   // Slide 4: Historias de Usuario
+  // ========================================================
   {
     id: 'slide-4',
     html: `
@@ -147,28 +179,32 @@ export const SLIDES = [
       <p class="text-center">Documentamos requerimientos mediante historias de usuario y definimos casos de prueba para validar cada funcionalidad antes de su implementacion.</p>
       
       <div class="placeholder-container">
-        <div>
-          <p class="text-center" style="font-size: clamp(12px, 1.5vw, 16px); margin-bottom: 8px;">Tablero de Notion</p>
-          <div class="placeholder-img" style="background-image: url('assets/slides/notion-board.png')">
-          </div>
+        <div class="frame-wrapper">
+          <div class="frame-label">Tablero de Notion</div>
+          <div class="placeholder-img" style="background-image: url('assets/slides/notion-board.png');"></div>
         </div>
-        <div>
-          <p class="text-center" style="font-size: clamp(12px, 1.5vw, 16px); margin-bottom: 8px;">Historia de usuarios</p>
-          <div class="placeholder-img" style="background-image: url('assets/slides/notion-tasks.png'); background-position: top left;">
-          </div>
+        <div class="frame-wrapper">
+          <div class="frame-label">Historia de usuarios</div>
+          <div class="placeholder-img" style="background-image: url('assets/slides/notion-tasks.png'); background-position: top left;"></div>
         </div>
       </div>
+      ${CORNERS}
     `
   },
 
-  // Slide 5: Tests Implementados
+  // ========================================================
+  // Slide 5: Tests Implementados (CRT Monitor)
+  // ========================================================
   {
     id: 'slide-5',
     html: `
       <h2>Tests Implementados</h2>
-      <p>Validamos la logica de dominio con tests unitarios ejecutables con un solo comando.</p>
+      <p class="text-center">Validamos la logica de dominio con tests unitarios ejecutables con un solo comando.</p>
       
-      <div class="terminal" id="test-terminal"></div>
+      <div class="crt-monitor">
+        <div class="terminal" id="test-terminal"></div>
+      </div>
+      ${CORNERS}
     `,
     onEnter: (sessionId) => {
       const output = `> npm test
@@ -207,14 +243,16 @@ node_modules/\t        Instalado — Vitest v4.1.7 + dependencias
           term.scrollTop = term.scrollHeight;
           i++;
           playSound('bip');
-          scheduleSession(typeLine, Math.random() * 50 + 20, sessionId);
+          scheduleSession(typeLine, Math.random() * 40 + 15, sessionId);
         }
       }
-      scheduleSession(typeLine, 300, sessionId);
+      scheduleSession(typeLine, 400, sessionId);
     }
   },
 
+  // ========================================================
   // Slide 6: Evolucion de la Arquitectura
+  // ========================================================
   {
     id: 'slide-6',
     html: `
@@ -227,7 +265,8 @@ node_modules/\t        Instalado — Vitest v4.1.7 + dependencias
       </p>
 
       <div class="architecture-container">
-        <div class="tree-panel tree-initial" style="flex: 1; font-size: 12px;">
+        <div class="tree-panel tree-initial">
+          <div class="status-icon">⚠</div>
           <h3>Arquitectura Inicial</h3>
 <span class="dir">public/</span>
 ├── <span class="file">index.html</span>              <span class="comment"># DOM shell: UI panels, palette, dialogs</span>
@@ -251,7 +290,10 @@ node_modules/\t        Instalado — Vitest v4.1.7 + dependencias
     └── <span class="file">ui.json</span>                 <span class="comment"># Asset manifest (textures + animations)</span>
         </div>
 
-        <div class="tree-panel tree-current" style="flex: 1; font-size: 12px; padding: 16px;">
+        <div class="arch-arrow">⇒</div>
+
+        <div class="tree-panel tree-current">
+          <div class="status-icon">◆</div>
           <h3>Arquitectura Actual</h3>
 <span class="dir">public/</span>
 ├── <span class="file">index.html</span>              <span class="comment"># DOM shell: UI panels, palette, dialogs</span>
@@ -277,20 +319,31 @@ node_modules/\t        Instalado — Vitest v4.1.7 + dependencias
     └── <span class="dir">ui/</span>                 <span class="comment"># DOM modules (queue, dialog, mission, etc)</span>
         </div>
       </div>
+      ${CORNERS}
     `
   },
 
-  // Slide 7: Demo en vivo
+  // ========================================================
+  // Slide 7: Demo en vivo (Arcade Machine)
+  // ========================================================
   {
     id: 'slide-7',
     html: `
       <h2>Demo Interactiva</h2>
-      <p class="text-center">Mapa Principal · Tutorial Automatico</p>
+      <p class="text-center" style="margin-bottom: 16px;">Mapa Principal · Tutorial Automatico</p>
       
-      <div id="demo-container">
+      <div class="arcade-machine">
+        <div class="arcade-screen" id="demo-container"></div>
+        <div class="arcade-controls">
+          <div class="arcade-stick"></div>
+          <div class="arcade-btn red"></div>
+          <div class="arcade-btn blue"></div>
+          <div class="arcade-btn green"></div>
+        </div>
       </div>
       
-      <p class="text-center" style="font-size: clamp(12px, 1.5vw, 16px); color: var(--text-dim); margin-top: -8px;">El gatito ejecutara automaticamente una secuencia de comandos.</p>
+      <p class="text-center" style="font-size: clamp(12px, 1.5vw, 16px); color: var(--text-dim); margin-top: 4px;">El gatito ejecutara automaticamente una secuencia de comandos.</p>
+      ${CORNERS}
     `,
     onEnter: () => {
       startDemo('demo-container');

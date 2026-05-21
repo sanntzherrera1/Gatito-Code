@@ -38,6 +38,10 @@ export async function transitionTo(oldSlide, newSlide, direction = 1) {
 
   curtain.style.display = 'block';
   
+  // Flash white effect (scene change anime/juego style)
+  ctx.fillStyle = '#ffffff';
+  ctx.fillRect(0, 0, vw, vh);
+  
   // Draw an immediate solid frame to cover any remnants of the old slide
   ctx.fillStyle = 'rgba(9, 12, 16, 0.98)';
   ctx.fillRect(0, 0, vw, vh);
