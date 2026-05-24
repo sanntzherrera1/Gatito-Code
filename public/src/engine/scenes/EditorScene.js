@@ -10,7 +10,7 @@ import {
 } from '../../services/Storage.js';
 import { createWeather, destroyWeather } from '../../engine/level/WeatherSystem.js';
 
-const LAYERS = ['floor', 'walls'];
+const LAYERS = ['floor', 'path', 'walls'];
 const UNDO_CAP = 50;
 
 export class EditorScene extends Phaser.Scene {
@@ -26,8 +26,9 @@ export class EditorScene extends Phaser.Scene {
     const level = loadLevel(this, this.levelKey);
     this.map = level.map;
     this.floorLayer = level.floorLayer;
+    this.pathLayer = level.pathLayer;
     this.wallsLayer = level.wallsLayer;
-    this.flat = level.flat;           // { floor:[], walls:[] }
+    this.flat = level.flat;           // { floor:[], path:[], walls:[] }
     this.cols = level.cols;
     this.rows = level.rows;
     this.spawn = level.spawn;
@@ -152,12 +153,13 @@ export class EditorScene extends Phaser.Scene {
     // Keyboard --------------------------------------------------------------
     const K = Phaser.Input.Keyboard.KeyCodes;
     this.keys = this.input.keyboard.addKeys({
-      ONE: K.ONE, TWO: K.TWO, E: K.E, G: K.G,
+      ONE: K.ONE, TWO: K.TWO, THREE: K.THREE, E: K.E, G: K.G,
       S: K.S, Z: K.Z, Y: K.Y, P: K.P, ESC: K.ESC,
       C: K.C, O: K.O,
     });
     this.keys.ONE.on('down', () => this.setLayer('floor'));
     this.keys.TWO.on('down', () => this.setLayer('walls'));
+    this.keys.THREE.on('down', () => this.setLayer('path'));
     this.keys.G.on('down',   () => { this.gridVisible = !this.gridVisible; this.grid.setVisible(this.gridVisible); });
     this.keys.E.on('down',   () => this.eyedrop());
     this.keys.P.on('down',   () => this.playTest());
@@ -191,7 +193,11 @@ export class EditorScene extends Phaser.Scene {
 
   // --- Painting ----------------------------------------------------------
 
-  layerOf(name) { return name === 'floor' ? this.floorLayer : this.wallsLayer; }
+  layerOf(name) {
+    if (name === 'floor') return this.floorLayer;
+    if (name === 'path') return this.pathLayer;
+    return this.wallsLayer;
+  }
 
   paintAt(tx, ty, mode) {
     if (this.activeTerrain && mode === 'paint') {
@@ -291,6 +297,7 @@ export class EditorScene extends Phaser.Scene {
     this.activeLayer = name;
     // Highlight the active layer visually: non-active layer stays visible but dim.
     this.floorLayer.setAlpha(name === 'floor' ? 1 : 0.55);
+    this.pathLayer.setAlpha(name === 'path' ? 1 : 0.6);
     this.wallsLayer.setAlpha(name === 'walls' ? 1 : 0.7);
     window.__setEditor_updateLayer?.(name);
     this.updateHud();
@@ -299,29 +306,43 @@ export class EditorScene extends Phaser.Scene {
   // --- Undo / redo -------------------------------------------------------
 
   pushHistory() {
-    this.history.push({ floor: this.flat.floor.slice(), walls: this.flat.walls.slice() });
+    this.history.push({
+      floor: this.flat.floor.slice(),
+      path: this.flat.path.slice(),
+      walls: this.flat.walls.slice()
+    });
     if (this.history.length > UNDO_CAP) this.history.shift();
     this.future.length = 0;
   }
 
   undo() {
     if (!this.history.length) return;
-    this.future.push({ floor: this.flat.floor.slice(), walls: this.flat.walls.slice() });
+    this.future.push({
+      floor: this.flat.floor.slice(),
+      path: this.flat.path.slice(),
+      walls: this.flat.walls.slice()
+    });
     const s = this.history.pop();
     this.applySnapshot(s);
   }
 
   redo() {
     if (!this.future.length) return;
-    this.history.push({ floor: this.flat.floor.slice(), walls: this.flat.walls.slice() });
+    this.history.push({
+      floor: this.flat.floor.slice(),
+      path: this.flat.path.slice(),
+      walls: this.flat.walls.slice()
+    });
     const s = this.future.pop();
     this.applySnapshot(s);
   }
 
   applySnapshot(s) {
     this.flat.floor = s.floor.slice();
+    this.flat.path = s.path.slice();
     this.flat.walls = s.walls.slice();
     this.redrawLayer('floor');
+    this.redrawLayer('path');
     this.redrawLayer('walls');
     writeLevelJson(this.levelKey, this.serialize());
   }
@@ -361,6 +382,7 @@ export class EditorScene extends Phaser.Scene {
       tilesets: TILESETS.map(t => t.name),
       layers: {
         floor: this.flat.floor.slice(),
+        path: this.flat.path.slice(),
         walls: this.flat.walls.slice(),
       },
       spawn: this.spawn,
