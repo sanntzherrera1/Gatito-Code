@@ -39,7 +39,7 @@ export const SLIDES = [
     id: 'slide-1',
     html: `
       <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;">
-        <div style="position: absolute; inset: 0; background: url('../assets/SproutLands-Sprites/Tilesets/Grass.png'); background-size: 176px 112px; opacity: 0.15; z-index: 0; image-rendering: pixelated; mix-blend-mode: overlay;"></div>
+        <div style="position: absolute; inset: 0; background: url('../../assets/SproutLands-Sprites/Tilesets/Grass.png'); background-size: 176px 112px; opacity: 0.15; z-index: 0; image-rendering: pixelated; mix-blend-mode: overlay;"></div>
         
         <div style="z-index: 1; text-align: center;">
           <div id="cover-sprite"></div>

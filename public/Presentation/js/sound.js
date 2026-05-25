@@ -1,8 +1,8 @@
 const SOUNDS = {
-  bip: '../assets/SproutLands-SorrySprites/Audio/bip_1.wav',
-  blup: '../assets/SproutLands-SorrySprites/Audio/blup_1.wav',
-  squick: '../assets/SproutLands-SorrySprites/Audio/squick_1.wav',
-  pickup: '../assets/SproutLands-SorrySprites/Audio/blup_2.wav'
+  bip: '../../assets/SproutLands-SorrySprites/Audio/bip_1.wav',
+  blup: '../../assets/SproutLands-SorrySprites/Audio/blup_1.wav',
+  squick: '../../assets/SproutLands-SorrySprites/Audio/squick_1.wav',
+  pickup: '../../assets/SproutLands-SorrySprites/Audio/blup_2.wav'
 };
 
 const audioElements = {};
