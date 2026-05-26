@@ -1,0 +1,771 @@
+@font-face {
+  font-family: 'SproutPixel';
+  src: url('../../assets/SproutLands-UI/fonts/pixelFont-7-8x14-sproutLands.ttf') format('truetype');
+  font-display: block;
+}
+
+:root {
+  --bg-deep: #070a10;
+  --bg-base: #0c1016;
+  --bg-surface: #151b26;
+  --bg-warm: #1a1510;
+  --border-dim: #1f2d42;
+  --border-bright: #2e3f5a;
+  --accent: #6ee7ff;
+  --accent-warm: #ffe066;
+  --text-primary: #e8ecf1;
+  --text-dim: #7a8ba3;
+  --green: #7ef07e;
+  --glow-cyan: rgba(110, 231, 255, 0.35);
+  --glow-gold: rgba(255, 224, 102, 0.3);
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  font-family: 'SproutPixel', ui-monospace, monospace;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  user-select: none;
+  image-rendering: pixelated;
+}
+
+body {
+  background: var(--bg-deep);
+}
+
+/* Overlays globales */
+#scanlines-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 4px
+  );
+}
+
+#vignette-overlay {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9997;
+  background: radial-gradient(ellipse 70% 60% at 50% 50%, transparent 50%, rgba(0, 0, 0, 0.7) 100%);
+}
+
+#presentation-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background:
+    radial-gradient(ellipse 60% 50% at 50% 50%, rgba(20, 35, 60, .5) 0%, transparent 70%),
+    repeating-conic-gradient(rgba(255,255,255,.006) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
+    var(--bg-base);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* =========================================================
+   CORNER ORNAMENTS (decorativas en cada slide)
+   ========================================================= */
+.corner-ornament {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  z-index: 5;
+  pointer-events: none;
+}
+.corner-ornament::before,
+.corner-ornament::after {
+  content: '';
+  position: absolute;
+  background: var(--accent-warm);
+}
+/* Esquina superior izquierda */
+.corner-ornament.tl { top: 16px; left: 16px; }
+.corner-ornament.tl::before { top: 0; left: 0; width: 32px; height: 4px; box-shadow: 0 0 8px var(--glow-gold); }
+.corner-ornament.tl::after  { top: 0; left: 0; width: 4px; height: 32px; box-shadow: 0 0 8px var(--glow-gold); }
+/* Esquina superior derecha */
+.corner-ornament.tr { top: 16px; right: 16px; }
+.corner-ornament.tr::before { top: 0; right: 0; width: 32px; height: 4px; box-shadow: 0 0 8px var(--glow-gold); }
+.corner-ornament.tr::after  { top: 0; right: 0; width: 4px; height: 32px; box-shadow: 0 0 8px var(--glow-gold); }
+/* Esquina inferior izquierda */
+.corner-ornament.bl { bottom: 16px; left: 16px; }
+.corner-ornament.bl::before { bottom: 0; left: 0; width: 32px; height: 4px; box-shadow: 0 0 8px var(--glow-gold); }
+.corner-ornament.bl::after  { bottom: 0; left: 0; width: 4px; height: 32px; box-shadow: 0 0 8px var(--glow-gold); }
+/* Esquina inferior derecha */
+.corner-ornament.br { bottom: 16px; right: 16px; }
+.corner-ornament.br::before { bottom: 0; right: 0; width: 32px; height: 4px; box-shadow: 0 0 8px var(--glow-gold); }
+.corner-ornament.br::after  { bottom: 0; right: 0; width: 4px; height: 32px; box-shadow: 0 0 8px var(--glow-gold); }
+
+/* =========================================================
+   SLIDE BASE
+   ========================================================= */
+.slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 56px 80px;
+  box-sizing: border-box;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.35s ease;
+  display: flex;
+  flex-direction: column;
+}
+
+.slide.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* =========================================================
+   TYPOGRAPHY
+   ========================================================= */
+h1 {
+  font-size: clamp(36px, 7vw, 84px);
+  color: var(--accent-warm);
+  text-shadow:
+    0 0 10px var(--glow-gold),
+    3px 3px 0 #000,
+    -1px -1px 0 #000;
+  margin: 0 0 24px 0;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+}
+
+h2 {
+  font-size: clamp(26px, 4.5vw, 52px);
+  color: var(--accent-warm);
+  margin: 0 0 24px 0;
+  text-shadow: 2px 2px 0 #000, 0 0 15px var(--glow-gold);
+  letter-spacing: 2px;
+  text-align: center;
+}
+
+h3 {
+  font-size: clamp(16px, 2vw, 22px);
+  color: var(--accent-warm);
+  margin: 0 0 16px 0;
+  text-shadow: 1px 1px 0 #000;
+  letter-spacing: 1px;
+}
+
+p {
+  font-size: clamp(14px, 1.8vw, 22px);
+  line-height: 1.6;
+  color: var(--accent);
+  margin: 0 0 16px 0;
+}
+
+/* =========================================================
+   UI ELEMENTS
+   ========================================================= */
+.dialog-box {
+  background: var(--bg-surface);
+  border: 4px solid var(--border-bright);
+  border-radius: 8px;
+  padding: 32px 40px;
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.6), inset 0 0 20px rgba(0,0,0,0.3), 0 0 0 2px var(--accent-warm);
+  margin: auto;
+  max-width: 900px;
+  width: 100%;
+  position: relative;
+}
+.dialog-box::after {
+  content: '▮';
+  position: absolute;
+  bottom: 12px;
+  right: 16px;
+  color: var(--accent-warm);
+  font-size: 18px;
+  animation: blink 1s step-end infinite;
+}
+
+@keyframes blink {
+  50% { opacity: 0; }
+}
+
+/* =========================================================
+   SLIDE 1 — PORTADA
+   ========================================================= */
+#cover-sprite {
+  width: 144px;
+  height: 144px;
+  margin: 0 auto 24px auto;
+  background: url('../../assets/SproutLands-Sprites/Characters/Basic Charakter Spritesheet.png');
+  background-size: 576px 576px;
+  background-position: 0 0;
+  image-rendering: pixelated;
+  animation: walkDown 0.5s steps(4) infinite, breathe 3s ease-in-out infinite;
+  position: relative;
+}
+#cover-sprite::before {
+  content: '';
+  position: absolute;
+  inset: -20px;
+  background: radial-gradient(circle, var(--glow-cyan) 0%, transparent 70%);
+  z-index: -1;
+  animation: pulseGlow 3s ease-in-out infinite;
+}
+
+@keyframes walkDown {
+  from { background-position: 0 0; }
+  to { background-position: -576px 0; }
+}
+@keyframes breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.08); }
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(0.9); }
+  50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* =========================================================
+   SLIDE 2 — PARTY SELECT (Equipo)
+   ========================================================= */
+.party-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  justify-content: center;
+  flex: 1;
+  padding: 0 6vw;
+}
+
+.party-slot {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  opacity: 0;
+  transform: translateY(-40px) scale(0.9);
+  transition: opacity 0.5s ease, transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.party-slot.show {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.party-avatar {
+  width: 56px;
+  height: 56px;
+  flex-shrink: 0;
+  background: url('../../assets/SproutLands-Sprites/Characters/Basic Charakter Spritesheet.png');
+  background-size: 192px 192px;
+  image-rendering: pixelated;
+  border: 3px solid var(--accent-warm);
+  border-radius: 6px;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5), 0 0 10px var(--glow-gold);
+  background-color: var(--bg-surface);
+}
+
+.party-card {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  background: var(--bg-surface);
+  border: 3px solid var(--border-bright);
+  border-left: 4px solid var(--accent-warm);
+  padding: 12px 20px;
+  border-radius: 6px;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+}
+
+.party-name {
+  color: var(--text-primary);
+  font-size: clamp(14px, 1.6vw, 18px);
+  font-weight: bold;
+  min-width: 160px;
+}
+
+.party-role {
+  color: var(--accent);
+  font-size: clamp(11px, 1.3vw, 15px);
+  line-height: 1.4;
+}
+
+/* =========================================================
+   SLIDE 3 — QUEST LOG (SCRUM)
+   ========================================================= */
+.scrum-container {
+  display: flex;
+  gap: 28px;
+  flex: 1;
+  min-height: 0;
+}
+
+.scrum-panel {
+  flex: 1;
+  background: var(--bg-warm);
+  border: 4px solid #3d2e1a;
+  padding: 24px;
+  border-radius: 6px;
+  overflow-y: auto;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.4), 5px 5px 0 rgba(0,0,0,0.4);
+  position: relative;
+}
+.scrum-panel::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 2px dashed rgba(255, 224, 102, 0.15);
+  pointer-events: none;
+  border-radius: 4px;
+}
+
+.scrum-panel h3 {
+  color: var(--accent-warm);
+  font-size: clamp(16px, 2vw, 22px);
+  margin: 0 0 16px 0;
+  text-align: center;
+  border-bottom: 2px solid rgba(255, 224, 102, 0.25);
+  padding-bottom: 8px;
+  position: relative;
+}
+.scrum-panel h3::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--accent-warm);
+  transition: width 1s ease;
+}
+.scrum-panel h3.animate-underline::after {
+  width: 80%;
+}
+
+.scrum-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.scrum-list li {
+  margin-bottom: 18px;
+  padding-left: 36px;
+  position: relative;
+  color: var(--text-primary);
+  font-size: clamp(11px, 1.3vw, 15px);
+  line-height: 1.5;
+  opacity: 0;
+  transform: translateX(-10px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.scrum-list li.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.scrum-list li .icon {
+  position: absolute;
+  left: 0;
+  top: 0;
+  font-size: 20px;
+  line-height: 1.2;
+}
+
+.scrum-list .label {
+  color: var(--accent-warm);
+  font-weight: bold;
+  display: block;
+  margin-bottom: 2px;
+  text-shadow: 1px 1px 0 #000;
+}
+
+/* =========================================================
+   SLIDE 4 — NOTION FRAMES
+   ========================================================= */
+.placeholder-container {
+  display: flex;
+  gap: 40px;
+  justify-content: center;
+  flex: 1;
+  align-items: center;
+}
+
+.frame-wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.frame-label {
+  background: var(--bg-surface);
+  border: 3px solid var(--border-bright);
+  border-bottom: none;
+  padding: 6px 24px;
+  border-radius: 6px 6px 0 0;
+  color: var(--accent-warm);
+  font-size: clamp(11px, 1.2vw, 14px);
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #000;
+  position: relative;
+  top: 2px;
+  z-index: 2;
+  box-shadow: 3px 0 0 rgba(0,0,0,0.4);
+}
+
+.placeholder-img {
+  width: clamp(300px, 36vw, 440px);
+  height: clamp(340px, 52vh, 540px);
+  border: 4px solid var(--border-bright);
+  background-size: cover;
+  background-position: top center;
+  background-repeat: no-repeat;
+  border-radius: 0 4px 4px 4px;
+  box-shadow:
+    inset 0 0 20px rgba(0,0,0,0.5),
+    6px 6px 0 rgba(0,0,0,0.4),
+    0 0 0 2px var(--accent-warm);
+  position: relative;
+}
+.placeholder-img::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(110,231,255,0.03) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.15) 100%);
+  pointer-events: none;
+}
+
+/* =========================================================
+   SLIDE 5 — CRT TERMINAL
+   ========================================================= */
+.crt-monitor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #0a0c10;
+  border: 6px solid #2a2f3a;
+  border-radius: 12px;
+  padding: 10px;
+  box-shadow:
+    inset 0 0 0 3px #1a1e26,
+    0 0 0 2px var(--accent),
+    0 0 40px rgba(110, 231, 255, 0.08);
+  position: relative;
+}
+.crt-monitor::before {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 0, 0, 0.25) 3px,
+    rgba(0, 0, 0, 0.25) 6px
+  );
+  pointer-events: none;
+  z-index: 2;
+  border-radius: 4px;
+}
+
+.terminal {
+  flex: 1;
+  background: var(--bg-deep);
+  border: 2px solid var(--border-dim);
+  border-radius: 4px;
+  padding: 24px;
+  font-family: monospace;
+  font-size: clamp(12px, 1.4vw, 16px);
+  color: var(--green);
+  overflow-y: auto;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  box-shadow: inset 0 0 30px rgba(0,0,0,0.9);
+  text-shadow: 0 0 4px rgba(126, 240, 126, 0.3);
+}
+.terminal .cmd { color: var(--text-primary); }
+.terminal .accent { color: var(--accent); }
+.terminal .green { color: var(--green); }
+
+/* =========================================================
+   SLIDE 6 — ARCHITECTURE EVOLUTION
+   ========================================================= */
+.architecture-container {
+  display: flex;
+  gap: 24px;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+
+.tree-panel {
+  flex: 1;
+  background: var(--bg-surface);
+  border: 4px solid var(--border-bright);
+  padding: 0 20px;
+  overflow: auto;
+  font-family: monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre;
+  border-radius: 4px;
+  position: relative;
+}
+
+.tree-panel h3 {
+  color: var(--accent-warm);
+  font-family: 'SproutPixel', ui-monospace, monospace;
+  font-size: clamp(13px, 1.6vw, 18px);
+  margin: 0 0 6px 0;
+  text-align: center;
+  text-shadow: 0 0 8px var(--glow-gold);
+}
+
+.tree-panel .dir { color: var(--accent); font-weight: bold; }
+.tree-panel .file { color: var(--text-primary); }
+.tree-panel .comment { color: var(--text-dim); }
+
+.tree-initial {
+  opacity: 0.85;
+  filter: grayscale(60%);
+  border-color: #3a3f4a;
+  box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+}
+.tree-initial .status-icon {
+  display: block;
+  text-align: center;
+  font-size: 24px;
+  /* margin-bottom: 8px; */
+  opacity: 0.6;
+}
+
+.tree-current {
+  border-color: var(--accent-warm);
+  box-shadow: 0 0 30px var(--glow-gold), inset 0 0 20px rgba(255,224,102,0.03);
+}
+.tree-current .status-icon {
+  display: block;
+  text-align: center;
+  font-size: 24px;
+  /* margin-bottom: 8px; */
+  color: var(--accent-warm);
+  text-shadow: 0 0 10px var(--glow-gold);
+}
+
+.arch-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--accent-warm);
+  font-size: 32px;
+  text-shadow: 0 0 15px var(--glow-gold);
+  animation: arrowPulse 2s ease-in-out infinite;
+}
+@keyframes arrowPulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.2); }
+}
+
+/* =========================================================
+   SLIDE 7 — ARCADE MACHINE
+   ========================================================= */
+.arcade-machine {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #111318;
+  border: 8px solid #2a2f3a;
+  border-radius: 16px;
+  padding: 16px 24px 24px 24px;
+  box-shadow:
+    inset 0 0 0 4px #1a1e26,
+    0 0 0 3px var(--accent-warm),
+    0 10px 40px rgba(0,0,0,0.6),
+    0 0 60px rgba(255, 224, 102, 0.05);
+  position: relative;
+}
+.arcade-machine::before {
+  content: 'GATITO CODE';
+  position: absolute;
+  top: -18px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-base);
+  border: 3px solid var(--accent-warm);
+  padding: 4px 20px;
+  border-radius: 6px;
+  color: var(--accent-warm);
+  font-size: clamp(10px, 1.2vw, 14px);
+  text-shadow: 0 0 6px var(--glow-gold);
+  box-shadow: 0 4px 0 rgba(0,0,0,0.4);
+}
+
+.arcade-screen {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #000;
+  border: 4px solid #1a1e26;
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+.arcade-screen::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent 0px,
+    transparent 2px,
+    rgba(0,0,0,0.2) 2px,
+    rgba(0,0,0,0.2) 4px
+  );
+  pointer-events: none;
+}
+
+.arcade-controls {
+  display: flex;
+  gap: 16px;
+  margin-top: 16px;
+  align-items: center;
+}
+
+.arcade-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, #ff5e5e, #b32424);
+  border: 2px solid #5c1515;
+  box-shadow: 0 4px 0 #3d0e0e, 0 0 10px rgba(255, 94, 94, 0.3);
+}
+.arcade-btn.blue {
+  background: radial-gradient(circle at 30% 30%, #5eabff, #2468b3);
+  border-color: #153a5c;
+  box-shadow: 0 4px 0 #0e263d, 0 0 10px rgba(94, 171, 255, 0.3);
+}
+.arcade-btn.green {
+  background: radial-gradient(circle at 30% 30%, #5eff7e, #24b335);
+  border-color: #155c1f;
+  box-shadow: 0 4px 0 #0e3d15, 0 0 10px rgba(94, 255, 126, 0.3);
+}
+
+.arcade-stick {
+  width: 16px;
+  height: 40px;
+  background: #444;
+  border: 2px solid #222;
+  border-radius: 4px;
+  margin-right: 8px;
+  position: relative;
+}
+.arcade-stick::after {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: #333;
+  border: 2px solid #111;
+  border-radius: 50%;
+}
+
+/* =========================================================
+   NAVIGATION UI
+   ========================================================= */
+#nav-ui {
+  position: absolute;
+  bottom: 28px;
+  left: 56px;
+  right: 56px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 100;
+}
+
+.nav-btn {
+  background: var(--bg-surface);
+  border: 3px solid var(--border-bright);
+  color: var(--accent);
+  padding: 10px 20px;
+  font-family: 'SproutPixel', monospace;
+  font-size: clamp(18px, 2vw, 26px);
+  cursor: pointer;
+  border-radius: 4px;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.5), inset 0 0 0 1px rgba(255,255,255,0.05);
+  transition: transform 0.1s, box-shadow 0.1s, background 0.2s;
+  min-width: 60px;
+  text-align: center;
+}
+.nav-btn:hover {
+  background: var(--border-bright);
+  color: var(--text-primary);
+  transform: translateY(-2px);
+  box-shadow: 4px 6px 0 rgba(0,0,0,0.5), 0 0 10px var(--glow-cyan);
+}
+.nav-btn:active {
+  transform: translateY(1px);
+  box-shadow: 1px 1px 0 rgba(0,0,0,0.5);
+}
+
+#slide-counter-display {
+  background: var(--bg-deep);
+  border: 3px solid var(--border-dim);
+  padding: 8px 20px;
+  border-radius: 4px;
+  color: var(--accent-warm);
+  font-size: clamp(14px, 1.5vw, 20px);
+  box-shadow: inset 0 0 10px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  text-shadow: 0 0 6px var(--glow-gold);
+}
+#slide-counter-display .sep {
+  color: var(--text-dim);
+  font-size: 0.85em;
+}
+
+/* =========================================================
+   TRANSITION CURTAIN
+   ========================================================= */
+#transition-curtain {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 200;
+  display: none;
+  overflow: hidden;
+  background: rgba(9, 12, 16, 0.98);
+}
+
+#transition-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 202;
+  image-rendering: pixelated;
+}
+
+/* Utilities */
+.text-center { text-align: center; }

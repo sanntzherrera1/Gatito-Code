@@ -7,7 +7,7 @@ export const ARROW = {
 };
 export const LABEL = {
   up: 'move up', down: 'move down', left: 'move left', right: 'move right',
-  func1: 'función 1',
+  func1: 'funcion 1',
   jump: 'jump',
   jump_up: 'jump up', jump_down: 'jump down', jump_left: 'jump left', jump_right: 'jump right',
 };

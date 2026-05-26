@@ -15,14 +15,38 @@
   opacity: 0.5;
 }
 
-.ed-terrains { display: flex; flex-wrap: wrap; gap: 4px; }
-.ed-terrains button {
-  padding: 5px 8px !important; font-size: 11px !important;
-  transition: background var(--transition-fast, .08s ease), border-color var(--transition-med, .18s ease), box-shadow var(--transition-med, .18s ease);
+.ed-autotile-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
 }
-#editor-panel .ed-terrains button.active {
-  background: #3b5488 !important; color: #fff !important; border-color: #5a7ac0 !important;
+#ed-autotile-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  font-size: 11px;
+  background: #151c26;
+  border: 1px solid #2e3a4f;
+  color: #6b7d99;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background var(--transition-fast, .08s ease), border-color var(--transition-med, .18s ease), color var(--transition-med, .18s ease), box-shadow var(--transition-med, .18s ease);
+}
+#ed-autotile-btn:hover {
+  background: #1e293b;
+  border-color: #3e4d66;
+  color: #a0b0cc;
+}
+#ed-autotile-btn.active {
+  background: #3b5488;
+  color: #fff;
+  border-color: #5a7ac0;
   box-shadow: 0 0 8px rgba(90,160,255,.15);
+}
+#ed-autotile-btn .ed-autotile-icon {
+  font-size: 12px;
+  line-height: 1;
 }
 
 #ed-title { color: var(--accent-warm, #ffee88); }
@@ -177,14 +201,25 @@
 
 .ed-obj-type {
   display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
   background: #151c26;
   border: 1px solid #2e3a4f;
   border-radius: 999px;
   padding: 3px;
   gap: 0;
 }
+.ed-obj-type-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6a7d99;
+  text-transform: uppercase;
+  letter-spacing: .5px;
+  padding: 0 8px;
+  white-space: nowrap;
+}
 .ed-obj-type button {
-  padding: 4px 14px !important;
+  padding: 4px 10px !important;
   font-size: 10px !important;
   font-weight: 600 !important;
   text-transform: uppercase !important;
