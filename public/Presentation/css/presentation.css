@@ -738,6 +738,8 @@ p {
   align-items: center;
   gap: 6px;
   text-shadow: 0 0 6px var(--glow-gold);
+  position: relative;
+  top: 15px;
 }
 #slide-counter-display .sep {
   color: var(--text-dim);

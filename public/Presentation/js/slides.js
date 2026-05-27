@@ -3,17 +3,18 @@ import { startDemo, stopDemo } from './demo-game.js';
 import { schedule, scheduleSession } from './timers.js';
 
 /*
-  Spritesheet: 576x576 px, 12 cols x 12 rows, frame=48px.
-  Avatar container: 56x56 px.
-  background-size = 56 * 12 = 672px.
-  Each frame in the container is exactly 56px.
-  Positions (col*56, row*56) negative:
-    Brian  → (0,0)    down idle
-    Inti   → (2*56,0) down walk2
-    Iara   → (0,1*56) up idle
-    Luis   → (1*56,1*56) up walk1
-    Lisett → (2*56,1*56) up walk2
-    Lucas  → (0,2*56) left idle
+  Avatares tomados de: assets/user-demo-sprites/emojis-reactions.png
+  El archivo es un strip horizontal de 8 frames.
+
+  Slide 2 (.party-avatar):
+  - Contenedor: 56x56 px
+  - background-size: 448x56 px (56 * 8)
+  - Offset X por frame: -(index * 56)px
+
+  Slide 13 (.thanks-avatar):
+  - Contenedor: 72x72 px
+  - background-size: 576x72 px (72 * 8)
+  - Offset X por frame: -(index * 72)px
 */
 const AVATARS = [
   { pos: '0 0' },
@@ -414,7 +415,7 @@ export const SLIDES = [
         <div class="retro-col blue">
           <div class="retro-col-title">&#9889; Acciones</div>
           <div class="retro-card">Feature branches obligatorias por cada historia de usuario o tarea de sprint.</div>
-          <div class="retro-card">Standup asincroni breve en el canal del equipo al menos 2 veces por semana.</div>
+          <div class="retro-card">Standup asincrono breve en el canal del equipo al menos 2 veces por semana.</div>
           <div class="retro-card">Refactoring como item explicito del sprint backlog, no como tarea opcional.</div>
           <div class="retro-card">Revisar estimaciones con margen del 20% para absorber imprevistos tecnicos.</div>
         </div>
@@ -433,7 +434,7 @@ export const SLIDES = [
   },
 
   // ========================================================
-  // Slide 9: Lecciones Aprendidas
+  // Slide 8: Lecciones Aprendidas
   // ========================================================
   {
     id: 'slide-8',
@@ -715,7 +716,7 @@ node_modules/\t        Instalado — Vitest v4.1.7 + dependencias
   },
 
   // ========================================================
-  // Slide 14: Gracias
+  // Slide 13: Gracias
   // ========================================================
   {
     id: 'slide-13',
@@ -723,7 +724,7 @@ node_modules/\t        Instalado — Vitest v4.1.7 + dependencias
       <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center; position:relative;">
 
         <div style="z-index:1; text-align:center; margin-bottom:1.5rem;">
-          <h1 style="margin-bottom:0.5rem;">Gracias!</h1>
+          <h1 style="margin-bottom:0.5rem;">¡Muchas Gracias!</h1>
           <div style="display:flex; align-items:center; justify-content:center; gap:0.6rem;">
             <div class="thanks-flag"></div>
             <p style="font-size:1.1rem; text-shadow:0 0 8px var(--glow-cyan); margin:0;">Gestion de Proyectos &mdash; 2026</p>
@@ -735,7 +736,7 @@ node_modules/\t        Instalado — Vitest v4.1.7 + dependencias
 
         <div class="dialog-box" style="z-index:1; margin-top:1.5rem; width:70%; max-width:750px; text-align:center; padding:1rem 1.5rem;">
           <p style="color:var(--text-primary); margin:0; font-size:0.85rem; line-height:1.7;">
-            Proyecto desarrollado con Phaser 3, puro JavaScript y mucho pixel-art.<br>
+            Proyecto desarrollado con Phaser 3, puro JavaScript y mucho pixel-art ❤️.<br>
             Assets: <span style="color:var(--accent-warm);">Cup Nooble &mdash; Sprout Lands</span>
           </p>
         </div>

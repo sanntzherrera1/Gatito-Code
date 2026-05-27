@@ -99,14 +99,15 @@ async function goToSlide(index, immediate = false) {
     oldDef.onLeave();
   }
 
+  // Reset animation state before the new slide becomes visible.
+  resetSlideAnimations(newEl);
+
   if (immediate) {
     if (oldEl) oldEl.classList.remove('active');
     newEl.classList.add('active');
   } else {
     await transitionTo(oldEl, newEl, direction);
   }
-
-  resetSlideAnimations(newEl);
 
   if (newDef && newDef.onEnter) {
     newDef.onEnter(slideSessionId);
