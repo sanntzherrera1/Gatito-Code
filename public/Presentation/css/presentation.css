@@ -12,6 +12,7 @@
   --border-dim: #1f2d42;
   --border-bright: #2e3f5a;
   --accent: #6ee7ff;
+  --accent-magenta: #ff5fd2;
   --accent-warm: #ffe066;
   --text-primary: #e8ecf1;
   --text-dim: #7a8ba3;
@@ -275,7 +276,7 @@ p {
   flex: 1;
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
   background: var(--bg-surface);
   border: 3px solid var(--border-bright);
   border-left: 4px solid var(--accent-warm);
@@ -293,7 +294,7 @@ p {
 
 .party-role {
   color: var(--text-primary);
-  font-size: 0.8rem;
+  font-size: 0.9rem;
   line-height: 1.4;
 }
 
@@ -530,14 +531,14 @@ p {
   color: var(--accent-warm);
   font-family: 'SproutPixel', ui-monospace, monospace;
   font-size: 0.9rem;
-  margin: 0 0 0.3rem 0;
+  margin: 0 0 0 0;
   text-align: center;
   text-shadow: 0 0 8px var(--glow-gold);
 }
 
-.tree-panel .dir { color: var(--accent); font-weight: bold; }
-.tree-panel .file { color: var(--text-primary); }
-.tree-panel .comment { color: var(--text-dim); }
+.tree-panel .dir { color: var(--accent); font-weight: bold; font-size: 0.9rem; }
+.tree-panel .file { color: var(--text-primary); font-size: 0.9rem; }
+.tree-panel .comment { color: var(--text-dim);  font-size: 0.7rem; }
 
 .tree-initial {
   opacity: 0.85;
@@ -589,7 +590,7 @@ p {
   background: #111318;
   border: 8px solid #2a2f3a;
   border-radius: 16px;
-  padding: 16px 24px 24px 24px;
+  padding: 14px 20px 16px 20px;
   box-shadow:
     inset 0 0 0 4px #1a1e26,
     0 0 0 3px var(--accent-warm),
@@ -614,8 +615,10 @@ p {
 }
 
 .arcade-screen {
-  flex: 1;
-  width: 100%;
+  flex: 0 1 auto;
+  width: min(100%, 780px);
+  aspect-ratio: 4 / 3;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -624,6 +627,12 @@ p {
   border-radius: 8px;
   overflow: hidden;
   position: relative;
+}
+.arcade-screen canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+  image-rendering: pixelated;
 }
 .arcade-screen::after {
   content: '';

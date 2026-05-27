@@ -54,7 +54,13 @@ export const SLIDES = [
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
-      const text = "Gatito-Code es un videojuego educativo de pensamiento computacional con estetica pixel-art, destinado a ninos y ninas de 8 a 10 anos sin conocimientos previos de programacion. El jugador guia a un gatito en un mapa de tiles, construyendo programas mediante bloques de instrucciones arrastrables (arriba, abajo, izquierda, derecha) para recolectar objetos y completar niveles.";
+      const text = "Gatito-Code es un videojuego educativo de pensamiento computacional con estetica pixel-art, destinado a ninos y ninas de 8 a 10 anos sin conocimientos previos de programacion. El juego estara disponible originalmente en la web, sin necesidad de instalar nada. El jugador guia a un gatito en un mapa de tiles, construyendo programas mediante bloques de instrucciones arrastrables (arriba, abajo, izquierda, derecha) para recolectar objetos y completar niveles.";
+      const highlightedText = text
+        .replace('videojuego educativo', '<span style="color:var(--accent-warm);">videojuego educativo</span>')
+        .replace('pensamiento computacional', '<span style="color:var(--accent);">pensamiento computacional</span>')
+        .replace('pixel-art', '<span style="color:var(--green);">pixel-art</span>')
+        .replace('en la web', '<span style="color:var(--accent-magenta);">en la web</span>')
+        .replace('sin necesidad de instalar nada', '<span style="color:var(--green);">sin necesidad de instalar nada</span>');
       const el = document.getElementById('typewriter-text');
       if (!el) return;
       el.innerHTML = '';
@@ -65,6 +71,8 @@ export const SLIDES = [
           i++;
           if (i % 20 === 0) playSound('bip');
           scheduleSession(typeWriter, 6, sessionId);
+        } else {
+          el.innerHTML = highlightedText;
         }
       }
       scheduleSession(typeWriter, 300, sessionId);
@@ -85,12 +93,12 @@ export const SLIDES = [
     `,
     onEnter: (sessionId) => {
       const members = [
-        { name: "Brian Herrera", title: "Desarrollador", desc: "Programacion de la logica del juego, movimiento del jugador, colisiones y sistema de ejecucion de comandos." },
-        { name: "Lisett Castillo", title: "Scrum Master", desc: "Facilitacion de ceremonias agiles, gestion del backlog y aseguramiento del flujo de trabajo." },
-        { name: "Iara Baya", title: "Desarrolladora", desc: "Desarrollo del motor de tilemaps, sistema de clima y editor visual de niveles." },
-        { name: "Luis Herrera", title: "Disenador UI/UX", desc: "Creacion de interfaces, paletas de colores, tipografia pixel-art y experiencia de usuario." },
-        { name: "Inti Taretto", title: "Desarrollador", desc: "Implementacion de mecanicas de niveles, integracion de assets y optimizacion de rendimiento." },
-        { name: "Lucas Gimenez", title: "QA & Documentacion", desc: "Diseno de casos de prueba, control de calidad y redaccion de documentacion tecnica." }
+        { name: "Brian Herrera", emoji: "🧠", title: "Desarrollador", desc: "Programacion de la logica del juego, movimiento del jugador, colisiones y sistema de ejecucion de comandos." },
+        { name: "Lisett Castillo", emoji: "📋", title: "Scrum Master", desc: "Facilitacion de ceremonias agiles, gestion del backlog y aseguramiento del flujo de trabajo." },
+        { name: "Iara Baya", emoji: "🛠️", title: "Desarrolladora", desc: "Desarrollo del motor de tilemaps, sistema de clima y editor visual de niveles." },
+        { name: "Luis Herrera", emoji: "🎨", title: "Disenador UI/UX", desc: "Creacion de interfaces, paletas de colores, tipografia pixel-art y experiencia de usuario." },
+        { name: "Inti Taretto", emoji: "⚡", title: "Desarrollador", desc: "Implementacion de mecanicas de niveles, integracion de assets y optimizacion de rendimiento." },
+        { name: "Lucas Gimenez", emoji: "🔍", title: "QA & Documentacion", desc: "Diseno de casos de prueba, control de calidad y redaccion de documentacion tecnica." }
       ];
 
       const grid = document.getElementById('party-grid');
@@ -105,7 +113,7 @@ export const SLIDES = [
           <div class="party-avatar" style="background-position: ${av.pos};"></div>
           <div class="party-card">
             <div class="party-name">${m.name}</div>
-            <div class="party-role"><span class="party-role-title">${m.title}</span> — ${m.desc}</div>
+            <div class="party-role"><span class="party-role-title">${m.emoji} ${m.title}</span> — ${m.desc}</div>
           </div>
         `;
         grid.appendChild(slot);
@@ -365,8 +373,8 @@ export const SLIDES = [
         </div>
       </div>
 
-      <div class="dialog-box" style="margin-top:0.7rem; padding:0.6rem 1.2rem; max-width:100%; flex-shrink:0;">
-        <p style="color:var(--text-primary); margin:0; font-size:0.78rem; line-height:1.6; text-align:center;">
+      <div class="dialog-box" style="margin-top:0.7rem; margin-bottom:1.4rem; padding:0.6rem 1.2rem; max-width:100%; flex-shrink:0;">
+        <p style="color:var(--text-primary); margin:0; font-size:1rem; line-height:1.6; text-align:center;">
           Preparar <span style="color:var(--accent-warm);">agendas antes</span> de cada reunion y registrar
           <span style="color:var(--accent-warm);">minutas despues</span> nos permitio llegar con propuestas concretas,
           tomar decisiones en el momento y no perder acuerdos entre reuniones.
