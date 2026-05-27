@@ -57,12 +57,21 @@ export class TileLevelScene extends Phaser.Scene {
       window.__setMission?.(null);
     }
 
+    const onDocEsc = (e) => {
+      if (e.key !== 'Escape' && e.key !== 'Esc') return;
+      const tag = (e.target?.tagName || '').toLowerCase();
+      if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable) return;
+      this.exitToMenu();
+    };
+    document.addEventListener('keydown', onDocEsc);
+
     this.events.once('shutdown', () => {
       destroyWeather(this);
       window.__setPanels?.(false);
       window.__setMission?.(null);
-      window.__setMission?.(null);
+      document.removeEventListener('keydown', onDocEsc);
       if (window.__GYM) { window.__GYM.onRun = null; window.__GYM.onRestart = null; }
+      this._exiting = false;
     });
 
     if (this.welcomeMessage) {
@@ -74,7 +83,7 @@ export class TileLevelScene extends Phaser.Scene {
       F: Phaser.Input.Keyboard.KeyCodes.F,
       ESC: Phaser.Input.Keyboard.KeyCodes.ESC,
     });
-    this.keys.ESC.on('down', () => this.scene.start('Menu', { screen: this.returnScreen }));
+    this.keys.ESC.on('down', () => this.exitToMenu());
 
     this.grid = this.add.graphics().setDepth(100).setScrollFactor(0);
     this.drawGrid();
@@ -87,6 +96,17 @@ export class TileLevelScene extends Phaser.Scene {
 
     this.keys.G.on('down', () => { this.gridVisible = !this.gridVisible; this.grid.setVisible(this.gridVisible); });
     this.keys.F.on('down', () => { this.fpsVisible = !this.fpsVisible; this.debugText.setVisible(this.fpsVisible); });
+  }
+
+  exitToMenu(screen) {
+    if (this._exiting) return;
+    this._exiting = true;
+    const target = screen ?? this.returnScreen;
+    window.__setPanels?.(false);
+    window.__setMission?.(null);
+    document.getElementById('level-dialog')?.classList.remove('visible');
+    if (window.__GYM) { window.__GYM.running = false; window.__GYM.onRun = null; window.__GYM.onRestart = null; }
+    this.scene.start('Menu', { screen: target });
   }
 
   /** Subclass hook — pickups, props, non-tilemap decor. */
@@ -222,9 +242,11 @@ export class TileLevelScene extends Phaser.Scene {
       const btnLabel = nextLevel ? `Next Level ▶` : 'Done! 🏠';
       const nextBtn = this.createButton(0, 10, btnLabel, () => {
         if (nextLevel) {
+          window.__setPanels?.(false);
+          window.__setMission?.(null);
           this.scene.start(nextLevel.scene, { levelKey: nextLevel.key, returnScreen: this.returnScreen });
         } else {
-          this.scene.start('Menu', { screen: 'main' });
+          this.exitToMenu('main');
         }
       });
       this.resultGroup.add(nextBtn);
@@ -234,9 +256,7 @@ export class TileLevelScene extends Phaser.Scene {
         if (domRestart) domRestart.click();
         else this.resetLevel();
       });
-      const menuBtn = this.createButton(0, 30, '🏠 Menu', () => {
-        this.scene.start('Menu', { screen: this.returnScreen });
-      });
+      const menuBtn = this.createButton(0, 30, '🏠 Menu', () => this.exitToMenu());
       this.resultGroup.add([restartBtn, menuBtn]);
     }
 

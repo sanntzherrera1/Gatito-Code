@@ -788,7 +788,12 @@ export function preloadAssets(scene) {
 
 /** Expand compact { fill, rects } layer into a flat GID array of cols*rows. */
 export function expandLayer(layer, cols, rows) {
-  if (Array.isArray(layer)) return layer.slice();
+  if (Array.isArray(layer)) {
+    const arr = new Array(cols * rows).fill(0);
+    const n = Math.min(layer.length, arr.length);
+    for (let i = 0; i < n; i++) arr[i] = layer[i] || 0;
+    return arr;
+  }
   const out = new Array(cols * rows).fill(layer.fill ?? 0);
   for (const r of (layer.rects || [])) {
     for (let y = r.y; y < r.y + r.h; y++) {

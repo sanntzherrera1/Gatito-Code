@@ -1,5 +1,5 @@
 import { TILE, COLS, ROWS } from '../../config/game.js';
-import { getCustomLevels, addCustomLevel, createNewLevel, getAllLevels, getCompletedLevels } from '../../services/Storage.js';
+import { getCustomLevels, addCustomLevel, createNewLevel, getAllLevels, getCompletedLevels, BUILTIN_LEVELS } from '../../services/Storage.js';
 
 export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
@@ -43,7 +43,7 @@ export class MenuScene extends Phaser.Scene {
     this.buttons = [];
     this.selected = 0;
 
-    const W = COLS * TILE;
+    const W = COLS * TILE, H = ROWS * TILE;
     const bx = W / 2;
     const STEP = 20;
 
@@ -87,13 +87,18 @@ export class MenuScene extends Phaser.Scene {
       }).setOrigin(0.5);
       this.dynamicGroup.add(sep);
 
-      for (const lv of BUILTIN_LEVELS.concat(getCustomLevels())) {
-        const key = lv.key;
-        this.makeButton(bx, y, `Edit ${lv.name}`, () => this.scene.start('Editor', { levelKey: key, returnScreen: 'editor' }));
+      const allToEdit = [
+        { key: 'gym', name: 'Gym' },
+        { key: 'main', name: 'Main Level' },
+        ...getCustomLevels()
+      ];
+
+      allToEdit.forEach(lv => {
+        this.makeButton(bx, y, `Edit ${lv.name}`, () => this.scene.start('Editor', { levelKey: lv.key, returnScreen: 'editor' }));
         y += STEP;
-      }
+      });
       y += 4;
-      this.makeButton(bx, y, '← Back', () => this.showScreen('main'));
+      this.makeButton(bx, H - 30, '← Back', () => this.showScreen('main'));
     } else if (screen === 'credits') {
       this.addLabel('credits');
       const tx = this.add.text(bx, 84, 'Coming Soon', {

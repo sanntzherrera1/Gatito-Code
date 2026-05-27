@@ -86,8 +86,7 @@ export class EditorScene extends Phaser.Scene {
       onLayer:        (layer)   => this.setLayer(layer),
       onSave:         () => this.save(),
       onPlay:         () => this.playTest(),
-      onMenu:         () => this.scene.start('Menu', { screen: this.returnScreen }),
-      onMenu:         () => this.scene.start('Menu', { screen: this.returnScreen }),
+      onMenu:         () => this.exitToMenu(),
       onClear:        () => this.clearActiveLayer(),
       onUndo:         () => this.undo(),
       onRedo:         () => this.redo(),
@@ -163,7 +162,7 @@ export class EditorScene extends Phaser.Scene {
     this.keys.G.on('down',   () => { this.gridVisible = !this.gridVisible; this.grid.setVisible(this.gridVisible); });
     this.keys.E.on('down',   () => this.eyedrop());
     this.keys.P.on('down',   () => this.playTest());
-    this.keys.ESC.on('down', () => this.scene.start('Menu', { screen: this.returnScreen }));
+    this.keys.ESC.on('down', () => this.exitToMenu());
     this.keys.S.on('down',   (ev) => { if (!ev.ctrlKey) this.setMode(this.edMode === 'spawn' ? 'tile' : 'spawn'); });
     this.keys.O.on('down',   () => this.setMode(this.edMode === 'object' ? 'tile' : 'object'));
     this.input.keyboard.on('keydown', (ev) => {
@@ -182,6 +181,12 @@ export class EditorScene extends Phaser.Scene {
 
     this.setLayer(this.activeLayer);
     this.updateHud();
+  }
+
+  exitToMenu() {
+    window.__setEditor?.(null);
+    window.__setPanels?.(false);
+    this.scene.start('Menu', { screen: this.returnScreen });
   }
 
   drawGrid() {
@@ -478,7 +483,7 @@ export class EditorScene extends Phaser.Scene {
       modeHint,
     ];
     if (tx !== undefined && ty !== undefined) parts.push(`tile ${tx},${ty}`);
-    parts.push('[1/2] layer  [E] eyedrop  [S] spawn  [O] objects  [G] grid  [Ctrl+S] save  [P] play  [Esc] menu');
+    parts.push('[1/2/3] layer  [E] eyedrop  [S] spawn  [O] objects  [G] grid  [Ctrl+S] save  [P] play  [Esc] menu');
     this.hudText.setText(parts.join('  ·  '));
   }
 }

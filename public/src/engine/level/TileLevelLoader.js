@@ -57,6 +57,15 @@ export function loadLevel(scene, levelKey) {
 
   const spawn = lvl.spawn || { tx: Math.floor(cols / 2), ty: Math.floor(rows / 2) };
   const objects = lvl.objects ?? [];
+
+  if (hasPath) {
+    if (spawn && solid[spawn.ty]) solid[spawn.ty][spawn.tx] = false;
+    for (const obj of objects) {
+      if (obj.type === 'pickup' || obj.type === 'pickup_with_animation') {
+        if (solid[obj.ty]) solid[obj.ty][obj.tx] = false;
+      }
+    }
+  }
   const weather = migrateWeather(lvl.weather);
   const level = new Level(cols, rows, solid, spawn, objects, weather);
 

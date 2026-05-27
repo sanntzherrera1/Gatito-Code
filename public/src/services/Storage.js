@@ -77,6 +77,7 @@ export function createNewLevel(key) {
     tilesets: TILESETS.map(t => t.name),
     layers: {
       floor: new Array(cols * rows).fill(13),
+      path: new Array(cols * rows).fill(0),
       walls: new Array(cols * rows).fill(0),
     },
     spawn: { tx: 8, ty: 6 },
