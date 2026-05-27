@@ -496,7 +496,7 @@ export const SLIDES = [
           <div class="doc-subtitle">Proyecto: Juego Educativo de Pensamiento Computacional</div>
           <div class="doc-date">
             Fecha: 27 de mayo de 2026 &nbsp;|&nbsp; Materia: Gestion de Proyectos<br>
-            Equipo: Lisett Castillo &middot; Brian Herrera &middot; J. Luis Herrera &middot; Iara Baya &middot; Jose Taretto &middot; Federico Estevez &middot; Lucas Fernandez
+            Equipo: Lisett Castillo &middot; Brian Herrera &middot; J. Luis Herrera &middot; Iara Baya &middot; Inti Taretto &middot; Lucas Gimenez
           </div>
         </div>
 
