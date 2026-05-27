@@ -28,6 +28,13 @@ export class BootScene extends Phaser.Scene {
     }
     // UI assets manifest.
     this.load.json('ui_manifest', 'assets/ui.json');
+
+    // Emote icons (happy/sad faces) for victory/defeat overlays.
+    this.load.spritesheet(
+      'emote_icons',
+      'assets/SproutLands-UI/Sprite sheets/Icons/special icons/Small Happines-Sadness icons.png',
+      { frameWidth: 16, frameHeight: 16 }
+    );
   }
 
   create() {

@@ -38,6 +38,8 @@ export class TileLevelScene extends Phaser.Scene {
     this.pickups = new Map();
     this.collected = 0;
 
+    this.drawPathMarkers(levelData.flat?.path);
+
     this.loadObjects(this.level.objects);
     this.decorate();
 
@@ -56,6 +58,7 @@ export class TileLevelScene extends Phaser.Scene {
     } else {
       window.__setMission?.(null);
     }
+    this.showIdlePanel();
 
     const onDocEsc = (e) => {
       if (e.key !== 'Escape' && e.key !== 'Esc') return;
@@ -104,9 +107,35 @@ export class TileLevelScene extends Phaser.Scene {
     const target = screen ?? this.returnScreen;
     window.__setPanels?.(false);
     window.__setMission?.(null);
+    window.__hideResult?.();
     document.getElementById('level-dialog')?.classList.remove('visible');
     if (window.__GYM) { window.__GYM.running = false; window.__GYM.onRun = null; window.__GYM.onRestart = null; }
     this.scene.start('Menu', { screen: target });
+  }
+
+  showIdlePanel() {
+    window.__showResult?.({
+      state: 'idle',
+      message: this.missionText || '¡A jugar! Armá tu programa y presioná Ejecutar.',
+    });
+  }
+
+  /** Highlight walkable tiles when the level uses the `path` layer. */
+  drawPathMarkers(pathFlat) {
+    if (!pathFlat || !pathFlat.some(v => v !== 0)) return;
+    const g = this.add.graphics().setDepth(15);
+    g.lineStyle(1, 0xffee88, 0.65);
+    for (let y = 0; y < this.rows; y++) {
+      for (let x = 0; x < this.cols; x++) {
+        if (pathFlat[y * this.cols + x] !== 0) {
+          g.strokeRect(x * TILE + 0.5, y * TILE + 0.5, TILE - 1, TILE - 1);
+        }
+      }
+    }
+    this.tweens.add({
+      targets: g, alpha: { from: 0.45, to: 1 },
+      duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
+    });
   }
 
   /** Subclass hook — pickups, props, non-tilemap decor. */
@@ -117,11 +146,8 @@ export class TileLevelScene extends Phaser.Scene {
     this.playerView.stopAnimations();
     this.playerView.setPosition(this.playerModel.tx, this.playerModel.ty);
     this.playerView.playIdle(this.playerModel.facing);
-    
-    if (this.resultGroup) {
-      this.resultGroup.destroy(true);
-      this.resultGroup = null;
-    }
+
+    this.showIdlePanel();
 
     for (const pickup of this.pickups.values()) {
       if (pickup.sprite) {
@@ -212,35 +238,28 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   showResultOverlay(isWin) {
-    if (this.resultGroup) this.resultGroup.destroy(true);
+    const allLevels = getAllLevels();
+    const currentIdx = allLevels.findIndex(l => l.key === this.levelKey);
+    const nextLevel = allLevels[currentIdx + 1];
 
-    const { width, height } = this.scale;
-    const cx = width / 2;
-    const cy = height / 2;
-    
-    this.resultGroup = this.add.container(cx, cy).setDepth(200);
+    const pickupsLeft = this.pickups.size;
+    const message = isWin
+      ? '¡Lo lograste!'
+      : pickupsLeft > 0
+        ? 'Usá más movimientos para llegar a todos los objetos.'
+        : 'Revisá tu programa.';
 
-    const color = isWin ? '#ffcc00' : '#ff4444';
-    const message = isWin ? 'VICTORY!' : 'DEFEAT';
-
-    const text = this.add.text(0, -30, message, {
-      fontFamily: 'Arial Black',
-      fontSize: '18px',
-      color: color,
-      align: 'center',
-      stroke: '#000',
-      strokeThickness: 3,
-    }).setOrigin(0.5);
-    
-    this.resultGroup.add(text);
-
-    if (isWin) {
-      const allLevels = getAllLevels();
-      const currentIdx = allLevels.findIndex(l => l.key === this.levelKey);
-      const nextLevel = allLevels[currentIdx + 1];
-
-      const btnLabel = nextLevel ? `Next Level ▶` : 'Done! 🏠';
-      const nextBtn = this.createButton(0, 10, btnLabel, () => {
+    window.__showResult?.({
+      state: isWin ? 'win' : 'lose',
+      hasNext: isWin && !!nextLevel,
+      message,
+      onRestart: () => {
+        const domRestart = document.getElementById('restart');
+        if (domRestart) domRestart.click();
+        else this.resetLevel();
+      },
+      onMenu: () => this.exitToMenu(),
+      onNext: () => {
         if (nextLevel) {
           window.__setPanels?.(false);
           window.__setMission?.(null);
@@ -248,61 +267,8 @@ export class TileLevelScene extends Phaser.Scene {
         } else {
           this.exitToMenu('main');
         }
-      });
-      this.resultGroup.add(nextBtn);
-    } else {
-      const restartBtn = this.createButton(0, 0, '↺ Restart', () => {
-        const domRestart = document.getElementById('restart');
-        if (domRestart) domRestart.click();
-        else this.resetLevel();
-      });
-      const menuBtn = this.createButton(0, 30, '🏠 Menu', () => this.exitToMenu());
-      this.resultGroup.add([restartBtn, menuBtn]);
-    }
-
-    this.resultGroup.setScale(0);
-
-    this.tweens.add({
-      targets: this.resultGroup,
-      scale: 1,
-      duration: 600,
-      ease: 'Back.easeOut',
+      },
     });
-  }
-
-  createButton(x, y, textStr, onClick) {
-    const btn = this.add.container(x, y);
-    const bg = this.add.graphics();
-    
-    const w = 100;
-    const h = 24;
-    const drawBg = (color) => {
-      bg.clear();
-      bg.fillStyle(color, 1);
-      bg.lineStyle(2, 0xffffff, 1);
-      bg.fillRoundedRect(-w/2, -h/2, w, h, 6);
-      bg.strokeRoundedRect(-w/2, -h/2, w, h, 6);
-    };
-    drawBg(0x333333);
-
-    const txt = this.add.text(0, 0, textStr, {
-      fontFamily: 'monospace',
-      fontSize: '11px',
-      color: '#ffffff'
-    }).setOrigin(0.5);
-
-    btn.add([bg, txt]);
-    
-    const zone = this.add.zone(0, 0, w, h).setInteractive({ useHandCursor: true });
-    btn.add(zone);
-
-    zone.on('pointerover', () => drawBg(0x555555));
-    zone.on('pointerout', () => drawBg(0x333333));
-    zone.on('pointerdown', () => { drawBg(0x222222); btn.y = y + 2; });
-    zone.on('pointerup', () => { drawBg(0x555555); btn.y = y; onClick(); });
-    zone.on('pointerupoutside', () => { drawBg(0x333333); btn.y = y; });
-
-    return btn;
   }
 
   checkPickup(tx, ty) {
