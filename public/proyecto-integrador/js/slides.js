@@ -1,6 +1,6 @@
-import { playSound } from "../../Presentation/js/sound.js";
-import { startDemo, stopDemo } from "../../Presentation/js/demo-game.js";
-import { schedule, scheduleSession } from "../../Presentation/js/timers.js";
+import { playSound } from "../../presentacion-gestion/js/sound.js";
+import { startDemo, stopDemo } from "../../presentacion-gestion/js/demo-game.js";
+import { schedule, scheduleSession } from "../../presentacion-gestion/js/timers.js";
 
 const AVATARS = [
   { pos: "0 0" },
@@ -29,7 +29,8 @@ export const SLIDES = [
         <div style="z-index: 1; text-align: center;">
           <div id="cover-sprite"></div>
           <h1>GATITO CODE</h1>
-          <p style="font-size: 1.15rem; text-shadow: 0 0 8px var(--glow-cyan);">Proyecto Integrador</p>
+          <p style="font-size: 1.15rem; margin-bottom: 0.2rem; text-shadow: 0 0 8px var(--glow-cyan); color: var(--accent-magenta);">Proyecto Integrador</p>
+          <p style="font-size: 1rem; margin-top: 0; text-shadow: 0 0 8px var(--glow-cyan);">Un juego para aprender programacion</p>
         </div>
 
         <div class="dialog-box" style="z-index: 1; margin-top: 40px; width: 80%; max-width: 900px;">

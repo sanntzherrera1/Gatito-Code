@@ -43,7 +43,8 @@ export const SLIDES = [
         <div style="z-index: 1; text-align: center;">
           <div id="cover-sprite"></div>
           <h1>GATITO CODE</h1>
-          <p style="font-size: 1.15rem; text-shadow: 0 0 8px var(--glow-cyan);">Un juego para aprender programacion</p>
+          <p style="font-size: 1.15rem; margin-bottom: 0.2rem; text-shadow: 0 0 8px var(--glow-cyan); color: var(--green);">Gestion de Proyectos</p>
+          <p style="font-size: 1rem; margin-top: 0; text-shadow: 0 0 8px var(--glow-cyan);">Un juego para aprender programacion</p>
         </div>
 
         <div class="dialog-box" style="z-index: 1; margin-top: 40px; width: 80%; max-width: 900px;">

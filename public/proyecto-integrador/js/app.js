@@ -1,7 +1,7 @@
 import { SLIDES } from './slides.js';
-import { transitionTo } from '../../Presentation/js/transitions.js';
-import { initSounds, stopAllSounds } from '../../Presentation/js/sound.js';
-import { clearAllTimers, setSessionId } from '../../Presentation/js/timers.js';
+import { transitionTo } from '../../presentacion-gestion/js/transitions.js';
+import { initSounds, stopAllSounds } from '../../presentacion-gestion/js/sound.js';
+import { clearAllTimers, setSessionId } from '../../presentacion-gestion/js/timers.js';
 
 let currentSlideIndex = 0;
 const slideElements = [];
