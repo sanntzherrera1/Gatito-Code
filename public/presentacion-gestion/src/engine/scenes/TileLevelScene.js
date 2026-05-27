@@ -60,7 +60,6 @@ export class TileLevelScene extends Phaser.Scene {
       destroyWeather(this);
       window.__setPanels?.(false);
       window.__setMission?.(null);
-      window.__setMission?.(null);
       if (window.__GYM) { window.__GYM.onRun = null; window.__GYM.onRestart = null; }
     });
 
