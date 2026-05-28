@@ -1,4 +1,4 @@
-import { TILE } from '../../config/game.js';
+import { TILE, COLS } from '../../config/game.js';
 import { deriveAnimKey } from './WorldObjectView.js';
 
 /**
@@ -10,8 +10,11 @@ export class PickupView {
     this.tx = tx;
     this.ty = ty;
     const cx = tx * TILE + TILE / 2;
-    const cy = ty * TILE + TILE / 2;
-    this.sprite = scene.add.sprite(cx, cy, textureKey, frame).setDepth(50);
+    const cy = ty * TILE + TILE;
+    const depth = ty * COLS + tx + 2002;
+    this.sprite = scene.add.sprite(cx, cy, textureKey, frame)
+      .setOrigin(0.5, 1)
+      .setDepth(depth);
 
     const animKey = deriveAnimKey(textureKey, frame);
     if (scene.anims.exists(animKey)) {

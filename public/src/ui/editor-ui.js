@@ -6,7 +6,7 @@ let selectedGid = 0;
 let activeTerrainName = null;
 let activeObjCategory = 'objects';
 let activeObjTabIdx = 0;
-let activeObjType = 'pickup_with_animation';
+let activeObjType = 'deco';
 let activeGroup = null;
 let activeVariant = {};
 
@@ -65,7 +65,7 @@ function showEditor(cfg) {
   });
   updateLayerHighlight(cfg.getLayer());
 
-  activeObjType = 'pickup_with_animation';
+  activeObjType = 'deco';
   activeObjTabIdx = 0;
   activeGroup = null;
   activeVariant = {};

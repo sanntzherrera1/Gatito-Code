@@ -1,4 +1,4 @@
-import { TILE, STEP_MS } from '../../config/game.js';
+import { TILE, STEP_MS, COLS } from '../../config/game.js';
 
 /**
  * Visual representation of the player — sprite, tweens and animations.
@@ -10,7 +10,8 @@ export class PlayerView {
     this.playerModel = playerModel;
 
     const [x, y] = this._tileCenter(playerModel.tx, playerModel.ty);
-    this.sprite = scene.add.sprite(x, y, 'character_base', 0).setDepth(40);
+    const depth = playerModel.ty * COLS + playerModel.tx + 2001;
+    this.sprite = scene.add.sprite(x, y, 'character_base', 0).setDepth(depth);
     this.playIdle(playerModel.facing);
   }
 
@@ -45,6 +46,7 @@ export class PlayerView {
   setPosition(tx, ty) {
     const [x, y] = this._tileCenter(tx, ty);
     this.sprite.setPosition(x, y);
+    this.sprite.setDepth(ty * COLS + tx + 2001);
   }
 
   /**
@@ -57,7 +59,10 @@ export class PlayerView {
       this.scene.tweens.add({
         targets: this.sprite, x, y,
         duration: STEP_MS, ease: 'Linear',
-        onComplete: resolve,
+        onComplete: () => {
+          this.sprite.setDepth(ty * COLS + tx + 2001);
+          resolve();
+        },
       });
     });
   }
@@ -94,6 +99,7 @@ export class PlayerView {
         onComplete: () => {
           this.sprite.x = endX;
           this.sprite.y = endY;
+          this.sprite.setDepth(toTy * COLS + toTx + 2001);
           this.sprite.anims.stop();
           this.sprite.setFrame(PlayerView.getIdleFrameForDir(dir));
           resolve();

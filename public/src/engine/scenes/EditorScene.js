@@ -49,7 +49,7 @@ export class EditorScene extends Phaser.Scene {
     this.edMode = 'tile';             // 'tile' | 'object' | 'spawn'
     this.objects = (level.objects ?? []).slice();
     this.objectSprites = new Map();   // "tx,ty" → Phaser sprite
-    this.selectedObject = { key: 'plants', frame: 0, type: 'pickup_with_animation' };
+    this.selectedObject = { key: 'plants', frame: 0, type: 'deco' };
     this._renderAllObjects();
 
     this.spawnMarker = this.add.rectangle(
@@ -110,8 +110,33 @@ export class EditorScene extends Phaser.Scene {
     this.input.on('pointermove', (p) => {
       const { tx, ty } = tileAt(p);
       if (inBounds(tx, ty)) {
-        this.hoverRect.setPosition(tx * TILE, ty * TILE).setVisible(true);
-        if (this.painting && this.edMode === 'tile') this.paintAt(tx, ty, this.painting);
+        if (this.edMode === 'object') {
+          const objDef = OBJECTS.find(o => o.key === this.selectedObject.key);
+          const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
+          const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+          const { startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH);
+
+          let valid = true;
+          for (let y = startTy; y <= endTy; y++) {
+            for (let x = startTx; x <= endTx; x++) {
+              if (!inBounds(x, y)) { valid = false; break; }
+              if (this.flat.walls[y * this.cols + x] !== 0) { valid = false; break; }
+            }
+            if (!valid) break;
+          }
+          if (valid && this._hasObjectCollision(startTx, startTy, endTx, endTy)) valid = false;
+
+          const width = (endTx - startTx + 1) * TILE;
+          const height = (endTy - startTy + 1) * TILE;
+          this.hoverRect.setPosition(startTx * TILE, startTy * TILE).setSize(width, height);
+          this.hoverRect.setStrokeStyle(1, valid ? 0x00ff00 : 0xff0000, 1);
+          this.hoverRect.setVisible(true);
+        } else {
+          this.hoverRect.setPosition(tx * TILE, ty * TILE).setSize(TILE, TILE);
+          this.hoverRect.setStrokeStyle(1, 0xffee88, 1);
+          this.hoverRect.setVisible(true);
+          if (this.painting && this.edMode === 'tile') this.paintAt(tx, ty, this.painting);
+        }
       } else {
         this.hoverRect.setVisible(false);
       }
@@ -407,6 +432,50 @@ export class EditorScene extends Phaser.Scene {
     }
   }
 
+  _inBounds(x, y) {
+    return x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+  }
+
+  _getOccupancy(tx, ty, occupyW, occupyH) {
+    const startTx = tx - Math.floor((occupyW - 1) / 2);
+    const endTx = startTx + occupyW - 1;
+    const startTy = ty - (occupyH - 1);
+    const endTy = ty;
+    return { startTx, startTy, endTx, endTy };
+  }
+
+  _removeObjectsInFootprint(startTx, startTy, endTx, endTy) {
+    const toRemove = [];
+    for (const obj of this.objects) {
+      const objDef = OBJECTS.find(o => o.key === obj.key);
+      const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
+      const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+      const occ = this._getOccupancy(obj.tx, obj.ty, occW, occH);
+      if (occ.startTx <= endTx && occ.endTx >= startTx && occ.startTy <= endTy && occ.endTy >= startTy) {
+        toRemove.push(obj);
+      }
+    }
+    for (const obj of toRemove) {
+      const key = `${obj.tx},${obj.ty}`;
+      const s = this.objectSprites.get(key);
+      if (s) { this.tweens.killTweensOf(s); s.destroy(); this.objectSprites.delete(key); }
+      this.objects = this.objects.filter(o => !(o.tx === obj.tx && o.ty === obj.ty));
+    }
+  }
+
+  _hasObjectCollision(startTx, startTy, endTx, endTy) {
+    for (const obj of this.objects) {
+      const objDef = OBJECTS.find(o => o.key === obj.key);
+      const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
+      const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+      const occ = this._getOccupancy(obj.tx, obj.ty, occW, occH);
+      if (occ.startTx <= endTx && occ.endTx >= startTx && occ.startTy <= endTy && occ.endTy >= startTy) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   // --- Object placement --------------------------------------------------
 
   _renderAllObjects() {
@@ -416,8 +485,12 @@ export class EditorScene extends Phaser.Scene {
   }
 
   _renderObject(obj) {
-    const [cx, cy] = [obj.tx * TILE + TILE / 2, obj.ty * TILE + TILE / 2];
-    const s = this.add.sprite(cx, cy, obj.key, obj.frame).setDepth(50);
+    const cx = obj.tx * TILE + TILE / 2;
+    const cy = obj.ty * TILE + TILE;
+    const depth = obj.ty * this.cols + obj.tx + 2000;
+    const s = this.add.sprite(cx, cy, obj.key, obj.frame)
+      .setOrigin(0.5, 1)
+      .setDepth(depth);
 
     const animKey = deriveAnimKey(obj.key, obj.frame);
     if (this.anims.exists(animKey)) {
@@ -430,17 +503,39 @@ export class EditorScene extends Phaser.Scene {
   }
 
   _placeObject(tx, ty) {
-    this._removeObject(tx, ty);
+    const objDef = OBJECTS.find(o => o.key === this.selectedObject.key);
+    const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
+    const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+    const { startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH);
+
+    for (let y = startTy; y <= endTy; y++) {
+      for (let x = startTx; x <= endTx; x++) {
+        if (!this._inBounds(x, y)) return;
+        if (this.flat.walls[y * this.cols + x] !== 0) return;
+      }
+    }
+    if (this._hasObjectCollision(startTx, startTy, endTx, endTy)) return;
+
+    this._removeObjectsInFootprint(startTx, startTy, endTx, endTy);
     const obj = { tx, ty, key: this.selectedObject.key, frame: this.selectedObject.frame, type: this.selectedObject.type };
     this.objects.push(obj);
     this._renderObject(obj);
   }
 
   _removeObject(tx, ty) {
-    const key = `${tx},${ty}`;
+    const targetObj = this.objects.find(obj => {
+      const objDef = OBJECTS.find(o => o.key === obj.key);
+      const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
+      const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+      const { startTx, startTy, endTx, endTy } = this._getOccupancy(obj.tx, obj.ty, occW, occH);
+      return tx >= startTx && tx <= endTx && ty >= startTy && ty <= endTy;
+    });
+
+    if (!targetObj) return;
+    const key = `${targetObj.tx},${targetObj.ty}`;
     const s = this.objectSprites.get(key);
     if (s) { this.tweens.killTweensOf(s); s.destroy(); this.objectSprites.delete(key); }
-    this.objects = this.objects.filter(o => !(o.tx === tx && o.ty === ty));
+    this.objects = this.objects.filter(o => !(o.tx === targetObj.tx && o.ty === targetObj.ty));
   }
 
   // --- HUD ---------------------------------------------------------------
