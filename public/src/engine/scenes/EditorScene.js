@@ -485,7 +485,10 @@ export class EditorScene extends Phaser.Scene {
   }
 
   _renderObject(obj) {
-    const cx = obj.tx * TILE + TILE / 2;
+    const objDef = OBJECTS.find(o => o.key === obj.key);
+    const occW = objDef?.occupyW ?? Math.ceil((objDef?.frameW ?? TILE) / TILE);
+    const startTx = obj.tx - Math.floor((occW - 1) / 2);
+    const cx = startTx * TILE + (occW * TILE) / 2;
     const cy = obj.ty * TILE + TILE;
     const depth = obj.ty * this.cols + obj.tx + 2000;
     const s = this.add.sprite(cx, cy, obj.key, obj.frame)

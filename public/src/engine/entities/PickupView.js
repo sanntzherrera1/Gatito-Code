@@ -1,4 +1,5 @@
 import { TILE, COLS } from '../../config/game.js';
+import { OBJECTS } from '../../engine/level/TileRegistry.js';
 import { deriveAnimKey } from './WorldObjectView.js';
 
 /**
@@ -9,7 +10,10 @@ export class PickupView {
     this.scene = scene;
     this.tx = tx;
     this.ty = ty;
-    const cx = tx * TILE + TILE / 2;
+    const objDef = OBJECTS.find(o => o.key === textureKey);
+    const occW = objDef?.occupyW ?? Math.ceil((objDef?.frameW ?? TILE) / TILE);
+    const startTx = tx - Math.floor((occW - 1) / 2);
+    const cx = startTx * TILE + (occW * TILE) / 2;
     const cy = ty * TILE + TILE;
     const depth = ty * COLS + tx + 2002;
     this.sprite = scene.add.sprite(cx, cy, textureKey, frame)
