@@ -502,12 +502,12 @@ export const SLIDES = [
     id: "slide-estado",
     html: `
       <h2>Estado Actual del Desarrollo</h2>
-      <p class="text-center">3 sprints ejecutados con entregas incrementales y 2 planificados para completar el producto.</p>
+      <p class="text-center">3 sprints ejecutados con entregas incrementales y 1 planificado para completar el producto.</p>
 
       <div class="stat-bar-container">
         <span class="stat-bar-label">Progreso Global</span>
-        <div class="stat-bar-track"><div class="stat-bar-fill" id="global-progress" data-width="68"></div></div>
-        <span class="stat-bar-value">27 / 40 tareas</span>
+        <div class="stat-bar-track"><div class="stat-bar-fill" id="global-progress" data-width="56"></div></div>
+        <span class="stat-bar-value">27 / 48 tareas</span>
       </div>
 
       <div class="sprint-board">
@@ -563,20 +563,31 @@ export const SLIDES = [
         </div>
 
         <div class="sprint-card" id="sprint-card-4" style="border-color:var(--border-dim);">
-          <div class="sprint-name" style="color:var(--text-dim);">Sprint 4&ndash;5</div>
-          <div class="sprint-period">Proximas iteraciones</div>
+          <div class="sprint-name" style="color:var(--text-dim);">Sprint 4&ndash;6</div>
+          <div class="sprint-period">Junio &rarr; 2027</div>
           <div style="display:flex; align-items:center; gap:0.4rem;">
             <div class="progress-bar" style="flex:1;"><div class="progress-fill green" data-width="0"></div></div>
-            <span style="color:var(--text-dim); font-size:0.7rem;">0/7</span>
+            <span style="color:var(--text-dim); font-size:0.7rem;">0/15</span>
           </div>
           <div class="sprint-status planned">PLANIFICADO</div>
           <ul class="sprint-tasks">
-            <li>Niveles pedagogicos completos (18)</li>
-            <li>Playtest con usuarios (8&ndash;10 anos)</li>
-            <li>Pantalla de resultados</li>
-            <li>Progresion entre niveles</li>
-            <li>Despliegue publico (hosting)</li>
+            <li>Niveles pedagogicos progresivos</li>
+            <li>Sistema de progresion</li>
+            <li>Pantalla de victoria</li>
+            <li>Sonidos y feedback</li>
+            <li>Hosting web publico</li>
+            <li>Playtest con usuarios reales</li>
+            <li>Feedback visual de error</li>
+            <li>30+ niveles completos</li>
+            <li>Bucles y condicionales</li>
+            <li>Responsive basico</li>
+            <li>Version mobile</li>
+            <li>Publicacion en Steam</li>
+            <li>Multiplayer cooperativo</li>
+            <li>Editor publico de niveles</li>
+            <li>Niveles generados por IA</li>
           </ul>
+        </div>
         </div>
       </div>
 
@@ -625,21 +636,53 @@ export const SLIDES = [
     id: "slide-roadmap",
     html: `
       <h2>Roadmap del Producto</h2>
-      <p class="text-center">Hoja de ruta desde el MVP actual hasta la expansion multiplataforma.</p>
+      <p class="text-center">Hoja de ruta desde la infraestructura tecnica hasta la expansion multiplataforma.</p>
 
       <div class="roadmap-timeline">
         <div class="roadmap-step done">
           <div class="roadmap-node">&#10003;</div>
           <div class="roadmap-line"></div>
           <div class="roadmap-card">
-            <div class="roadmap-card-title">MVP Actual</div>
+            <div class="roadmap-card-title">Infraestructura Tecnica</div>
+            <div class="roadmap-card-date">Abril 2026</div>
+            <ul class="roadmap-card-items">
+              <li>55 tilesets registrados</li>
+              <li>221+ sprites y animaciones</li>
+              <li>JSON Level Format</li>
+              <li>Persistencia con localStorage</li>
+              <li>Tests unitarios con Vitest</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="roadmap-step done">
+          <div class="roadmap-node">&#10003;</div>
+          <div class="roadmap-line"></div>
+          <div class="roadmap-card">
+            <div class="roadmap-card-title">Motor Jugable</div>
+            <div class="roadmap-card-date">Abril &ndash; Mayo 2026</div>
+            <ul class="roadmap-card-items">
+              <li>Motor Phaser funcional</li>
+              <li>2 niveles jugables</li>
+              <li>Sistema de colisiones por tiles</li>
+              <li>Editor visual de niveles</li>
+              <li>Sistema de clima (9 efectos)</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="roadmap-step done">
+          <div class="roadmap-node">&#10003;</div>
+          <div class="roadmap-line"></div>
+          <div class="roadmap-card">
+            <div class="roadmap-card-title">Experiencia de Usuario</div>
             <div class="roadmap-card-date">Mayo 2026</div>
             <ul class="roadmap-card-items">
-              <li>Motor de juego jugable</li>
-              <li>2 niveles funcionales</li>
-              <li>Editor de niveles completo</li>
-              <li>Sistema de clima (9 efectos)</li>
-              <li>11 tests unitarios</li>
+              <li>Cola de comandos visual</li>
+              <li>Drag &amp; drop de instrucciones</li>
+              <li>Jump picker inline</li>
+              <li>Animaciones idle de sprites</li>
+              <li>Y-sorting 2D (depth por posicion)</li>
             </ul>
           </div>
         </div>
@@ -651,7 +694,7 @@ export const SLIDES = [
             <div class="roadmap-card-title">Playtest v1</div>
             <div class="roadmap-card-date">Junio 2026</div>
             <ul class="roadmap-card-items">
-              <li>18 niveles pedagogicos</li>
+              <li>Niveles pedagogicos progresivos</li>
               <li>Sistema de progresion</li>
               <li>Pantalla de victoria</li>
               <li>Sonidos y feedback</li>
@@ -664,11 +707,11 @@ export const SLIDES = [
           <div class="roadmap-line"></div>
           <div class="roadmap-card">
             <div class="roadmap-card-title">Beta Publica</div>
-            <div class="roadmap-card-date">Julio 2026</div>
+            <div class="roadmap-card-date">Junio 2026</div>
             <ul class="roadmap-card-items">
               <li>Hosting web publico</li>
+              <li>Playtest con usuarios reales</li>
               <li>Feedback visual de error</li>
-              <li>Efectos de sonido completos</li>
             </ul>
           </div>
         </div>
@@ -678,7 +721,7 @@ export const SLIDES = [
           <div class="roadmap-line"></div>
           <div class="roadmap-card">
             <div class="roadmap-card-title">Lanzamiento v1.0</div>
-            <div class="roadmap-card-date">Agosto 2026</div>
+            <div class="roadmap-card-date">Julio 2026</div>
             <ul class="roadmap-card-items">
               <li>30+ niveles completos</li>
               <li>Bucles y condicionales</li>
@@ -697,6 +740,7 @@ export const SLIDES = [
               <li>Publicacion en Steam</li>
               <li>Multiplayer cooperativo</li>
               <li>Editor publico de niveles</li>
+              <li>Niveles generados por IA</li>
             </ul>
           </div>
         </div>

@@ -55,7 +55,7 @@ export const SLIDES = [
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
-      const text = "Gatito-Code es un videojuego educativo de pensamiento computacional con estetica pixel-art, destinado a ninos y ninas de 8 a 10 anos sin conocimientos previos de programacion. El juego estara disponible originalmente en la web, sin necesidad de instalar nada. El jugador guia a un gatito en un mapa de tiles, construyendo programas mediante bloques de instrucciones arrastrables (arriba, abajo, izquierda, derecha) para recolectar objetos y completar niveles.";
+      const text = "Gatito-Code es un videojuego educativo de pensamiento computacional con estetica pixel-art, destinado a ninos y ninas de 6 a 10 anos sin conocimientos previos de programacion. El juego estara disponible originalmente en la web, sin necesidad de instalar nada. El jugador guia a un gatito en un mapa de tiles, construyendo programas mediante bloques de instrucciones arrastrables (arriba, abajo, izquierda, derecha) para recolectar objetos y completar niveles.";
       const highlightedText = text
         .replace('videojuego educativo', '<span style="color:var(--accent-warm);">videojuego educativo</span>')
         .replace('pensamiento computacional', '<span style="color:var(--accent);">pensamiento computacional</span>')
@@ -184,7 +184,7 @@ export const SLIDES = [
     id: 'slide-4',
     html: `
       <h2>Documento de Alcance</h2>
-      <p class="text-center">MVP definido: un juego educativo de pensamiento computacional navegable sin instalacion, orientado a ninos de 8 a 10 anos.</p>
+      <p class="text-center">MVP definido: un juego educativo de pensamiento computacional navegable sin instalacion, orientado a ninos de 6 a 10 anos.</p>
 
       <div class="scrum-container">
         <div class="scrum-panel" id="alcance-panel-left">
@@ -300,14 +300,6 @@ export const SLIDES = [
             <div class="progress-bar" style="flex:1;"><div class="progress-fill green" data-width="0"></div></div>
             <span style="color:var(--text-dim); font-size:0.7rem;">0/7</span>
           </div>
-          <div class="sprint-status planned">PLANIFICADO</div>
-          <ul class="sprint-tasks">
-            <li>Niveles pedagogicos completos (18)</li>
-            <li>Playtest con usuarios (8–10 anos)</li>
-            <li>Pantalla de resultados y celebracion</li>
-            <li>Sistema de progresion entre niveles</li>
-            <li>Despliegue publico (hosting)</li>
-          </ul>
         </div>
       </div>
       ${CORNERS}
