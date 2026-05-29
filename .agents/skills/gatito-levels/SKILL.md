@@ -12,15 +12,16 @@ Esta skill guía a cualquier LLM en la creación de nuevos mapas/niveles para el
 
 ## Regla de Interacción Inicial (OBLIGATORIA)
 
-Cuando el usuario te pida crear un mapa o un nivel, **NO** generes código ni archivos inmediatamente. Tu primera acción DEBE ser hacerle estas **7 preguntas obligatorias** y esperar sus respuestas:
+Cuando el usuario te pida crear un mapa o un nivel, **NO** generes código ni archivos inmediatamente. Tu primera acción DEBE ser hacerle estas **8 preguntas obligatorias** y esperar sus respuestas:
 
 1. **Dificultad:** *"¿Qué dificultad deseas para este nivel: fácil, normal, difícil o pesadilla?"*
 2. **Concepto Pedagógico:** *"¿Qué concepto de lógica o algoritmos quieres que el jugador practique aquí? (Ej: secuencias simples, esquivar obstáculos, encontrar la ruta más corta, evitar callejones sin salida, planificar con límite de movimientos)."*
 3. **Temática y Assets:** *"¿Qué escenario visual te imaginas? Te muestro las opciones disponibles..."* (Ver catálogo más abajo).
-4. **Estado Anímico / Narrativa Visual:** *"¿Qué emoción o sensación debe transmitir el nivel? (Ej: alegre, triste, melancólico, misterioso, nostálgico, aterrador, tranquilo, caótico, esperanzador)."*
-5. **Clima / Atmósfera Física:** *"Describe el clima ambiental. Puedes combinar efectos: lluvia intensa de noche, nieve ligera al amanecer, hojas cayendo en día despejado, polen flotante, o simplemente despejado."*
-6. **Narrativa de Juego:** *"¿Quieres incluir un mensaje de bienvenida (diálogo al iniciar el nivel) o un texto de misión específico en la pantalla?"*
-7. **Nombre del Mapa:** *"¿Cómo quieres llamar a este nivel? (Ej: bosque_encantado, granja_abandonada, pueblo_lobos). Este nombre se usará para el archivo, el menú y el código fuente."*
+4. **Geografía y Bioma:** *"Describe el bioma o geografía del nivel. ¿Qué elementos naturales, animales o construcciones quieres que aparezcan? (Ej: bosque denso con árboles frutales y conejos, granja con gallineros y cultivos, dungeon con piedras y murciélagos, pueblo con casas de madera y puentes, playa con arena y peces)."*
+5. **Estado Anímico / Narrativa Visual:** *"¿Qué emoción o sensación debe transmitir el nivel? (Ej: alegre, triste, melancólico, misterioso, nostálgico, aterrador, tranquilo, caótico, esperanzador)."*
+6. **Clima / Atmósfera Física:** *"Describe el clima ambiental. Puedes combinar efectos: lluvia intensa de noche, nieve ligera al amanecer, hojas cayendo en día despejado, polen flotante, o simplemente despejado."*
+7. **Narrativa de Juego:** *"¿Quieres incluir un mensaje de bienvenida (diálogo al iniciar el nivel) o un texto de misión específico en la pantalla?"*
+8. **Nombre del Mapa:** *"¿Cómo quieres llamar a este nivel? (Ej: bosque_encantado, granja_abandonada, pueblo_lobos). Este nombre se usará para el archivo, el menú y el código fuente."*
 
 ---
 
@@ -28,65 +29,189 @@ Cuando el usuario te pida crear un mapa o un nivel, **NO** generes código ni ar
 
 > **Nota:** Este es un catálogo resumido con los assets más útiles para diseñar niveles. El registro completo de todos los tilesets, objetos, animales e items disponibles está en `public/src/engine/level/TileRegistry.js` (más de 80 spritesheets). Si el usuario pide un asset específico que no aparezca aquí, verifica su existencia en ese archivo antes de decir que no está disponible.
 
-### Terrenos Transitables (Autotile)
-Se pintan en la capa `floor`.
-- `grass` — Pasto verde básico (GID 1-99)
-- `dirt` — Tierra arada/marrón (GID 200-299)
-- `water` — Agua animada (GID 400-499)
+### Terrenos y Muros (Autotile)
+El compilador semántico soporta **33 tipos de autotile** que se pintan en las capas `floor` o `walls`. Todo GID distinto de 0 en la capa `walls` bloquea el paso del jugador.
 
-### Obstáculos / Muros (Autotile)
-Se pintan en la capa `walls`. Todo GID != 0 bloquea el paso.
-- `hills` — Colinas y elevaciones verdes (GID 300-399)
-- `fences` — Cercas de madera (GID 100-199)
-- `fences_v2` — Cercas extendidas (GID 3700+)
+> **Nota:** Existen más tilesets en `TileRegistry.js` (como `grass_hill_slopes`, `wooden_house`, `dungeon_walls`, `ice_tiles`, etc.), pero estos tienen estructuras incompatibles con el sistema de autotile de 4 vecinos (slopes, edificios, items, animaciones). Solo pueden usarse como objetos decorativos (`deco`) o mediante edición manual de GIDs en el editor visual.
+
+#### Grass / Pastos (capa `floor`)
+- `grass` — Pasto verde básico
+- `grass_v2` — Pasto versión 2
+- `grass_hills` — Colinas de pasto
+- `grass_layers` — Pasto con capas
+- `grass_layers2` — Pasto con capas 2
+- `grass_simple` — Pasto simple
+- `dgrass_hills` — Colinas de pasto oscuro
+- `dgrass_layers` — Pasto oscuro con capas
+- `dgrass_layers2` — Pasto oscuro con capas 2
+- `dgrass_tiles` — Pasto oscuro
+- `bush` — Arbustos como terreno
+
+#### Soil / Suelos (capa `floor`)
+- `dirt` — Tierra arada básica
+- `dirt_v2` — Tierra versión 2
+- `dirt_wide` — Tierra ancha
+- `dirt_wide_v2` — Tierra ancha versión 2
+- `soil_hills` — Colinas de suelo
+- `soil_tiles` — Suelo
+- `dsoil_hills` — Colinas de suelo oscuro
+- `dsoil_tiles` — Suelo oscuro
+- `stone_hills` — Colinas de piedra
+- `stone_tiles` — Suelo de piedra
+
+#### Dungeon (capa `floor`)
+- `dungeon_ground_orange` — Suelo dungeon naranja
+- `dungeon_ground_orange_dark` — Suelo dungeon naranja oscuro
+
+#### Winter / Invierno (capa `floor`)
+- `snow_tiles_1` — Nieve 1
+- `snow_tiles_2` — Nieve 2
+
+#### Water / Agua (capa `floor`)
+- `water` - Agua básica
+
+#### Extended / Más terrenos (capa `floor`)
+- `grass_layers_sorry_1` — Capas extendidas 1
+- `grass_layers_sorry_2` — Capas extendidas 2
+- `grass_layers_sorry_3` — Capas extendidas 3
+- `grass_layers_sorry_4` — Capas extendidas 4
+- `blue_grass_layers_1` — Pasto azul capas 1
+- `blue_grass_layers_2` — Pasto azul capas 2
+- `blue_grass_layers_3` — Pasto azul capas 3
+- `blue_grass_layers_4` — Pasto azul capas 4
+
+#### Walls / Muros (capa `walls`)
+- `hills` - Colinas y rocas
+- `fences` - Cercas de madera
+
+### Tilesets Especiales (Manuales / Sin Autotile)
+Existen tilesets adicionales que no soportan el sistema de autotile de 4 vecinos debido a su estructura (ej. edificios, agujeros, paredes complejas de mazmorra, rieles, interruptores, hielo). Estos tilesets disponibles son:
+
+- `doors`
+- `wooden_house`
+- `wooden_roof`
+- `wooden_walls`
+- `stone_path`
+- `dungeon_walls`
+- `dungeon_walls_decor`
+- `dungeon_ground_orange_hole`
+- `dungeon_ground_orange_darker_hole`
+- `dungeon_items`
+- `dungeon_carts`
+- `dungeon_rails`
+- `dungeon_rocks`
+- `dungeon_switch`
+- `ice_tiles`
+
+> **Instrucción de Uso Manual:** Si decides utilizar alguno de estos tilesets, **NO puedes usar el compilador semántico** para ellos. Debes usar la herramienta de búsqueda para leer `public/src/engine/level/TileRegistry.js` y encontrar sus valores exactos de `cols`, `rows` y `firstgid`. Luego, deberás calcular matemáticamente el GID que necesitas y editar tú misma el array plano del JSON final del nivel.
 
 ### Objetos Decorativos y Estructuras
 Se colocan en el array `objects` del JSON con `type: "deco"`.
-- `grass_props` — Arbustos, troncos, hongos, flores (cols: 9, rows: 5)
-- `plants` — Cultivos pequeños (cols: 6, rows: 2)
-- `trees` — Árboles, tocones y arbustos grandes (cols: 12, rows: 7)
-- `mushrooms` — Hongos, flores y piedras (cols: 12, rows: 5)
-- `farming` — Cultivos en crecimiento (cols: 5, rows: 15)
-- `furniture` — Mobiliario básico (cols: 9, rows: 6)
-- `signs` — Letreros de madera frontales (cols: 6, rows: 4)
-- `signs_sides` — Letreros laterales (cols: 8, rows: 2)
-- `well` — Pozo de agua (cols: 2, rows: 2)
-- `wood_bridge` — Puente de madera v1 (cols: 5, rows: 3)
-- `wooden_bridge_v2` — Puente de madera v2 (cols: 4, rows: 3)
-- `workstation` — Mesa de trabajo (cols: 2, rows: 2)
-- `paths` — Caminos decorativos (cols: 4, rows: 4)
-- `boats` — Botes pequeños (cols: 9, rows: 6)
-- `water_objs` — Objetos acuáticos (cols: 12, rows: 2)
-- `barn_structures` — Estructuras de granja (cols: 3, rows: 4)
-- `chicken_houses` — Gallineros (cols: 24, rows: 11)
-- `door_animation` — Puertas animadas (cols: 18, rows: 2)
-- `fence_gates_anim` — Puertas de cerca animadas (cols: 10, rows: 3)
-- `mailbox_anim` — Buzón animado (cols: 11, rows: 21)
-- `campfire` — Fogata (cols: 7, rows: 3)
+- `grass_props` — Arbustos, troncos, hongos, flores
+- `plants` — Cultivos pequeños
+- `trees` — Árboles, tocones y arbustos grandes
+- `tree_full` — Árbol completo (sin fruta)
+- `tree_apple` — Árbol con manzanas
+- `tree_orange` — Árbol con naranjas
+- `tree_peach` — Árbol con duraznos
+- `tree_pear` — Árbol con peras
+- `no_tree_apple` — Manzana sin árbol
+- `no_tree_orange` — Naranja sin árbol
+- `no_tree_peach` — Durazno sin árbol
+- `no_tree_pear` — Pera sin árbol
+- `mushrooms` — Hongos, flores y piedras
+- `farming` — Cultivos en crecimiento
+- `farming_v2` — Cultivos versión 2 (sin regar)
+- `farming_v2_watered` — Cultivos versión 2 (regados)
+- `furniture` — Mobiliario básico
+- `new_wooden_furniture` — Mobiliario nuevo de madera
+- `new_wooden_furniture_items` — Items de mobiliario nuevo
+- `birch_biom` — Bioma de abedul
+- `birch_water_plants` — Plantas acuáticas de abedul
+- `cherry_biom` — Bioma de cerezo
+- `cherry_water_plants` — Plantas acuáticas de cerezo
+- `pine_biom` — Bioma de pino
+- `pine_water_plants` — Plantas acuáticas de pino
+- `trees_v2` — Árboles versión 2
+- `wood_shrooms` — Madera y hongos
+- `christmas_tree` — Árbol de Navidad
+- `snowflakes` — Copos de nieve
+- `fire_animation` — Fuego animado
+- `winter_sprites` — Sprites de invierno
+- `dungeon_probs` — Props de mazmorra
+- `fishing_splash` — Salpicaduras de pesca
+- `dungeon_rocks_obj` — Rocas de mazmorra
+- `water_tray` — Bebedero de agua
+- `dungeon_carts_obj` — Carros de mazmorra
+- `dungeon_switch_obj` — Interruptor de mazmorra
+- `signs` — Letreros de madera frontales
+- `signs_sides` — Letreros laterales
+- `well` — Pozo de agua
+- `wood_bridge` — Puente de madera v1
+- `wooden_bridge_v2` — Puente de madera v2
+- `workstation` — Mesa de trabajo
+- `paths` — Caminos decorativos
+- `boats` — Botes pequeños
+- `water_objs` — Objetos acuáticos
+- `barn_structures` — Estructuras de granja
+- `chicken_houses` — Gallineros
+- `door_animation` — Puertas animadas
+- `fence_gates_anim` — Puertas de cerca animadas
+- `mailbox_anim` — Buzón animado
+- `campfire` — Fogata
+
+#### Village Pack — Casas y Edificios
+- `wooden_door_spritesheet` — Puerta de madera
+- `grey_brick_houses` — Casa de ladrillo gris
+- `grey_brick_houses_doors` — Casa de ladrillo gris con puerta
+- `grey_brick_houses_doors_grass` — Casa de ladrillo gris con puerta y pasto
+- `grey_brick_houses_grass` — Casa de ladrillo gris con pasto
+- `small_house` — Casa pequeña
+- `small_house_light` — Casa pequeña con luz
+- `small_house_door` — Casa pequeña con puerta
+- `small_house_door_grass` — Casa pequeña con puerta y pasto
+- `small_house_grass` — Casa pequeña con pasto
+- `small_house_light_door` — Casa pequeña con luz y puerta
+- `small_house_light_door_grass` — Casa pequeña con luz, puerta y pasto
+- `small_house_light_grass` — Casa pequeña con luz y pasto
+- `small_huts` — Cabañas pequeñas
+- `small_huts_doors` — Cabañas pequeñas con puertas
+- `small_huts_doors_grass` — Cabañas pequeñas con puertas y pasto
+- `small_huts_grass` — Cabañas pequeñas con pasto
+- `small_house_shadow` — Sombra de casa pequeña
+- `small_hut_shadow` — Sombra de cabaña
+- `brick_houses_shadow` — Sombra de casa de ladrillo
 
 ### Items (Pickups Coleccionables)
 Se colocan en `objects` con `type: "pickup"`. El jugador debe recogerlos para completar la misión.
-- `egg_items` — Huevo (cols: 5, rows: 1)
-- `tools_items` — Herramientas y materiales (cols: 4, rows: 3)
-- `piknik_basket` — Cesta de picnic (cols: 1, rows: 1)
-- `piknik_blanket` — Manta de picnic (cols: 3, rows: 3)
-- `fruit_berries_items` — Frutas y bayas (cols: 4, rows: 2)
-- `milk_items` — Productos lácteos (cols: 4, rows: 11)
-- `grass_ground_items` — Items de suelo (cols: 6, rows: 2)
-- `farming_plants_items` — Items de cultivo (cols: 2, rows: 15)
+- `egg_items` — Huevo
+- `tools_items` — Herramientas y materiales
+- `piknik_basket` — Cesta de picnic
+- `piknik_blanket` — Manta de picnic
+- `fruit_berries_items` — Frutas y bayas
+- `milk_items` — Productos lácteos
+- `grass_ground_items` — Items de suelo
+- `farming_plants_items` — Items de cultivo
+- `farming_items_v2` — Items de cultivo versión 2
+- `present_green` — Regalo verde
+- `present_green_2` — Regalo verde 2
+- `present_red` — Regalo rojo
+- `present_red_2` — Regalo rojo 2
+- `present_red_3` — Regalo rojo 3
+- `winter_items` — Items de invierno
 
 ### Cofres (Estructuras con animación)
-- `birch_chest`, `cherry_chest`, `golden_chest`, `oak_chest`, `pine_chest`, `silver_chest` — Cofres de diferentes materiales (cols: 10, rows: 4 cada uno)
+- `birch_chest`, `cherry_chest`, `golden_chest`, `oak_chest`, `pine_chest`, `silver_chest` — Cofres de diferentes materiales
 
 ### Animales (Decorativos / Ambientales)
-- `free_chicken` — Gallina libre (cols: 4, rows: 2)
-- `chicken` / `chicken_blue` / `chicken_brown` / `chicken_green` / `chicken_red` — Gallinas de colores (cols: 8, rows: 27)
-- `chicken_baby` / `chicken_baby_blue` / `chicken_baby_brown` / `chicken_baby_green` / `chicken_baby_red` — Pollitos (cols: 8, rows: 19)
-- `cow` / `cow_brown` / `cow_green` / `cow_pink` / `cow_purple` — Vacas (cols: 16, rows: 16)
-- `cow_baby_brown` / `cow_baby_green` / `cow_baby_light` / `cow_baby_pink` / `cow_baby_purple` — Terneros (cols: 16, rows: 18)
-- `bat_animations` — Murciélagos (cols: 6, rows: 2)
-- `small_green_slime` — Slime verde (cols: 12, rows: 8)
-- `fish_sprites` — Peces (cols: 10, rows: 5)
+- `free_chicken` — Gallina libre
+- `chicken` / `chicken_blue` / `chicken_brown` / `chicken_green` / `chicken_red` — Gallinas de colores
+- `chicken_baby` / `chicken_baby_blue` / `chicken_baby_brown` / `chicken_baby_green` / `chicken_baby_red` — Pollitos
+- `cow` / `cow_brown` / `cow_green` / `cow_pink` / `cow_purple` — Vacas
+- `cow_baby_brown` / `cow_baby_green` / `cow_baby_light` / `cow_baby_pink` / `cow_baby_purple` — Terneros
+- `bat_animations` — Murciélagos
+- `small_green_slime` — Slime verde
+- `fish_sprites` — Peces
 
 ### Personajes (Solo referencia, no para objetos del mapa)
 - `character_base` — El protagonista controlado por el jugador
@@ -133,9 +258,10 @@ El motor NO soporta cambiar colores de los tiles dinámicamente. La emoción se 
 | **Aterrador** | Noche intensa (`night: 0.9`), lluvia torrencial (`rain: 0.9`) | Todo lo anterior + ausencia total de animales, muchos `hills` (montañas) cerrando el espacio |
 | **Tranquilo / Nostálgico** | Despejado de noche (`night: 0.5`), nieve ligera (`snow: 0.3`) | `grass` con árboles (`Trees`), animales pasivos, pozo, caminos de `dirt` |
 | **Caótico** | Tormenta de hojas (`leaves: 0.8`) + lluvia (`rain: 0.6`) | Objetos dispersos sin orden, múltiples tipos de terreno mezclados, puentes rotos, obstáculos inesperados |
+| **Peligroso / Hostil** | Noche profunda (`night: 0.8`) + nieve intensa (`snow: 0.7`) + tormenta (`storm: 0.5`) + viento (`wind: 0.3`) | Dungeon, rocas (`hills`), objetos dungeon (`dungeon_probs`, `dungeon_rocks_obj`), ausencia de animales |
 
 ### Efectos Climáticos (Nativos del Motor)
-El motor soporta múltiples efectos simultáneos. En el JSON del nivel se incluye:
+El motor soporta **9 efectos simultáneos**. En el JSON del nivel se incluyen todos:
 
 ```json
 "weather": {
@@ -143,13 +269,47 @@ El motor soporta múltiples efectos simultáneos. En el JSON del nivel se incluy
   "snow": 0.0,
   "pollen": 0.0,
   "leaves": 0.0,
-  "night": 0.0
+  "night": 0.0,
+  "fog": 0.0,
+  "dust": 0.0,
+  "wind": 0.0,
+  "storm": 0.0
 }
 ```
 
 - **Valores:** `0.0` (desactivado) a `1.0` (máxima intensidad).
-- **Combinaciones:** Ilimitadas. Ejemplo: `"noche lluviosa"` = `{ "night": 0.6, "rain": 0.8 }`.
-- **Tipos:** `rain` (lluvia), `snow` (nieve), `pollen` (polen flotante), `leaves` (hojas cayendo), `night` (overlay oscuro).
+- **Combinaciones:** Ilimitadas.
+
+| Tipo | Descripción Visual | Ejemplo de Uso |
+|------|-------------------|----------------|
+| `rain` | Gotas de lluvia cayendo | `{ "rain": 0.8 }` — Lluvia torrencial |
+| `snow` | Copos de nieve con rotación | `{ "snow": 0.7 }` — Ventisca |
+| `pollen` | Partículas flotantes ascendentes | `{ "pollen": 0.3 }` — Primavera |
+| `leaves` | Hojas cayendo con rotación | `{ "leaves": 0.8 }` — Otoño |
+| `night` | Overlay oscuro semitransparente | `{ "night": 0.6 }` — Anochecer |
+| `fog` | Niebla difusa con partículas | `{ "fog": 0.5 }` — Mañana brumosa |
+| `dust` | Partículas de polvo con rotación | `{ "dust": 0.4 }` — Desierto |
+| `wind` | Viento con ráfagas visibles | `{ "wind": 0.5 }` — Temporal |
+| `storm` | Rayos periódicos con destello | `{ "storm": 0.9 }` — Tormenta eléctrica |
+
+**Ejemplos de combinaciones atmosféricas:**
+- `"noche lluviosa"` = `{ "night": 0.6, "rain": 0.8 }`
+- `"ventisca helada"` = `{ "night": 0.8, "snow": 0.7, "wind": 0.5 }`
+- `"tormenta eléctrica"` = `{ "night": 0.9, "rain": 0.9, "storm": 0.9, "wind": 0.6 }`
+- `"mañana brumosa"` = `{ "fog": 0.6, "pollen": 0.2 }`
+- `"desierto"` = `{ "dust": 0.7, "wind": 0.4 }`
+
+### Implicaciones del Clima en el Diseño del Mapa
+El clima no es solo visual: debe influir activamente en los tiles y objetos que coloques.
+
+| Clima Principal | Regla de Diseño Automático |
+|---|---|
+| **Lluvioso** (`rain > 0.5`) | Agregar tiles de `water` (charcos) o `water_objs` en el suelo como decoración acuática. |
+| **Nevado** (`snow > 0.5`) | Usar `snow_tiles_1` o `snow_tiles_2` como terreno base en lugar de `grass`. |
+| **Noche profunda** (`night > 0.7`) | Reducir animales pasivos (`chicken`, `cow`) y aumentar elementos misteriosos/amenazantes (`bat_animations`, `dungeon_probs`). |
+| **Tormenta** (`storm > 0.5`) | Combinar con `rain` alto. Considerar ausencia total de animales y terreno oscuro (`dungeon_ground_orange_dark`). |
+| **Desierto / Polvoriento** (`dust > 0.5`) | Usar `dirt` o `stone_tiles` como terreno base. Reducir vegetación verde. |
+| **Otoño** (`leaves > 0.5`) | Usar `trees` con fruta madura (`tree_apple`, `tree_orange`, etc.) y dejar hojas caídas como objetos decorativos. |
 
 ---
 
@@ -216,7 +376,7 @@ La IA NO debe escribir a mano arrays de 192 GIDs. En su lugar, debe generar un a
   "name": "bosque_encantado",
   "cols": 16,
   "rows": 12,
-  "weather": { "rain": 0, "snow": 0, "pollen": 0, "leaves": 0, "night": 0.6 },
+  "weather": { "rain": 0, "snow": 0, "pollen": 0, "leaves": 0, "night": 0.6, "fog": 0, "dust": 0, "wind": 0, "storm": 0 },
   "spawn": { "tx": 8, "ty": 6 },
   "terrain": [
     { "type": "grass", "rect": [0, 0, 16, 12] },
@@ -281,7 +441,7 @@ El validador verificará:
   "name": "granja_abandonada",
   "cols": 16,
   "rows": 12,
-  "weather": { "rain": 0.4, "snow": 0, "pollen": 0, "leaves": 0.2, "night": 0.5 },
+  "weather": { "rain": 0.4, "snow": 0, "pollen": 0, "leaves": 0.2, "night": 0.5, "fog": 0, "dust": 0, "wind": 0, "storm": 0 },
   "spawn": { "tx": 2, "ty": 2 },
   "terrain": [
     { "type": "dirt", "rect": [0, 0, 16, 12] },

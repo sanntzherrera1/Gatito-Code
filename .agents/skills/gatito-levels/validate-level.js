@@ -23,15 +23,68 @@ import path from 'path';
 // ── Constantes ───────────────────────────────────────────────────────────────
 
 const GID_RANGES = [
+  // ── Core / Compilador ──
   { name: 'grass', min: 1, max: 99 },
   { name: 'fences', min: 100, max: 199 },
   { name: 'dirt', min: 200, max: 299 },
   { name: 'hills', min: 300, max: 399 },
   { name: 'water', min: 400, max: 499 },
+  // ── Dirt variants ──
+  { name: 'dirt_v2', min: 500, max: 576 },
+  { name: 'dirt_wide', min: 600, max: 676 },
+  { name: 'dirt_wide_v2', min: 700, max: 776 },
+  // ── Dark grass / Bush ──
+  { name: 'bush', min: 800, max: 920 },
+  { name: 'dgrass_hills_slopes', min: 900, max: 1617 },
+  // ── Grass hills / layers ──
+  { name: 'grass_hills_layers', min: 1700, max: 1976 },
+  { name: 'grass_v2', min: 2000, max: 2076 },
+  { name: 'ground_hill_slopes', min: 2100, max: 2111 },
+  // ── Soil / Stone ──
+  { name: 'soil_hills', min: 2200, max: 2276 },
+  { name: 'soil_tiles', min: 2300, max: 2376 },
+  { name: 'dsoil_hills', min: 1400, max: 1476 },
+  { name: 'dsoil_tiles', min: 1500, max: 1576 },
+  { name: 'stone_hills', min: 2400, max: 2476 },
+  { name: 'stone_tiles', min: 2500, max: 2576 },
+  // ── Buildings / Structures ──
+  { name: 'doors', min: 3100, max: 3103 },
+  { name: 'wooden_house', min: 3200, max: 3234 },
+  { name: 'wooden_roof', min: 3300, max: 3334 },
+  { name: 'wooden_walls', min: 3400, max: 3414 },
+  { name: 'stone_path', min: 3600, max: 3615 },
+  { name: 'fences_v2', min: 3700, max: 3731 },
+  // ── Dungeon ──
+  { name: 'dungeon_walls', min: 3800, max: 4063 },
+  { name: 'dungeon_walls_decor', min: 4100, max: 4148 },
+  { name: 'dungeon_ground_orange', min: 4200, max: 4320 },
+  { name: 'dungeon_ground_orange_dark', min: 4350, max: 4470 },
+  { name: 'dungeon_ground_hole', min: 4500, max: 4503 },
+  { name: 'dungeon_ground_darker_hole', min: 4650, max: 4653 },
+  { name: 'dungeon_items', min: 4800, max: 4814 },
+  { name: 'dungeon_carts', min: 4850, max: 4855 },
+  { name: 'dungeon_rails', min: 4900, max: 4911 },
+  { name: 'dungeon_rocks', min: 4950, max: 4965 },
+  { name: 'dungeon_switch', min: 5000, max: 5002 },
+  // ── Winter ──
+  { name: 'ice_tiles', min: 5050, max: 5061 },
+  { name: 'snow_tiles_1', min: 5100, max: 5374 },
+  { name: 'snow_tiles_2', min: 5400, max: 5674 },
+  // ── Extended / More ──
+  { name: 'grass_layers_sorry_1', min: 5700, max: 5974 },
+  { name: 'grass_layers_sorry_2', min: 6000, max: 6249 },
+  { name: 'grass_layers_sorry_3', min: 6300, max: 6574 },
+  { name: 'grass_layers_sorry_4', min: 6600, max: 6874 },
+  { name: 'blue_grass_layers_1', min: 6900, max: 7174 },
+  { name: 'blue_grass_layers_2', min: 7200, max: 7474 },
+  { name: 'blue_grass_layers_3', min: 7500, max: 7774 },
+  { name: 'blue_grass_layers_4', min: 7800, max: 8074 },
+  // ── Simple grass ──
+  { name: 'grass_simple', min: 3500, max: 3529 },
 ];
 
 const MAX_STEPS = 7;
-const WEATHER_TYPES = ['rain', 'snow', 'pollen', 'leaves', 'night'];
+const WEATHER_TYPES = ['rain', 'snow', 'pollen', 'leaves', 'night', 'fog', 'dust', 'wind', 'storm'];
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -63,6 +63,8 @@ export class MenuScene extends Phaser.Scene {
       this.makeButton(bx, y, 'Main Level', () => this.scene.start('Main')); y += STEP;
       this.makeButton(bx, y, 'Gym', () => this.scene.start('Gym')); y += STEP;
       this.makeButton(bx, y, 'Prueba', () => this.scene.start('Prueba')); y += STEP;
+      this.makeButton(bx, y, 'Dungeon', () => this.scene.start('Dungeon')); y += STEP;
+      this.makeButton(bx, y, 'Bosque', () => this.scene.start('BosqueDePrueba')); y += STEP;
       for (const lv of getCustomLevels()) {
         const key = lv.key;
         this.makeButton(bx, y, lv.name, () => this.scene.start('Custom', { levelKey: key }));
@@ -81,7 +83,7 @@ export class MenuScene extends Phaser.Scene {
       }).setOrigin(0.5);
       this.dynamicGroup.add(sep);
 
-      for (const lv of [{ key: 'gym', name: 'Gym' }, { key: 'main', name: 'Main' }, { key: 'prueba', name: 'Prueba' }, ...getCustomLevels()]) {
+      for (const lv of [{ key: 'gym', name: 'Gym' }, { key: 'main', name: 'Main' }, { key: 'prueba', name: 'Prueba' }, { key: 'dungeon', name: 'Dungeon' }, { key: 'bosque_de_prueba', name: 'Bosque' }, ...getCustomLevels()]) {
         const key = lv.key;
         this.makeButton(bx, y, `Edit ${lv.name}`, () => this.scene.start('Editor', { levelKey: key, returnScreen: 'editor' }));
         y += STEP;
