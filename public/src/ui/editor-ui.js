@@ -25,6 +25,8 @@ export function initEditor() {
   document.getElementById('ed-undo').onclick = () => edCfg?.onUndo();
   document.getElementById('ed-redo').onclick = () => edCfg?.onRedo();
   document.getElementById('ed-revert').onclick = () => edCfg?.onRevert();
+  document.getElementById('ed-clear-objects').onclick = () => edCfg?.onClearObjects();
+  document.getElementById('ed-intro-mode').onclick = () => edCfg?.onIntroMode();
 
   window.__setEditor = (cfg) => { if (!cfg) hideEditor(); else showEditor(cfg); };
   window.__setEditor_updateLayer = (name) => updateLayerHighlight(name);
@@ -32,6 +34,7 @@ export function initEditor() {
   window.__setEditor_updateTerrain = (name) => { activeTerrainName = name; highlightTerrain(); };
   window.__setEditor_updateMode = (mode) => {
     document.getElementById('ed-spawn').classList.toggle('active', mode === 'spawn');
+    document.getElementById('ed-intro-mode').classList.toggle('active', mode === 'intro');
   };
 }
 

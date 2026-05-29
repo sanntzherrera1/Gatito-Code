@@ -10,7 +10,7 @@ import {
 } from '../../services/Storage.js';
 import { createWeather, destroyWeather } from '../../engine/level/WeatherSystem.js';
 
-const LAYERS = ['floor', 'path', 'walls'];
+const LAYERS = ['floor', 'path', 'walls', 'overlay', 'top'];
 const UNDO_CAP = 50;
 
 export class EditorScene extends Phaser.Scene {
@@ -28,7 +28,9 @@ export class EditorScene extends Phaser.Scene {
     this.floorLayer = level.floorLayer;
     this.pathLayer = level.pathLayer;
     this.wallsLayer = level.wallsLayer;
-    this.flat = level.flat;           // { floor:[], path:[], walls:[] }
+    this.overlayLayer = level.overlayLayer;
+    this.topLayer = level.topLayer;
+    this.flat = level.flat;           // { floor:[], path:[], walls:[], overlay:[], top:[] }
     this.cols = level.cols;
     this.rows = level.rows;
     this.spawn = level.spawn;
@@ -51,6 +53,10 @@ export class EditorScene extends Phaser.Scene {
     this.objectSprites = new Map();   // "tx,ty" → Phaser sprite
     this.selectedObject = { key: 'plants', frame: 0, type: 'pickup_with_animation' };
     this._renderAllObjects();
+
+    this.introPoints = (level.raw.introPoints || []).map(p => ({ ...p }));
+    this.introMarkerSprites = [];
+    this._renderIntroMarkers();
 
     this.spawnMarker = this.add.rectangle(
       this.spawn.tx * TILE, this.spawn.ty * TILE, TILE, TILE
@@ -88,6 +94,7 @@ export class EditorScene extends Phaser.Scene {
       onPlay:         () => this.playTest(),
       onMenu:         () => this.exitToMenu(),
       onClear:        () => this.clearActiveLayer(),
+      onClearObjects: () => this.clearAllObjects(),
       onUndo:         () => this.undo(),
       onRedo:         () => this.redo(),
       onRevert:       () => this.revertToDisk(),
@@ -95,6 +102,7 @@ export class EditorScene extends Phaser.Scene {
       onObjectSelect: (key, frame, type) => { this.selectedObject = { key, frame, type }; this.setMode('object'); },
       onObjectTypeChange: (type) => { this.selectedObject.type = type; this.updateHud(); },
       onSpawnMode:    () => this.setMode('spawn'),
+      onIntroMode:    () => this.setMode(this.edMode === 'intro' ? 'tile' : 'intro'),
       getMode:        () => this.edMode,
       getWeather:     () => this.weather,
       onWeatherChange:(cfg) => this.setWeather(cfg),
@@ -120,6 +128,12 @@ export class EditorScene extends Phaser.Scene {
     this.input.on('pointerdown', (p) => {
       const { tx, ty } = tileAt(p);
       if (!inBounds(tx, ty)) return;
+
+      if (this.edMode === 'intro') {
+        this._toggleIntroPoint(tx, ty);
+        writeLevelJson(this.levelKey, this.serialize());
+        return;
+      }
 
       if (this.edMode === 'spawn') {
         this.spawn = { tx, ty };
@@ -152,13 +166,15 @@ export class EditorScene extends Phaser.Scene {
     // Keyboard --------------------------------------------------------------
     const K = Phaser.Input.Keyboard.KeyCodes;
     this.keys = this.input.keyboard.addKeys({
-      ONE: K.ONE, TWO: K.TWO, THREE: K.THREE, E: K.E, G: K.G,
+      ONE: K.ONE, TWO: K.TWO, THREE: K.THREE, FOUR: K.FOUR, FIVE: K.FIVE, E: K.E, G: K.G,
       S: K.S, Z: K.Z, Y: K.Y, P: K.P, ESC: K.ESC,
       C: K.C, O: K.O,
     });
     this.keys.ONE.on('down', () => this.setLayer('floor'));
     this.keys.TWO.on('down', () => this.setLayer('walls'));
     this.keys.THREE.on('down', () => this.setLayer('path'));
+    this.keys.FOUR.on('down', () => this.setLayer('overlay'));
+    this.keys.FIVE.on('down', () => this.setLayer('top'));
     this.keys.G.on('down',   () => { this.gridVisible = !this.gridVisible; this.grid.setVisible(this.gridVisible); });
     this.keys.E.on('down',   () => this.eyedrop());
     this.keys.P.on('down',   () => this.playTest());
@@ -201,6 +217,8 @@ export class EditorScene extends Phaser.Scene {
   layerOf(name) {
     if (name === 'floor') return this.floorLayer;
     if (name === 'path') return this.pathLayer;
+    if (name === 'overlay') return this.overlayLayer;
+    if (name === 'top') return this.topLayer;
     return this.wallsLayer;
   }
 
@@ -304,6 +322,8 @@ export class EditorScene extends Phaser.Scene {
     this.floorLayer.setAlpha(name === 'floor' ? 1 : 0.55);
     this.pathLayer.setAlpha(name === 'path' ? 1 : 0.6);
     this.wallsLayer.setAlpha(name === 'walls' ? 1 : 0.7);
+    this.overlayLayer.setAlpha(name === 'overlay' ? 1 : 0.6);
+    this.topLayer.setAlpha(name === 'top' ? 1 : 0.6);
     window.__setEditor_updateLayer?.(name);
     this.updateHud();
   }
@@ -314,7 +334,9 @@ export class EditorScene extends Phaser.Scene {
     this.history.push({
       floor: this.flat.floor.slice(),
       path: this.flat.path.slice(),
-      walls: this.flat.walls.slice()
+      walls: this.flat.walls.slice(),
+      overlay: this.flat.overlay.slice(),
+      top: this.flat.top.slice(),
     });
     if (this.history.length > UNDO_CAP) this.history.shift();
     this.future.length = 0;
@@ -325,7 +347,9 @@ export class EditorScene extends Phaser.Scene {
     this.future.push({
       floor: this.flat.floor.slice(),
       path: this.flat.path.slice(),
-      walls: this.flat.walls.slice()
+      walls: this.flat.walls.slice(),
+      overlay: this.flat.overlay.slice(),
+      top: this.flat.top.slice(),
     });
     const s = this.history.pop();
     this.applySnapshot(s);
@@ -336,7 +360,9 @@ export class EditorScene extends Phaser.Scene {
     this.history.push({
       floor: this.flat.floor.slice(),
       path: this.flat.path.slice(),
-      walls: this.flat.walls.slice()
+      walls: this.flat.walls.slice(),
+      overlay: this.flat.overlay.slice(),
+      top: this.flat.top.slice(),
     });
     const s = this.future.pop();
     this.applySnapshot(s);
@@ -346,9 +372,13 @@ export class EditorScene extends Phaser.Scene {
     this.flat.floor = s.floor.slice();
     this.flat.path = s.path.slice();
     this.flat.walls = s.walls.slice();
+    this.flat.overlay = s.overlay.slice();
+    this.flat.top = s.top.slice();
     this.redrawLayer('floor');
     this.redrawLayer('path');
     this.redrawLayer('walls');
+    this.redrawLayer('overlay');
+    this.redrawLayer('top');
     writeLevelJson(this.levelKey, this.serialize());
   }
 
@@ -389,10 +419,13 @@ export class EditorScene extends Phaser.Scene {
         floor: this.flat.floor.slice(),
         path: this.flat.path.slice(),
         walls: this.flat.walls.slice(),
+        overlay: this.flat.overlay.slice(),
+        top: this.flat.top.slice(),
       },
       spawn: this.spawn,
       objects: this.objects.slice(),
       weather: this.weather,
+      introPoints: this.introPoints.slice(),
     };
   }
 
@@ -411,7 +444,8 @@ export class EditorScene extends Phaser.Scene {
 
   playTest() {
     writeLevelJson(this.levelKey, this.serialize());
-    const targetScene = this.levelKey === 'gym' ? 'Gym' 
+    const targetScene = this.levelKey === 'nivel0' ? 'Nivel0'
+                      : this.levelKey === 'gym' ? 'Gym'
                       : this.levelKey === 'main' ? 'Main'
                       : 'Custom';
     this.scene.start(targetScene, { levelKey: this.levelKey, returnScreen: this.returnScreen });
@@ -469,21 +503,52 @@ export class EditorScene extends Phaser.Scene {
     this.objects = this.objects.filter(o => !(o.tx === tx && o.ty === ty));
   }
 
+  clearAllObjects() {
+    if (!this.objects.length) return;
+    if (!confirm(`Eliminar todos los objetos (${this.objects.length})?`)) return;
+    for (const [, s] of this.objectSprites) { this.tweens.killTweensOf(s); s.destroy(); }
+    this.objectSprites.clear();
+    this.objects = [];
+    writeLevelJson(this.levelKey, this.serialize());
+  }
+
   // --- HUD ---------------------------------------------------------------
+
+  _toggleIntroPoint(tx, ty) {
+    const idx = this.introPoints.findIndex(p => p.tx === tx && p.ty === ty);
+    if (idx >= 0) this.introPoints.splice(idx, 1);
+    else this.introPoints.push({ tx, ty });
+    this._renderIntroMarkers();
+  }
+
+  _renderIntroMarkers() {
+    for (const s of this.introMarkerSprites) s.destroy();
+    this.introMarkerSprites = [];
+    for (let i = 0; i < this.introPoints.length; i++) {
+      const { tx, ty } = this.introPoints[i];
+      const t = this.add.text(tx * TILE + 1, ty * TILE + 1, `${i + 1}`, {
+        fontFamily: 'monospace', fontSize: '8px', color: '#ffffff',
+        backgroundColor: '#ee6600',
+      }).setDepth(95).setScrollFactor(0).setPadding(1, 0, 1, 0);
+      this.introMarkerSprites.push(t);
+    }
+  }
 
   updateHud(tx, ty) {
     const modeHint = this.edMode === 'spawn'
       ? 'CLICK TILE TO SET SPAWN'
-      : this.edMode === 'object'
-        ? `obj: ${this.selectedObject.key} f${this.selectedObject.frame} (${this.selectedObject.type})`
-        : (this.activeTerrain ? `terrain: ${this.activeTerrain.label}` : `gid ${this.selectedGid}`);
+      : this.edMode === 'intro'
+        ? `INTRO: click tile to add/remove point  (${this.introPoints.length} pts)`
+        : this.edMode === 'object'
+          ? `obj: ${this.selectedObject.key} f${this.selectedObject.frame} (${this.selectedObject.type})`
+          : (this.activeTerrain ? `terrain: ${this.activeTerrain.label}` : `gid ${this.selectedGid}`);
     const parts = [
       `editing ${this.levelKey}`,
       `layer ${this.activeLayer}`,
       modeHint,
     ];
     if (tx !== undefined && ty !== undefined) parts.push(`tile ${tx},${ty}`);
-    parts.push('[1/2/3] layer  [E] eyedrop  [S] spawn  [O] objects  [G] grid  [Ctrl+S] save  [P] play  [Esc] menu');
+    parts.push('[1/2/3/4/5] layer  [E] eyedrop  [S] spawn  [O] objects  [G] grid  [Ctrl+S] save  [P] play  [Esc] menu');
     this.hudText.setText(parts.join('  ·  '));
   }
 }

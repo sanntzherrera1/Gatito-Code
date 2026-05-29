@@ -88,7 +88,7 @@ export const TILESETS = [
   { key: 'ts_blue_grass_layers_4',  name: 'blue_grass_layers_4',  category: 'more', label: 'Blue 4',   name: 'blue_grass_layers_4',  url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Ground tilesets/blue_tint_Grass_Tile_Layers4.png', cols: 11, rows: 25, firstgid: 7800  },
 ];
 
-export const LEVELS = ['gym', 'main'];
+export const LEVELS = ['nivel0', 'gym', 'main'];
 
 export const OBJECTS = [
   // ── Objects (basicos / existentes) ──
@@ -119,6 +119,7 @@ export const OBJECTS = [
 
   // ── Characters ──
   { key: 'premium_char', label: 'Premium Char',url:'assets/SproutLands-Sprites/Characters/Premium Charakter Spritesheet.png',cols: 8, rows: 24, frameW: 48, frameH: 48, category: 'characters' },
+  { key: 'premium_char_npc', label: 'NPC Animado', url:'assets/SproutLands-Sprites/Characters/Premium Charakter Spritesheet.png', cols: 8, rows: 24, frameW: 48, frameH: 48, category: 'characters', animGroupSize: 3 },
 
   // ── Items ──
 

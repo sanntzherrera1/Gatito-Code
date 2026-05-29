@@ -100,6 +100,8 @@
           <button data-layer="floor">[1] Floor</button>
           <button data-layer="walls" class="active">[2] Walls</button>
           <button data-layer="path">[3] Path</button>
+          <button data-layer="overlay">[4] Overlay</button>
+          <button data-layer="top">[5] Top</button>
         </div>
       </div>
       <hr class="ed-section-hr">
@@ -126,17 +128,24 @@
       <div>
         <div class="ed-obj-header">
           <h3>Objects</h3>
+          <button id="ed-clear-objects">🗑️ Clear all objects</button>
           <div class="ed-obj-type" id="ed-obj-type">
             <span class="ed-obj-type-label">Type:</span>
             <button data-objtype="pickup_with_animation" class="active">Pickup with animation</button>
             <button data-objtype="pickup">Pickup</button>
             <button data-objtype="deco">Decoration</button>
+            <button data-objtype="top">Top</button>
           </div>
         </div>
         <div class="ed-obj-categories" id="ed-obj-categories"></div>
         <div class="ed-tabs" id="ed-obj-tabs"></div>
         <div class="ed-variant-switches" id="ed-variant-switches"></div>
         <div class="ed-palette" id="ed-obj-palette"></div>
+      </div>
+      <hr class="ed-section-hr">
+      <div>
+        <h3>Puntos de Intro</h3>
+        <button id="ed-intro-mode">🎬 Marcar punto intro</button>
       </div>
       <hr class="ed-section-hr">
       <div>

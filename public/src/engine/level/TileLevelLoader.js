@@ -17,6 +17,8 @@ export function loadLevel(scene, levelKey) {
   const floor = expandLayer(lvl.layers.floor, cols, rows);
   const walls = expandLayer(lvl.layers.walls, cols, rows);
   const path = expandLayer(lvl.layers.path || [], cols, rows);
+  const overlay = expandLayer(lvl.layers.overlay || [], cols, rows);
+  const top = expandLayer(lvl.layers.top || [], cols, rows);
 
   const map = scene.make.tilemap({
     tileWidth: 16, tileHeight: 16, width: cols, height: rows,
@@ -29,6 +31,8 @@ export function loadLevel(scene, levelKey) {
   const floorLayer = map.createBlankLayer('floor', tilesetObjs, 0, 0, cols, rows).setDepth(0);
   const pathLayer = map.createBlankLayer('path', tilesetObjs, 0, 0, cols, rows).setDepth(10);
   const wallsLayer = map.createBlankLayer('walls', tilesetObjs, 0, 0, cols, rows).setDepth(20);
+  const overlayLayer = map.createBlankLayer('overlay', tilesetObjs, 0, 0, cols, rows).setDepth(30);
+  const topLayer = map.createBlankLayer('top', tilesetObjs, 0, 0, cols, rows).setDepth(45);
 
   const hasPath = path.some(p => p !== 0);
 
@@ -37,9 +41,13 @@ export function loadLevel(scene, levelKey) {
       const f = floor[y * cols + x];
       const p = path[y * cols + x];
       const w = walls[y * cols + x];
+      const o = overlay[y * cols + x];
+      const t = top[y * cols + x];
       if (f) floorLayer.putTileAt(f, x, y);
       if (p) pathLayer.putTileAt(p, x, y);
       if (w) wallsLayer.putTileAt(w, x, y);
+      if (o) overlayLayer.putTileAt(o, x, y);
+      if (t) topLayer.putTileAt(t, x, y);
     }
   }
 
@@ -70,12 +78,13 @@ export function loadLevel(scene, levelKey) {
   const level = new Level(cols, rows, solid, spawn, objects, weather);
 
   return {
-    map, floorLayer, pathLayer, wallsLayer, level, cols, rows,
-    flat: { floor, path, walls },
+    map, floorLayer, pathLayer, wallsLayer, overlayLayer, topLayer, level, cols, rows,
+    flat: { floor, path, walls, overlay, top },
     objects,
     spawn,
     solid,
     raw: lvl,
     weather,
+    introPoints: lvl.introPoints || [],
   };
 }

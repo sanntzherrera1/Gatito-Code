@@ -21,6 +21,7 @@ export class TileLevelScene extends Phaser.Scene {
 
   create() {
     const levelData = loadLevel(this, this.levelKey);
+    this.introPoints = levelData.introPoints;
     this.level = levelData.level;
     this.cols = this.level.cols;
     this.rows = this.level.rows;
@@ -90,7 +91,8 @@ export class TileLevelScene extends Phaser.Scene {
 
     this.grid = this.add.graphics().setDepth(100).setScrollFactor(0);
     this.drawGrid();
-    this.gridVisible = true;
+    this.gridVisible = false;
+    this.grid.setVisible(false);
     this.debugText = this.add.text(4, 4, '', {
       fontFamily: 'monospace', fontSize: '8px', color: '#8ef', backgroundColor: '#000a',
     }).setDepth(101).setPadding(2, 1, 2, 1).setScrollFactor(0);
@@ -171,6 +173,8 @@ export class TileLevelScene extends Phaser.Scene {
       if (obj.type === 'pickup' || obj.type === 'pickup_with_animation') {
         const animated = obj.type === 'pickup_with_animation';
         this.addPickup(obj.tx, obj.ty, obj.frame, obj.key, true, animated);
+      } else if (obj.type === 'top') {
+        new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame, 45);
       } else {
         new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame);
       }

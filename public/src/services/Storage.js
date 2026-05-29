@@ -33,6 +33,7 @@ export const CUSTOM_LEVELS_KEY = 'gatito_custom_levels';
 export const PROGRESS_KEY = 'gatito_progress';
 
 export const BUILTIN_LEVELS = [
+  { key: 'nivel0', name: 'Nivel 0', scene: 'Nivel0' },
   { key: 'gym', name: 'Gym', scene: 'Gym' },
   { key: 'main', name: 'Main Level', scene: 'Main' }
 ];
@@ -79,6 +80,8 @@ export function createNewLevel(key) {
       floor: new Array(cols * rows).fill(13),
       path: new Array(cols * rows).fill(0),
       walls: new Array(cols * rows).fill(0),
+      overlay: new Array(cols * rows).fill(0),
+      top: new Array(cols * rows).fill(0),
     },
     spawn: { tx: 8, ty: 6 },
     objects: [],
