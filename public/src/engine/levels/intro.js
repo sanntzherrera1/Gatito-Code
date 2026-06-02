@@ -109,7 +109,7 @@ export function injectStyles() {
 
 // Muestra un cartel con texto y espera a que el usuario haga clic en "continuar"
 // Si se cancela, elimina el card del DOM y resuelve inmediatamente.
-function showCard(html, signal) {
+export function showCard(html, signal) {
   return new Promise(resolve => {
     const card = document.createElement('div');
     card.id = 'intro-card';

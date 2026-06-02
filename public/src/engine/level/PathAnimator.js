@@ -9,7 +9,7 @@ import { TILE } from '../../config/game.js';
  * @param {number} [opts.color=0xffe600]
  * @param {number} [opts.alpha=0.7]
  */
-export function animatePath(scene, { delay = 300, duration = 700, color = 0xffe600, alpha = 0.7 } = {}) {
+export function animatePath(scene, { delay = 300, duration = 700, color = 0xffe600, alpha = 0.7, onComplete } = {}) {
   const path = scene.pathFlat;
   if (!path?.some(v => v !== 0)) return;
 
@@ -43,7 +43,12 @@ export function animatePath(scene, { delay = 300, duration = 700, color = 0xffe6
       ).setAlpha(alpha).setDepth(50);
       scene.tweens.add({
         targets: rect, alpha: 0, duration, ease: 'Sine.easeOut',
-        onComplete: () => rect.destroy(),
+        onComplete: () => {
+          rect.destroy();
+          if (onComplete && i === ordered.length - 1) {
+            scene.time.delayedCall(0, onComplete);
+          }
+        },
       });
     });
   });
