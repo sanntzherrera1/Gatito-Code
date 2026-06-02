@@ -36,7 +36,7 @@ function wait(scene, ms) {
 }
 
 // Inyecta los estilos del cartel una sola vez
-function injectStyles() {
+export function injectStyles() {
   if (document.getElementById('intro-css')) return;
   const s = document.createElement('style');
   s.id = 'intro-css';

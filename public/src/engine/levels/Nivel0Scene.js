@@ -1,7 +1,5 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
 import { runNivel0Intro } from './intro.js';
-import { executeProgram } from '../program/ProgramExecutor.js';
-import { markLevelCompleted } from '../../services/Storage.js';
 
 export class Nivel0Scene extends TileLevelScene {
   constructor() {
@@ -10,6 +8,8 @@ export class Nivel0Scene extends TileLevelScene {
     this.welcomeMessage = null;
     this.missionText = null; // lo muestra el intro al final
   }
+
+  addPickup() {}
 
   showIdlePanel() {
     if (!this._introComplete) return;
@@ -38,26 +38,6 @@ export class Nivel0Scene extends TileLevelScene {
         this._introComplete = true;
         super.showIdlePanel();
       });
-  }
-
-  async runProgram(moves) {
-    const context = {
-      step:        (dir) => this.step(dir),
-      jumpInPlace: ()    => this.jumpInPlace(),
-      jumpDir:     (dir) => this.jumpDir(dir),
-      onComplete: () => {
-        const isWin = this.playerModel.tx === 3 && this.playerModel.ty === 6;
-        if (isWin) {
-          markLevelCompleted(this.levelKey);
-          this.playerView.playCelebrate();
-          this.showResultOverlay(true);
-        } else {
-          this.playerView.playSad();
-          this.showResultOverlay(false);
-        }
-      },
-    };
-    await executeProgram(moves, context, window.__GYM);
   }
 
   _disableFunc1() {

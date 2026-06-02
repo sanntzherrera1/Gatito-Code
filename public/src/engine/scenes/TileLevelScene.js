@@ -39,7 +39,8 @@ export class TileLevelScene extends Phaser.Scene {
     this.pickups = new Map();
     this.collected = 0;
 
-    this.drawPathMarkers(levelData.flat?.path);
+    this.pathFlat = levelData.flat?.path || [];
+    this.drawPathMarkers(this.pathFlat);
 
     this.loadObjects(this.level.objects);
     this.decorate();
@@ -79,7 +80,7 @@ export class TileLevelScene extends Phaser.Scene {
     });
 
     if (this.welcomeMessage) {
-      window.__showDialog?.({ message: this.welcomeMessage });
+      window.__showDialog?.({ message: this.welcomeMessage, onClose: this.onWelcomeClose });
     }
 
     this.keys = this.input.keyboard.addKeys({
@@ -120,6 +121,28 @@ export class TileLevelScene extends Phaser.Scene {
       state: 'idle',
       message: this.missionText || '¡A jugar! Armá tu programa y presioná Ejecutar.',
     });
+  }
+
+  _pathGoal() {
+    const path = this.pathFlat;
+    if (!path?.some(v => v !== 0)) return null;
+    const cols = this.cols, rows = this.rows;
+    const dirs = [{dx:0,dy:-1},{dx:0,dy:1},{dx:-1,dy:0},{dx:1,dy:0}];
+    const isPath = (tx, ty) => tx >= 0 && ty >= 0 && tx < cols && ty < rows && path[ty * cols + tx] !== 0;
+    const endpoints = [];
+    for (let ty = 0; ty < rows; ty++) {
+      for (let tx = 0; tx < cols; tx++) {
+        if (!isPath(tx, ty)) continue;
+        const n = dirs.filter(({dx, dy}) => isPath(tx + dx, ty + dy)).length;
+        if (n === 1) endpoints.push({ tx, ty });
+      }
+    }
+    if (!endpoints.length) return null;
+    const spawn = this.level.spawn;
+    return endpoints.sort((a, b) =>
+      (Math.abs(b.tx - spawn.tx) + Math.abs(b.ty - spawn.ty)) -
+      (Math.abs(a.tx - spawn.tx) + Math.abs(a.ty - spawn.ty))
+    )[0];
   }
 
   /** Highlight walkable tiles when the level uses the `path` layer. */
@@ -221,12 +244,14 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   async runProgram(moves) {
+    const goal = this._pathGoal();
     const context = {
       step: (dir) => this.step(dir),
       jumpInPlace: () => this.jumpInPlace(),
       jumpDir: (dir) => this.jumpDir(dir),
       onComplete: () => {
-        const isWin = this.pickups.size === 0;
+        const atGoal = !goal || (this.playerModel.tx === goal.tx && this.playerModel.ty === goal.ty);
+        const isWin = atGoal && this.pickups.size === 0;
         if (isWin) {
           markLevelCompleted(this.levelKey);
           this.playerView.playCelebrate();
