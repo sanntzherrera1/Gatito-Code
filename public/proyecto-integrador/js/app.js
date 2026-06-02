@@ -1,7 +1,7 @@
 import { SLIDES } from './slides.js';
-import { transitionTo } from './transitions.js';
-import { initSounds, stopAllSounds } from './sound.js';
-import { clearAllTimers, setSessionId } from './timers.js';
+import { transitionTo } from '../../presentacion-gestion/js/transitions.js';
+import { initSounds, stopAllSounds } from '../../presentacion-gestion/js/sound.js';
+import { clearAllTimers, setSessionId } from '../../presentacion-gestion/js/timers.js';
 
 let currentSlideIndex = 0;
 const slideElements = [];
@@ -11,8 +11,7 @@ let slideSessionId = 0;
 
 function init() {
   const container = document.getElementById('presentation-container');
-  
-  // Render all slides into DOM
+
   SLIDES.forEach((slideDef) => {
     const el = document.createElement('div');
     el.className = 'slide';
@@ -23,13 +22,12 @@ function init() {
   });
 
   updateCounter();
-  
-  // Event listeners
+
   document.getElementById('btn-prev').addEventListener('click', () => {
     initAudioContext();
     prevSlide();
   });
-  
+
   document.getElementById('btn-next').addEventListener('click', () => {
     initAudioContext();
     nextSlide();
@@ -49,7 +47,6 @@ function init() {
     }
   });
 
-  // Start at slide 0
   goToSlide(0, true);
 }
 
@@ -73,31 +70,31 @@ async function prevSlide() {
 async function goToSlide(index, immediate = false) {
   if (index < 0 || index >= SLIDES.length) return;
   if (isTransitioning) return;
-  
-  // Generate new session ID to invalidate old callbacks
+
   slideSessionId++;
   setSessionId(slideSessionId);
-  
-  // Stop all sounds and timers from previous slide
+
   stopAllSounds();
   clearAllTimers();
-  
+
   const oldIndex = currentSlideIndex;
   const oldDef = SLIDES[oldIndex];
   const oldEl = slideElements[oldIndex];
-  
+
   currentSlideIndex = index;
   const newDef = SLIDES[currentSlideIndex];
   const newEl = slideElements[currentSlideIndex];
-  
+
   const direction = currentSlideIndex > oldIndex ? 1 : -1;
-  
+
   isTransitioning = true;
   updateCounter();
 
   if (oldDef && oldDef.onLeave && !immediate) {
     oldDef.onLeave();
   }
+
+  resetSlideAnimations(newEl);
 
   if (immediate) {
     if (oldEl) oldEl.classList.remove('active');
@@ -109,8 +106,14 @@ async function goToSlide(index, immediate = false) {
   if (newDef && newDef.onEnter) {
     newDef.onEnter(slideSessionId);
   }
-  
+
   isTransitioning = false;
+}
+
+function resetSlideAnimations(slideEl) {
+  slideEl.querySelectorAll('.show').forEach(el => el.classList.remove('show'));
+  slideEl.querySelectorAll('.animate-underline').forEach(el => el.classList.remove('animate-underline'));
+  slideEl.querySelectorAll('.progress-fill').forEach(el => { el.style.width = '0'; });
 }
 
 function updateCounter() {
