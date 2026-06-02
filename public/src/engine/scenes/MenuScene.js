@@ -87,8 +87,9 @@ export class MenuScene extends Phaser.Scene {
 
       const allToEdit = [
         { key: 'nivel0', name: 'Nivel 0' },
-        { key: 'gym', name: 'Gym' },
-        { key: 'main', name: 'Main' },
+        { key: 'gym',    name: 'Gym' },
+        { key: 'main',   name: 'Main' },
+        { key: 'nivel3', name: 'Nivel 3' },
         ...getCustomLevels()
       ];
 

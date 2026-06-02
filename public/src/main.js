@@ -3,6 +3,7 @@ import { MenuScene } from './engine/scenes/MenuScene.js';
 import { Nivel0Scene } from './engine/levels/Nivel0Scene.js';
 import { GymScene } from './engine/levels/GymScene.js';
 import { MainScene } from './engine/levels/MainScene.js';
+import { Nivel3Scene } from './engine/levels/Nivel3Scene.js';
 import { EditorScene } from './engine/scenes/EditorScene.js';
 import { CustomScene } from './engine/levels/CustomScene.js';
 import { TILE, COLS, ROWS } from './config/game.js';
@@ -19,5 +20,5 @@ new Phaser.Game({
   roundPixels: true,
   backgroundColor: '#12161d',
   physics: { default: 'arcade', arcade: { debug: false, gravity: { x: 0, y: 0 } } },
-  scene: [BootScene, MenuScene, Nivel0Scene, GymScene, MainScene, EditorScene, CustomScene],
+  scene: [BootScene, MenuScene, Nivel0Scene, GymScene, MainScene, Nivel3Scene, EditorScene, CustomScene],
 });

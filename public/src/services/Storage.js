@@ -34,8 +34,9 @@ export const PROGRESS_KEY = 'gatito_progress';
 
 export const BUILTIN_LEVELS = [
   { key: 'nivel0', name: 'Nivel 0', scene: 'Nivel0' },
-  { key: 'gym', name: 'Gym', scene: 'Gym' },
-  { key: 'main', name: 'Main Level', scene: 'Main' }
+  { key: 'gym',    name: 'Gym',     scene: 'Gym' },
+  { key: 'main',   name: 'Main',    scene: 'Main' },
+  { key: 'nivel3', name: 'Nivel 3', scene: 'Nivel3' },
 ];
 
 export function getCustomLevels() {
