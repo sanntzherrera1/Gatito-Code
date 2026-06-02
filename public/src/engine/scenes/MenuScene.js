@@ -72,17 +72,15 @@ export class MenuScene extends Phaser.Scene {
         const isUnlocked = (i === 0) || completed.includes(allLevels[i - 1].key);
         const isCompleted = completed.includes(level.key);
 
-        this._createLevelSquare(x, y, i + 1, level, isUnlocked, isCompleted);
+        this._createLevelSquare(x, y, i, level, isUnlocked, isCompleted);
       });
 
       this.makeButton(bx, H - 30, '← Back', () => this.showScreen('main'));
     } else if (screen === 'editor') {
       this.addLabel('level editor');
-      let y = 50;
-      this.makeButton(bx, y, '+ New level', () => this.promptNewLevel(), 'accent');
-      y += STEP + 2;
+      this.makeButton(bx, 46, '+ New level', () => this.promptNewLevel(), 'accent');
 
-      const sep = this.add.text(bx, y - 5, '— edit existing —', {
+      const sep = this.add.text(bx, 62, '— edit existing —', {
         fontFamily: 'monospace', fontSize: '6px', color: '#446',
       }).setOrigin(0.5);
       this.dynamicGroup.add(sep);
@@ -90,15 +88,23 @@ export class MenuScene extends Phaser.Scene {
       const allToEdit = [
         { key: 'nivel0', name: 'Nivel 0' },
         { key: 'gym', name: 'Gym' },
-        { key: 'main', name: 'Main Level' },
+        { key: 'main', name: 'Main' },
         ...getCustomLevels()
       ];
 
-      allToEdit.forEach(lv => {
-        this.makeButton(bx, y, `Edit ${lv.name}`, () => this.scene.start('Editor', { levelKey: lv.key, returnScreen: 'editor' }));
-        y += STEP;
+      const GRID_COLS = 4;
+      const SPACING = 42;
+      const START_X = (W - (GRID_COLS - 1) * SPACING) / 2;
+      const START_Y = 82;
+
+      allToEdit.forEach((lv, i) => {
+        const row = Math.floor(i / GRID_COLS);
+        const col = i % GRID_COLS;
+        const x = START_X + col * SPACING;
+        const y = START_Y + row * SPACING;
+        this._createEditorSquare(x, y, i, lv);
       });
-      y += 4;
+
       this.makeButton(bx, H - 30, '← Back', () => this.showScreen('main'));
     } else if (screen === 'credits') {
       this.addLabel('credits');
@@ -147,6 +153,33 @@ export class MenuScene extends Phaser.Scene {
       }).setOrigin(0.5);
       container.add(check);
     }
+  }
+
+  _createEditorSquare(x, y, num, level) {
+    const container = this.add.container(x, y);
+    const size = 30;
+
+    const bg = this.add.rectangle(0, 0, size, size, 0x2d2010)
+      .setStrokeStyle(2, 0x886622);
+
+    const txtLabel = this.add.text(0, 0, num.toString(), {
+      fontFamily: 'monospace', fontSize: '14px', color: '#ffcc66', fontWeight: 'bold',
+    }).setOrigin(0.5);
+
+    const txtEdit = this.add.text(0, size / 2 + 6, level.name, {
+      fontFamily: 'monospace', fontSize: '6px', color: '#aa8844',
+    }).setOrigin(0.5);
+
+    container.add([bg, txtLabel, txtEdit]);
+    this.dynamicGroup.add(container);
+
+    bg.setInteractive({ useHandCursor: true });
+    bg.on('pointerover', () => { bg.setFillStyle(0x4a3318); bg.setScale(1.1); });
+    bg.on('pointerout',  () => { bg.setFillStyle(0x2d2010); bg.setScale(1); });
+    bg.on('pointerdown', () => {
+      bg.setScale(0.95);
+      this.scene.start('Editor', { levelKey: level.key, returnScreen: 'editor' });
+    });
   }
 
   promptNewLevel() {
