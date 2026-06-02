@@ -7,6 +7,8 @@ import { PlayerView } from '../../engine/entities/PlayerView.js';
 import { PickupView } from '../../engine/entities/PickupView.js';
 import { WorldObjectView } from '../../engine/entities/WorldObjectView.js';
 import { getAllLevels, markLevelCompleted } from '../../services/Storage.js';
+import { animatePath } from '../../engine/level/PathAnimator.js';
+import { injectStyles } from '../levels/intro.js';
 
 /**
  * Gameplay scene driven by the program-queue d-pad.
@@ -80,7 +82,21 @@ export class TileLevelScene extends Phaser.Scene {
     });
 
     if (this.welcomeMessage) {
-      window.__showDialog?.({ message: this.welcomeMessage, onClose: this.onWelcomeClose });
+      injectStyles();
+      document.getElementById('level-dialog-box')?.classList.add('intro-highlight');
+      window.__showDialog?.({
+        message: this.welcomeMessage,
+        onClose: this.onWelcomeClose ?? (() => {
+          document.getElementById('level-dialog-box')?.classList.remove('intro-highlight');
+          const panel = document.getElementById('result-panel');
+          if (panel) {
+            panel.classList.add('intro-highlight');
+            setTimeout(() => panel.classList.remove('intro-highlight'), 3000);
+          }
+          this._runPathAnimation();
+        }),
+      });
+      this._addRepeatPathButton();
     }
 
     this.keys = this.input.keyboard.addKeys({
@@ -121,6 +137,28 @@ export class TileLevelScene extends Phaser.Scene {
       state: 'idle',
       message: this.missionText || '¡A jugar! Armá tu programa y presioná Ejecutar.',
     });
+  }
+
+  _runPathAnimation() {
+    animatePath(this, { onComplete: this.onPathAnimationComplete });
+  }
+
+  _addRepeatPathButton() {
+    const btn = document.createElement('button');
+    btn.textContent = 'repetir camino';
+    btn.id = 'repeat-path-btn';
+    Object.assign(btn.style, {
+      position: 'absolute', bottom: '10px', right: '16px',
+      background: '#ffe600', border: '2px solid #c8a800',
+      color: '#3d2008', fontFamily: "'SproutPixel', monospace", fontSize: '11px',
+      fontWeight: 'bold', padding: '4px 12px', borderRadius: '5px', cursor: 'pointer',
+      boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+    });
+    btn.addEventListener('mouseenter', () => btn.style.background = '#ffd000');
+    btn.addEventListener('mouseleave', () => btn.style.background = '#ffe600');
+    btn.addEventListener('click', () => this._runPathAnimation());
+    document.getElementById('result-panel')?.appendChild(btn);
+    this.events.once('shutdown', () => btn.remove());
   }
 
   _pathGoal() {
