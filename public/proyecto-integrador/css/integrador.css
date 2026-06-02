@@ -179,9 +179,9 @@
 .roadmap-timeline {
   display: flex;
   align-items: flex-start;
-  gap: 0;
+  gap: 0.6rem;
   flex: 1;
-  padding: 1rem 2vw;
+  padding: 1rem 1.5vw;
   position: relative;
   min-height: 0;
   align-content: center;
@@ -264,7 +264,7 @@
   position: absolute;
   top: 26px;
   left: 50%;
-  width: 100%;
+  width: 106%;
   height: 3px;
   background: var(--border-dim);
   z-index: 1;
@@ -285,7 +285,7 @@
   background: var(--bg-surface);
   border: 3px solid var(--border-bright);
   border-radius: 6px;
-  padding: 0.6rem 0.7rem;
+  padding: 0.6rem 0.4rem;
   width: 100%;
   box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
 }

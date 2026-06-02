@@ -55,7 +55,7 @@ export const SLIDES = [
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
-      const text = "Gatito-Code es un videojuego educativo de pensamiento computacional con estetica pixel-art, destinado a ninos y ninas de 8 a 10 anos sin conocimientos previos de programacion. El juego estara disponible originalmente en la web, sin necesidad de instalar nada. El jugador guia a un gatito en un mapa de tiles, construyendo programas mediante bloques de instrucciones arrastrables (arriba, abajo, izquierda, derecha) para recolectar objetos y completar niveles.";
+      const text = "Gatito-Code es un videojuego educativo de pensamiento computacional con estetica pixel-art, destinado a ninos y ninas de 6 a 10 anos sin conocimientos previos de programacion. El juego estara disponible originalmente en la web, sin necesidad de instalar nada. El jugador guia a un gatito en un mapa de tiles, construyendo programas mediante bloques de instrucciones arrastrables (arriba, abajo, izquierda, derecha) para recolectar objetos y completar niveles.";
       const highlightedText = text
         .replace('videojuego educativo', '<span style="color:var(--accent-warm);">videojuego educativo</span>')
         .replace('pensamiento computacional', '<span style="color:var(--accent);">pensamiento computacional</span>')
@@ -99,7 +99,7 @@ export const SLIDES = [
         { name: "Iara Baya", emoji: "🛠️", title: "Desarrolladora", desc: "Desarrollo del motor de tilemaps, sistema de clima y editor visual de niveles." },
         { name: "Luis Herrera", emoji: "🎨", title: "Disenador UI/UX", desc: "Creacion de interfaces, paletas de colores, tipografia pixel-art y experiencia de usuario." },
         { name: "Inti Taretto", emoji: "⚡", title: "Desarrollador", desc: "Implementacion de mecanicas de niveles, integracion de assets y optimizacion de rendimiento." },
-        { name: "Lucas Gimenez", emoji: "🔍", title: "QA & Documentacion", desc: "Diseno de casos de prueba, control de calidad y redaccion de documentacion tecnica." }
+        { name: "Lucas Fernandez", emoji: "🔍", title: "QA & Documentacion", desc: "Diseno de casos de prueba, control de calidad y redaccion de documentacion tecnica." }
       ];
 
       const grid = document.getElementById('party-grid');
@@ -184,7 +184,7 @@ export const SLIDES = [
     id: 'slide-4',
     html: `
       <h2>Documento de Alcance</h2>
-      <p class="text-center">MVP definido: un juego educativo de pensamiento computacional navegable sin instalacion, orientado a ninos de 8 a 10 anos.</p>
+      <p class="text-center">MVP definido: un juego educativo de pensamiento computacional navegable sin instalacion, orientado a ninos de 6 a 10 anos.</p>
 
       <div class="scrum-container">
         <div class="scrum-panel" id="alcance-panel-left">
@@ -300,14 +300,6 @@ export const SLIDES = [
             <div class="progress-bar" style="flex:1;"><div class="progress-fill green" data-width="0"></div></div>
             <span style="color:var(--text-dim); font-size:0.7rem;">0/7</span>
           </div>
-          <div class="sprint-status planned">PLANIFICADO</div>
-          <ul class="sprint-tasks">
-            <li>Niveles pedagogicos completos (18)</li>
-            <li>Playtest con usuarios (8–10 anos)</li>
-            <li>Pantalla de resultados y celebracion</li>
-            <li>Sistema de progresion entre niveles</li>
-            <li>Despliegue publico (hosting)</li>
-          </ul>
         </div>
       </div>
       ${CORNERS}
@@ -506,7 +498,7 @@ export const SLIDES = [
           <div class="doc-subtitle">Proyecto: Juego Educativo de Pensamiento Computacional</div>
           <div class="doc-date">
             Fecha: 27 de mayo de 2026 &nbsp;|&nbsp; Materia: Gestion de Proyectos<br>
-            Equipo: Lisett Castillo &middot; Brian Herrera &middot; J. Luis Herrera &middot; Iara Baya &middot; Inti Taretto &middot; Lucas Gimenez
+            Equipo: Lisett Castillo &middot; Brian Herrera &middot; J. Luis Herrera &middot; Iara Baya &middot; Inti Taretto &middot; Lucas Fernandez
           </div>
         </div>
 
@@ -759,7 +751,7 @@ node_modules/\t        Instalado — Vitest v4.1.7 + dependencias
         { name: "Iara Baya",        pos: '-144px 0' },
         { name: "Luis Herrera",     pos: '-216px 0' },
         { name: "Inti Taretto",     pos: '-288px 0' },
-        { name: "Lucas Gimenez",    pos: '-360px 0' }
+        { name: "Lucas Fernandez",    pos: '-360px 0' }
       ];
 
       const grid = document.getElementById('thanks-grid');

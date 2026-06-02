@@ -9,8 +9,14 @@ let isTransitioning = false;
 let soundsInitialized = false;
 let slideSessionId = 0;
 
+const NEXT_KEYS = new Set(['arrowright', ' ', 'spacebar', 'enter', 'pagedown', 'n', 'right']);
+const PREV_KEYS = new Set(['arrowleft', 'pageup', 'p', 'left']);
+const NEXT_CODES = new Set(['ArrowRight', 'PageDown', 'NumpadEnter']);
+const PREV_CODES = new Set(['ArrowLeft', 'PageUp']);
+
 function init() {
   const container = document.getElementById('presentation-container');
+  container.tabIndex = -1;
   
   // Render all slides into DOM
   SLIDES.forEach((slideDef) => {
@@ -35,22 +41,83 @@ function init() {
     nextSlide();
   });
 
-  window.addEventListener('keydown', (e) => {
-    initAudioContext();
-    if (e.key === 'ArrowRight' || e.key === ' ' || e.key === 'Enter') {
-      e.preventDefault();
-      nextSlide();
-    } else if (e.key === 'ArrowLeft') {
-      e.preventDefault();
-      prevSlide();
-    } else if (e.key === 'Escape') {
-      e.preventDefault();
-      goToSlide(0);
-    }
+  const onKeyNavigation = (e) => {
+    if (handleKeyNavigation(e)) return;
+  };
+
+  // Captura en window y document para mejorar compatibilidad con remotos USB/Bluetooth.
+  window.addEventListener('keydown', onKeyNavigation, true);
+  document.addEventListener('keydown', onKeyNavigation, true);
+
+  // Muchos punteros/controles de presentacion emulan un clic izquierdo.
+  // Se navega por zonas: izquierda = anterior, derecha = siguiente.
+  container.addEventListener('pointerup', (e) => {
+    handlePointerNavigation(e);
   });
+
+  // Fallback global: algunos remotos disparan click fuera del contenedor visible.
+  document.addEventListener('click', (e) => {
+    if (!(e instanceof MouseEvent)) return;
+    handlePointerNavigation(e);
+  }, true);
+
+  document.addEventListener('pointerup', (e) => {
+    handlePointerNavigation(e);
+  }, true);
+
+  // Mantiene el foco para que keydown llegue incluso tras cambiar de ventana.
+  window.addEventListener('focus', () => {
+    container.focus({ preventScroll: true });
+  });
+
+  container.addEventListener('pointerdown', () => {
+    container.focus({ preventScroll: true });
+  });
+
+  container.focus({ preventScroll: true });
 
   // Start at slide 0
   goToSlide(0, true);
+}
+
+function handleKeyNavigation(e) {
+  const key = normalizeKey(e.key);
+  if (!key && !e.code) return false;
+
+  initAudioContext();
+
+  if (NEXT_KEYS.has(key) || NEXT_CODES.has(e.code)) {
+    e.preventDefault();
+    nextSlide();
+    return true;
+  }
+
+  if (PREV_KEYS.has(key) || PREV_CODES.has(e.code)) {
+    e.preventDefault();
+    prevSlide();
+    return true;
+  }
+
+  return false;
+}
+
+function handlePointerNavigation(e) {
+    if (e.button !== 0) return;
+    if (isInteractiveTarget(e.target)) return;
+    if (isTransitioning) return;
+
+    initAudioContext();
+    const midX = window.innerWidth / 2;
+    if (e.clientX < midX) {
+      prevSlide();
+    } else {
+      nextSlide();
+    }
+}
+
+function normalizeKey(key) {
+  if (typeof key !== 'string') return '';
+  return key.toLowerCase();
 }
 
 function initAudioContext() {
@@ -120,6 +187,11 @@ function resetSlideAnimations(slideEl) {
   slideEl.querySelectorAll('.show').forEach(el => el.classList.remove('show'));
   slideEl.querySelectorAll('.animate-underline').forEach(el => el.classList.remove('animate-underline'));
   slideEl.querySelectorAll('.progress-fill').forEach(el => { el.style.width = '0'; });
+}
+
+function isInteractiveTarget(target) {
+  if (!(target instanceof Element)) return false;
+  return Boolean(target.closest('button, a, input, select, textarea, [role="button"], [data-no-slide-nav="true"]'));
 }
 
 function updateCounter() {
