@@ -54,6 +54,7 @@ export class MenuScene extends Phaser.Scene {
       this.makeButton(bx, y, 'Level Editor', () => this.showScreen('editor')); y += STEP + 2;
       this.makeButton(bx, y, 'Credits', () => this.showScreen('credits'));
     } else if (screen === 'levels') {
+<<<<<<< HEAD
       this.addLabel('level selection');
       const allLevels = getAllLevels();
       const completed = getCompletedLevels();
@@ -76,6 +77,22 @@ export class MenuScene extends Phaser.Scene {
       });
 
       this.makeButton(bx, H - 30, '← Back', () => this.showScreen('main'));
+=======
+      this.addLabel('levels');
+      let y = 54;
+      this.makeButton(bx, y, 'Main Level', () => this.scene.start('Main')); y += STEP;
+      this.makeButton(bx, y, 'Gym', () => this.scene.start('Gym')); y += STEP;
+      this.makeButton(bx, y, 'Prueba', () => this.scene.start('Prueba')); y += STEP;
+      this.makeButton(bx, y, 'Dungeon', () => this.scene.start('Dungeon')); y += STEP;
+      this.makeButton(bx, y, 'Bosque', () => this.scene.start('BosqueDePrueba')); y += STEP;
+      for (const lv of getCustomLevels()) {
+        const key = lv.key;
+        this.makeButton(bx, y, lv.name, () => this.scene.start('Custom', { levelKey: key }));
+        y += STEP;
+      }
+      y += 4;
+      this.makeButton(bx, y, '← Back', () => this.showScreen('main'));
+>>>>>>> main
     } else if (screen === 'editor') {
       this.addLabel('level editor');
       this.makeButton(bx, 46, '+ New level', () => this.promptNewLevel(), 'accent');
@@ -85,6 +102,7 @@ export class MenuScene extends Phaser.Scene {
       }).setOrigin(0.5);
       this.dynamicGroup.add(sep);
 
+<<<<<<< HEAD
       const allToEdit = [
         { key: 'nivel0', name: 'Nivel 0' },
         { key: 'gym',    name: 'Gym' },
@@ -107,6 +125,15 @@ export class MenuScene extends Phaser.Scene {
       });
 
       this.makeButton(bx, H - 30, '← Back', () => this.showScreen('main'));
+=======
+      for (const lv of [{ key: 'gym', name: 'Gym' }, { key: 'main', name: 'Main' }, { key: 'prueba', name: 'Prueba' }, { key: 'dungeon', name: 'Dungeon' }, { key: 'bosque_de_prueba', name: 'Bosque' }, ...getCustomLevels()]) {
+        const key = lv.key;
+        this.makeButton(bx, y, `Edit ${lv.name}`, () => this.scene.start('Editor', { levelKey: key, returnScreen: 'editor' }));
+        y += STEP;
+      }
+      y += 4;
+      this.makeButton(bx, y, '← Back', () => this.showScreen('main'));
+>>>>>>> main
     } else if (screen === 'credits') {
       this.addLabel('credits');
       const tx = this.add.text(bx, 84, 'Coming Soon', {

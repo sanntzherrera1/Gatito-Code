@@ -6,7 +6,7 @@ let selectedGid = 0;
 let activeTerrainName = null;
 let activeObjCategory = 'objects';
 let activeObjTabIdx = 0;
-let activeObjType = 'pickup_with_animation';
+let activeObjType = 'deco';
 let activeGroup = null;
 let activeVariant = {};
 
@@ -68,7 +68,7 @@ function showEditor(cfg) {
   });
   updateLayerHighlight(cfg.getLayer());
 
-  activeObjType = 'pickup_with_animation';
+  activeObjType = 'deco';
   activeObjTabIdx = 0;
   activeGroup = null;
   activeVariant = {};
@@ -441,7 +441,7 @@ function renderObjPalette() {
   }
 
   objPalette.style.setProperty('--cols', o.cols);
-  for (let r = 0; r < o.rows; r++) {
+  for (let r = 0; r < (o.editorRows ?? o.rows); r++) {
     for (let c = 0; c < o.cols; c++) {
       const frame = r * o.cols + c;
       const d = document.createElement('div');

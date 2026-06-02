@@ -1,4 +1,6 @@
-import { TILE } from '../../config/game.js';
+import { TILE, COLS } from '../../config/game.js';
+import { OBJECTS } from '../../engine/level/TileRegistry.js';
+import { deriveAnimKey } from './WorldObjectView.js';
 
 /**
  * Visual representation of a pickup item — floating sprite + collection effect.
@@ -8,13 +10,19 @@ export class PickupView {
     this.scene = scene;
     this.tx = tx;
     this.ty = ty;
-    const cx = tx * TILE + TILE / 2;
-    const cy = ty * TILE + TILE / 2;
-    this.sprite = scene.add.sprite(cx, cy, textureKey, frame).setDepth(50);
+    const objDef = OBJECTS.find(o => o.key === textureKey);
+    const occW = objDef?.occupyW ?? Math.ceil((objDef?.frameW ?? TILE) / TILE);
+    const startTx = tx - Math.floor((occW - 1) / 2);
+    const cx = startTx * TILE + (occW * TILE) / 2;
+    const cy = ty * TILE + TILE;
+    const depth = ty * COLS + tx + 2002;
+    this.sprite = scene.add.sprite(cx, cy, textureKey, frame)
+      .setOrigin(0.5, 1)
+      .setDepth(depth);
 
-    const idleKey = `${textureKey}_idle`;
-    if (scene.anims.exists(idleKey)) {
-      this.sprite.anims.play(idleKey);
+    const animKey = deriveAnimKey(textureKey, frame);
+    if (scene.anims.exists(animKey)) {
+      this.sprite.anims.play(animKey);
     } else if (animated) {
       this.floatTween = scene.tweens.add({
         targets: this.sprite, y: cy - 2,

@@ -201,7 +201,7 @@ Supports **9 simultaneous effects** (intensity 0.0–1.0):
 ## Known Limitations
 
 - No win condition when all pickups are collected
-- `MainScene` hardcodes pickup logic in `decorate()` instead of reading it fully from JSON — pickup definitions are split between `main.json` and `MainScene.js`
+- Pickups and objects are fully loaded from the level JSON; `MainScene` no longer hardcodes entities in `decorate()`
 - DOM ↔ Phaser communication relies on global `window.*` coupling
-- `domain/` is pure JavaScript and testable with Node, but no automated tests or CI pipeline exist yet
+- `domain/` is pure JavaScript and testable with Node; unit tests with Vitest exist in `tests/domain.test.js`, but no CI pipeline is configured yet
 - `CustomScene` uses dynamic `levelKey` but shares the same mechanic as `MainScene`/`GymScene`

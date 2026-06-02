@@ -1,7 +1,7 @@
 export const TILE = 16;
 export const COLS = 16;
 export const ROWS = 12;
-export const STEP_MS = 160;
+export const STEP_MS = 240;
 
 export const DIRS = {
     up: { dx: 0, dy: -1 },
