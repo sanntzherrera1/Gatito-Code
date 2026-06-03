@@ -6,6 +6,9 @@ import { MainScene } from './engine/levels/MainScene.js';
 import { Nivel3Scene } from './engine/levels/Nivel3Scene.js';
 import { EditorScene } from './engine/scenes/EditorScene.js';
 import { CustomScene } from './engine/levels/CustomScene.js';
+import { PruebaScene } from './engine/levels/PruebaScene.js';
+import { DungeonScene } from './engine/levels/DungeonScene.js';
+import { BosqueDePruebaScene } from './engine/levels/BosqueDePruebaScene.js';
 import { TILE, COLS, ROWS } from './config/game.js';
 
 export { TILE, COLS, ROWS };

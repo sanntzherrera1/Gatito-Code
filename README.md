@@ -14,11 +14,28 @@ Incluye un **editor visual de niveles** con soporte para clima, objetos con vari
 - Técnica: [AGENTS.md](AGENTS.md) / [CLAUDE.md](CLAUDE.md) — guía de arquitectura para agentes de IA
 - Técnica (legacy): [docs/documentacion-tecnica.md](docs/documentacion-tecnica.md)
 
+## Presentaciones
+
+Con el servidor levantado en `http://localhost:3000`, estas son las rutas disponibles:
+
+- Juego principal: `http://localhost:3000/`
+- Presentación de gestión: `http://localhost:3000/presentacion-gestion/`
+- Presentación proyecto integrador: `http://localhost:3000/proyecto-integrador/`
+
+### Resumen de enfoque y contenido
+
+- `presentacion-gestion/`:
+  Enfoque en gestión de proyecto (equipo, Scrum, alcance, sprints, ceremonias, retrospectiva, lecciones, acta de cierre, evolución de arquitectura y validación por tests).
+
+- `proyecto-integrador/`:
+  Enfoque en propuesta/producto (problema, solución pedagógica, público objetivo, características, arquitectura técnica, estado actual, roadmap, estrategia de lanzamiento y cierre).
+
 ## Stack
 
 - [Phaser 3.80.1](https://phaser.io/) — cargado desde CDN, sin bundler
 - ES Modules nativos del browser
-- Sin dependencias de producción de npm — solo `browser-sync` como devDependency para desarrollo
+- Sin dependencias de producción de npm
+- DevDependencies: `browser-sync` (servidor local) y `vitest` (tests)
 - Assets: [Sprout Lands](https://cup-nooble.itch.io/sprout-lands) + [SorrySprites](https://itch.io/) (sprites, tilesets, UI, objetos, animales, personajes)
 - Personajes: Basic Char (48×48) y Premium Char (48×48) incluidos
 
@@ -35,7 +52,7 @@ Incluye un **editor visual de niveles** con soporte para clima, objetos con vari
 git clone 'https://github.com/sanntzherrera1/GatitoCode.git'
 cd gatito-codev2
 
-# 2. Instalar dependencias de desarrollo (solo browser-sync)
+# 2. Instalar dependencias de desarrollo (browser-sync + vitest)
 npm install
 
 # 3. Levantar el servidor con livereload
@@ -66,6 +83,8 @@ python -m http.server 3000
 gatito-codev2/
 ├── public/
 │   ├── index.html              # Entrada principal, UI DOM (paneles, slots, dialogs)
+│   ├── presentacion-gestion/    # Deck de presentación orientado a gestión del proyecto
+│   ├── proyecto-integrador/     # Deck de presentación orientado a propuesta/producto
 │   ├── src/
 │   │   ├── main.js             # Configuración Phaser + registro de escenas
 │   │   ├── config/
@@ -86,13 +105,17 @@ gatito-codev2/
 │   │   │   │   └── CustomScene.js  # Niveles personalizados
 │   │   │   ├── entities/
 │   │   │   │   ├── PlayerView.js   # Sprite, tweens, anims walk/idle/jump
-│   │   │   │   └── PickupView.js   # Sprite flotante + efecto de recolección
+│   │   │   │   ├── PickupView.js   # Sprite flotante + efecto de recolección
+│   │   │   │   └── WorldObjectView.js # Sprite visual para objetos del mapa
 │   │   │   ├── level/
 │   │   │   │   ├── TileRegistry.js     # Registro: 55 tilesets, ~221 objetos, terrenos, variantes
+│   │   │   │   ├── ObjectAnimations.js  # Definición de animaciones de objetos
 │   │   │   │   ├── TileLevelLoader.js  # JSON → Phaser Tilemap + domain/Level
 │   │   │   │   └── WeatherSystem.js    # Clima: lluvia, nieve, viento, tormenta, noche, etc.
 │   │   │   └── program/
 │   │   │       └── ProgramExecutor.js  # Intérprete asíncrono de comandos
+│   │   ├── game/
+│   │   │   └── PickupManager.js    # Orquestación de pickups en runtime
 │   │   ├── services/
 │   │   │   └── Storage.js          # localStorage: overrides, niveles personalizados
 │   │   └── ui/                     # DOM: paleta, diálogos, cola de comandos
@@ -101,6 +124,7 @@ gatito-codev2/
 │   │       ├── dialog.js
 │   │       ├── mission.js
 │   │       ├── editor-ui.js
+│   │       ├── jump-picker.js
 │   │       ├── name-dialog.js
 │   │       └── state.js
 │   ├── levels/
@@ -111,6 +135,9 @@ gatito-codev2/
 │       ├── SproutLands-Sprites/ # Tilesets y sprites del personaje/objetos
 │       ├── SproutLands-SorrySprites/ # Packs extendidos (dungeon, invierno, aldea)
 │       └── SproutLands-UI/     # Fuentes, botones, menús, dialogs
+├── tests/
+│   └── domain.test.js          # Tests unitarios de dominio (Vitest)
+├── package.json                # Scripts npm (start, test)
 └── AGENTS.md / CLAUDE.md       # Documentación de arquitectura para agentes de IA
 ```
 
@@ -159,6 +186,14 @@ Desde el menú: **Edit Gym**, **Edit Main** o **+ Nuevo nivel**
 | `Esc` | Volver al menú |
 
 Los niveles editados se persisten en `localStorage` del browser. Para exportar, usar `Ctrl+S` que descarga el JSON y reemplazar el archivo en `public/levels/`.
+
+## Tests
+
+```bash
+npm test
+```
+
+Ejecuta la suite de `Vitest` en `tests/domain.test.js` para validar comportamiento del dominio (`Player`, `Level`, etc.).
 
 ## Formato de nivel (JSON)
 
@@ -246,9 +281,9 @@ Los terrenos usan un bitmask de 4 vecinos cardinales: North=1, East=2, South=4, 
 ## Limitaciones conocidas
 
 - No hay condición de victoria cuando se recolectan todos los pickups
-- `MainScene` hardcodea pickups en `decorate()` en lugar de leerlos completamente desde JSON
+- Pickups y objetos se cargan completamente desde el JSON del nivel; `MainScene` ya no hardcodea entidades en `decorate()`
 - La comunicación DOM ↔ Phaser depende de variables globales (`window.*`)
-- `domain/` es JavaScript puro y testable con Node, pero aún no hay tests automatizados ni CI
+- `domain/` es JavaScript puro y testable con Node; existen tests unitarios con Vitest en `tests/domain.test.js`, pero aún no hay pipeline de CI configurada
 - `CustomScene` usa `levelKey` dinámico pero comparte la misma mecánica que `MainScene`/`GymScene`
 
 ## Licencia

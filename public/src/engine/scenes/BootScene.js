@@ -7,10 +7,12 @@ export class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
 
   preload() {
-    // Character — 192x192 → 4x4 grid of 48x48 frames.
+    // Character — Premium 384x1152 → 8x24 grid of 48x48 frames.
+    // First 8 rows: idle_down, idle_up, idle_right, idle_left,
+    //               walk_down, walk_up, walk_right, walk_left.
     this.load.spritesheet(
       'character_base',
-      `${BASE}/Characters/Basic Charakter Spritesheet.png`,
+      `${BASE}/Characters/Premium Charakter Spritesheet.png`,
       { frameWidth: 48, frameHeight: 48 }
     );
     // Plants — 96x32 → 6x2 grid of 16x16. Pickup frames used: 5 (corn), 11 (turnip).
@@ -72,20 +74,22 @@ export class BootScene extends Phaser.Scene {
     const walk = (key, frames) => this.anims.create({
       key,
       frames: this.anims.generateFrameNumbers('character_base', { frames }),
-      frameRate: 8, repeat: -1,
+      frameRate: 16, repeat: -1,
     });
-    walk('walk_down',  [0, 1, 2, 3]);
-    walk('walk_up',    [4, 5, 6, 7]);
-    walk('walk_left',  [8, 9, 10, 11]);
-    walk('walk_right', [12, 13, 14, 15]);
+    walk('walk_down',  [32, 33, 34, 35, 36, 37, 38, 39]);
+    walk('walk_up',    [40, 41, 42, 43, 44, 45, 46, 47]);
+    walk('walk_right', [48, 49, 50, 51, 52, 53, 54, 55]);
+    walk('walk_left',  [56, 57, 58, 59, 60, 61, 62, 63]);
 
-    const idle = (key, frame) => this.anims.create({
-      key, frames: [{ key: 'character_base', frame }],
+    const idle = (key, frames) => this.anims.create({
+      key,
+      frames: this.anims.generateFrameNumbers('character_base', { frames }),
+      frameRate: 10, repeat: -1,
     });
-    idle('idle_down', 0);
-    idle('idle_up', 4);
-    idle('idle_left', 8);
-    idle('idle_right', 12);
+    idle('idle_down',  [0, 1, 2, 3, 4, 5, 6, 7]);
+    idle('idle_up',    [8, 9, 10, 11, 12, 13, 14, 15]);
+    idle('idle_right', [16, 17, 18, 19, 20, 21, 22, 23]);
+    idle('idle_left',  [24, 25, 26, 27, 28, 29, 30, 31]);
 
     createObjectAnimations(this);
 

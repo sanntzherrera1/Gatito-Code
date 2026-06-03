@@ -1,4 +1,4 @@
-import { TILE, STEP_MS } from '../../config/game.js';
+import { TILE, STEP_MS, COLS } from '../../config/game.js';
 
 /**
  * Visual representation of the player — sprite, tweens and animations.
@@ -10,7 +10,8 @@ export class PlayerView {
     this.playerModel = playerModel;
 
     const [x, y] = this._tileCenter(playerModel.tx, playerModel.ty);
-    this.sprite = scene.add.sprite(x, y, 'character_base', 0).setDepth(40);
+    const depth = playerModel.ty * COLS + playerModel.tx + 2001;
+    this.sprite = scene.add.sprite(x, y, 'character_base', 0).setDepth(depth);
     this.playIdle(playerModel.facing);
   }
 
@@ -19,9 +20,9 @@ export class PlayerView {
   }
 
   static getBaseFrameForDir(dir) {
-    if (dir === 'up') return 4;
-    if (dir === 'left') return 8;
-    if (dir === 'right') return 12;
+    if (dir === 'up') return 8;
+    if (dir === 'right') return 16;
+    if (dir === 'left') return 24;
     return 0; // down
   }
 
@@ -76,6 +77,7 @@ export class PlayerView {
   setPosition(tx, ty) {
     const [x, y] = this._tileCenter(tx, ty);
     this.sprite.setPosition(x, y);
+    this.sprite.setDepth(ty * COLS + tx + 2001);
   }
 
   /**
@@ -88,7 +90,10 @@ export class PlayerView {
       this.scene.tweens.add({
         targets: this.sprite, x, y,
         duration: STEP_MS, ease: 'Linear',
-        onComplete: resolve,
+        onComplete: () => {
+          this.sprite.setDepth(ty * COLS + tx + 2001);
+          resolve();
+        },
       });
     });
   }
@@ -105,7 +110,7 @@ export class PlayerView {
       this.sprite.anims.stop();
       const [f1, f2] = PlayerView.getJumpFramesForDir(dir);
       this.sprite.setFrame(f1);
-      this.scene.time.delayedCall(Math.floor(STEP_MS / 2), () => {
+      this.scene.time.delayedCall(Math.floor(STEP_MS), () => {
         if (!this.sprite) return;
         this.sprite.setFrame(f2);
       });
@@ -115,7 +120,7 @@ export class PlayerView {
       this.scene.tweens.add({
         targets: state,
         t: 1,
-        duration: STEP_MS,
+        duration: STEP_MS * 2,
         ease: 'Linear',
         onUpdate: () => {
           const t = state.t;
@@ -125,6 +130,7 @@ export class PlayerView {
         onComplete: () => {
           this.sprite.x = endX;
           this.sprite.y = endY;
+          this.sprite.setDepth(toTy * COLS + toTx + 2001);
           this.sprite.anims.stop();
           this.sprite.setFrame(PlayerView.getIdleFrameForDir(dir));
           resolve();
