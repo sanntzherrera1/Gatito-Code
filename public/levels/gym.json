@@ -1066,10 +1066,31 @@
       "type": "deco"
     },
     {
+      "tx": 4,
+      "ty": 9,
+      "key": "cow",
+      "frame": 211,
+      "type": "deco"
+    },
+    {
+      "tx": 2,
+      "ty": 8,
+      "key": "cow_baby_light",
+      "frame": 246,
+      "type": "deco"
+    },
+    {
+      "tx": 2,
+      "ty": 7,
+      "key": "cow_baby_light",
+      "frame": 230,
+      "type": "deco"
+    },
+    {
       "tx": 13,
-      "ty": 1,
+      "ty": 9,
       "key": "tree_full",
-      "frame": 1,
+      "frame": 73,
       "type": "deco"
     },
     {
@@ -1171,35 +1192,7 @@
       "type": "deco"
     },
     {
-      "tx": 5,
-      "ty": 8,
-      "key": "cow",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
       "tx": 3,
-      "ty": 8,
-      "key": "cow_baby_light",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
-      "tx": 13,
-      "ty": 8,
-      "key": "tree_full",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
-      "tx": 13,
-      "ty": 3,
-      "key": "tree_full",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
-      "tx": 4,
       "ty": 3,
       "key": "boats",
       "frame": 0,
@@ -1210,6 +1203,27 @@
       "ty": 2,
       "key": "well",
       "frame": 0,
+      "type": "deco"
+    },
+    {
+      "tx": 12,
+      "ty": 3,
+      "key": "tree_full",
+      "frame": 12,
+      "type": "deco"
+    },
+    {
+      "tx": 14,
+      "ty": 3,
+      "key": "tree_full",
+      "frame": 12,
+      "type": "deco"
+    },
+    {
+      "tx": 13,
+      "ty": 2,
+      "key": "tree_full",
+      "frame": 12,
       "type": "deco"
     }
   ],

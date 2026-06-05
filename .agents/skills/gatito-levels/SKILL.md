@@ -115,6 +115,16 @@ A más camino y más pickups, más difícil planear el programa dentro del presu
 
 ## 5. Spec para `build-level.js build`
 
+### Modelo de CAPAS (orden de dibujo, de abajo hacia arriba)
+- **`floor`** — el **piso base**: **UN solo terreno**.
+- **`overlay`** — un **2º piso ENCIMA** del floor (parches de tierra, alfombras, caminos sobre el
+  pasto). Sus bordes (autotile) dejan ver el floor debajo.
+- **`top`** — una **3ª capa de tiles** encima del overlay (detalles sobre el 2º piso).
+- **`objects`** — sprites por encima de todo. Usá `type:"top"` para un objeto que va sobre el 2º piso.
+
+> Regla: `floor` = un piso. ¿Otro piso encima? → **`overlay`**. ¿Un objeto/tile sobre el 2º piso? → **`top`**.
+> **No** uses `floor.patches` para superponer pisos (eso reemplaza el piso base) — para eso está `overlay`.
+
 Una vez elegido el path, escribí el spec y compilá:
 
 ```jsonc
@@ -123,14 +133,15 @@ Una vez elegido el path, escribí el spec y compilá:
   "cols": 16, "rows": 12,
   "tools": ["func"],                    // informativo: lo pasás también al validador
   "spawn": { "tx": 1, "ty": 6 },        // en un EXTREMO del corredor
-  "floor": { "base": "grass",           // terreno base + parches opcionales (autotile)
-             "patches": [{ "type": "dirt", "rect": [10,2,4,3] }] },
-  "walls":  [{ "type": "hills", "rect": [0,0,16,12], "border": true }],  // opcional
-  "path":   { "tiles": [{ "x":1,"y":6 }, … ] },   // el corredor elegido (o "waypoints")
-  "pathGid": 212,                       // opcional; tile del sendero (≠0). 212 = tierra
+  "floor":   { "base": "grass_hills" },                       // 1 PISO base (un solo terreno)
+  "overlay": [ { "type": "dirt", "rect": [10,8,4,3] } ],      // 2º PISO encima (huerta/alfombra/camino)
+  "top":     [ ],                                              // opcional: tiles sobre el overlay
+  "walls":   [ { "type": "hills", "rect": [0,0,16,12], "border": true } ],  // opcional
+  "path":    { "tiles": [{ "x":1,"y":6 }, … ] },   // el corredor elegido (o "waypoints")
+  "pathGid": 59,                        // opcional; tile del sendero (≠0)
   "objects": [
     { "tx":4, "ty":6, "key":"grass_props", "frame":19, "type":"pickup_with_animation" },
-    { "tx":12,"ty":3, "key":"trees",       "frame":0,  "type":"deco" }
+    { "tx":12,"ty":3, "key":"tree_full",   "frame":0,  "type":"deco" }
   ],
   "weather": { "pollen": 0.3 }
 }
@@ -159,30 +170,37 @@ node .claude/skills/gatito-levels/validate-level.js public/levels/<name>.json --
 jugador ya queda confinado al corredor; los muros son sobre todo visuales/encierre.*
 
 ### Objetos (`objects[]`): `pickup` / `pickup_with_animation` (coleccionables) y `deco` / `top` (decoración)
-Cada objeto es **un solo tile de 16×16**: `{ tx, ty, key, frame, type }`, donde `frame` es el índice
-(0..cols·rows−1) del spritesheet.
+Formato: `{ tx, ty, key, frame, type }`. `frame` es el índice del spritesheet.
 
-> ⚠️ **CRÍTICO — los objetos multi-tile se ven CORTADOS.** Muchas hojas mezclan props de 1 tile con
-> objetos grandes (árboles, troncos, rocas grandes, girasol, casas) que ocupan 2×2 o más. Si ponés un
-> `frame` suelto de uno de esos, se renderiza **solo un pedacito** (un árbol cortado, media planta). El
-> motor **no** compone multi-tile en un objeto. **Usá solo frames que sean un dibujo completo en su celda.**
+#### Objetos multi-tile (árboles, casas, etc.) — YA soportados
+El motor dibuja estos objetos **enteros** como un solo objeto, anclado a un **tile-base**:
+- **Anclaje:** `(tx,ty)` = **fila inferior, columna centrada** de la huella. El objeto se dibuja hacia
+  **arriba** (origin abajo). `occupyW/occupyH` (en el registry) definen la **huella** en tiles.
+- **Bloquean su huella** (colisión) y se ordenan por fila (depth). La huella **no debe pisar** el
+  corredor, el spawn, un pickup ni otro objeto — **el validador lo chequea**.
 
-**Frames de 1 tile SEGUROS (verificados, ideales para decoración):**
-- `plants` (Basic Plants, 6×2 = 12 frames): **0–11**, todas plantitas/brotes pequeños. 100% seguros.
-- `mushrooms` (Mushrooms/Flowers/Stones, 12×5): **fila 0 = frames 0–11** (hongos). Las filas siguientes
-  tienen rocas grandes y un girasol multi-tile → evitarlas salvo flores chicas ya verificadas.
-- `grass_props` (9×5): la **fila 0 (frames 0–8) son ÁRBOLES multi-tile → NO usar sueltos.** Props de
-  1 tile verificados: `5` (remolacha), `28` y `36` (arbustos/piedras). Pickups animados conocidos: `19`, `31`.
-- `free_chicken` (4×2): **frame 0** (gallina) — 1 tile, decorativo.
+**Keys multi-tile usables (huella W×H):**
+- Árboles: `tree_full` / `tree_apple` / `tree_orange` / `tree_peach` / `tree_pear` (1×1; se ven de ~3 tiles
+  pero solo ocupan el tronco). Frutas sueltas: `no_tree_apple`… (1×1).
+- Casas: `small_house`/`small_huts` (+`_door`,`_grass`,`_light`…) (4×1); `grey_brick_houses`(+variantes) (5×2).
+- Otros: `well` (2×1), `workstation` (2×1), `water_tray` (2×1), `dungeon_probs` (2×2),
+  cofres `golden_chest`/`oak_chest`/… (1×1), `christmas_tree` (1×1).
 
-**Cómo verificar un frame nuevo:** abrí el PNG (`Read` de la imagen en `public/assets/...`), contá la
-grilla `cols×rows` del registry y elegí solo celdas con un dibujo **completo**. Árboles/casas/rocas
-grandes: **no hay soporte multi-tile → no los uses como deco.**
+> ⚠️ **No** uses estos para "grande" porque se cortan (no tienen entrada multi-tile): `trees`,
+> `trees_v2`, `wooden_house`, `chicken_houses`, ni la **fila 0 de `grass_props`** (árboles). Usá las keys
+> de arriba (`tree_full`, `small_house`, …). El validador avisa y sugiere el reemplazo.
 
-Otras keys (usar con la verificación de arriba): `winter_sprites`, `wood_shrooms` (props chicos);
-`free_chicken`/`chicken_baby` (animales 1 tile); `egg_items`,`fruit_berries_items`,`tools_items` (items chicos).
+#### Props de 1 tile (decoración chica, sin huella)
+- `plants` (Basic Plants, 6×2): **0–11**, plantitas/brotes. 100% seguros.
+- `mushrooms` (12×5): **fila 0 (0–11)** = hongos. (Rocas grandes/girasol de filas siguientes son multi-tile.)
+- `grass_props` (9×5): props de 1 tile verificados `5`, `28`, `36`. Pickups animados conocidos: `19`, `31`.
+- `free_chicken` (4×2) frame 0 (gallina), `egg_items`/`fruit_berries_items`/`tools_items` (items chicos).
 
-**Pickups SIEMPRE sobre el corredor** (un tile del `path`). La decoración va donde quieras (es visual).
+**Cómo agregar un objeto multi-tile nuevo:** si solo existe en una hoja 16×16 mixta, agregá una entrada
+en `OBJECTS` con `frames:[{x,y,w,h}]` (sub-frames atlas) + `occupyW/occupyH`; si ya hay hoja dedicada,
+usá esa. Medí el rect abriendo el PNG con `Read` (cada celda = 16 px).
+
+**Pickups SIEMPRE sobre el corredor** (un tile del `path`). La decoración va fuera del corredor.
 
 ### Clima (`weather`, 0.0–1.0) — combinables
 `rain`, `snow`, `pollen`, `leaves`, `night`, `fog`, `dust`, `wind`, `storm`.

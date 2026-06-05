@@ -24,13 +24,27 @@ import { fileURLToPath } from 'url';
 const MAX_MAIN = 5;   // slots del panel principal (ui/state.js)
 const MAX_FUNC = 3;   // pasos máximos de la Función (queueFunc1)
 
-// Keys cuyos sprites son multi-tile: un `frame` suelto se ve CORTADO como deco.
-const MULTITILE_KEYS = new Set([
-  'trees', 'trees_v2', 'tree_full', 'tree_apple', 'tree_orange', 'tree_peach', 'tree_pear',
-  'wooden_house', 'wooden_roof', 'wooden_walls', 'christmas_tree', 'barn_structures',
-  'chicken_houses', 'small_house', 'small_huts', 'grey_brick_houses', 'birch_biom',
-  'cherry_biom', 'pine_biom',
-]);
+// Huella en tiles de los objetos multi-tile soportados (sync con OBJECTS.occupyW/occupyH).
+// Anclaje: (tx,ty) = fila inferior, columna centrada.
+const OCCUPY = {
+  well: [2, 1], workstation: [2, 1], water_tray: [2, 1], dungeon_probs: [2, 2],
+  tree_full: [1, 1], tree_apple: [1, 1], tree_orange: [1, 1], tree_peach: [1, 1], tree_pear: [1, 1],
+  no_tree_apple: [1, 1], no_tree_orange: [1, 1], no_tree_peach: [1, 1], no_tree_pear: [1, 1],
+  christmas_tree: [1, 1], wooden_door_spritesheet: [1, 1],
+  birch_chest: [1, 1], cherry_chest: [1, 1], golden_chest: [1, 1], oak_chest: [1, 1], pine_chest: [1, 1], silver_chest: [1, 1],
+  grey_brick_houses: [5, 2], grey_brick_houses_doors: [5, 2], grey_brick_houses_doors_grass: [5, 2], grey_brick_houses_grass: [5, 2],
+  small_house: [4, 1], small_house_light: [4, 1], small_house_door: [4, 1], small_house_door_grass: [4, 1],
+  small_house_grass: [4, 1], small_house_light_door: [4, 1], small_house_light_door_grass: [4, 1], small_house_light_grass: [4, 1],
+  small_huts: [4, 1], small_huts_doors: [4, 1], small_huts_doors_grass: [4, 1], small_huts_grass: [4, 1],
+};
+// Keys cuyo dibujo abarca varias celdas pero NO tienen entrada multi-tile → un frame suelto se corta.
+const STILL_CUT = { trees: 'tree_full', trees_v2: 'tree_full', wooden_house: 'small_house', chicken_houses: 'small_house' };
+function occBox(tx, ty, key) {
+  const [w, h] = OCCUPY[key] || [1, 1];
+  const x0 = tx - Math.floor((w - 1) / 2);
+  const y0 = ty - (h - 1);
+  return { x0, y0, x1: x0 + w - 1, y1: ty, w, h };
+}
 
 // ── expandLayer (espejo de TileRegistry.expandLayer) ──
 function expandLayer(layer, cols, rows) {
@@ -170,13 +184,36 @@ function main() {
   // 3. Pickups
   if (pickups.length === 0) warns.push('el nivel no tiene pickups (se gana solo llegando a la meta)');
 
-  // 3b. Decoración multi-tile (se vería cortada)
-  for (const o of objects.filter(o => o.type === 'deco' || o.type === 'top')) {
-    if (MULTITILE_KEYS.has(o.key))
-      warns.push(`deco "${o.key}" (${o.tx},${o.ty}) suele ser multi-tile → un frame suelto se ve cortado`);
+  // 3b. Huella de objetos multi-tile: dentro de límites, sin pisar path/spawn/pickups ni solaparse.
+  const pkSet = new Set(pickups.map(p => `${p.tx},${p.ty}`));
+  const boxes = objects.map(o => ({ o, b: occBox(o.tx, o.ty, o.key) }));
+  for (const { o, b } of boxes) {
+    if (b.x0 < 0 || b.y0 < 0 || b.x1 >= cols || b.y1 >= rows)
+      errors.push(`"${o.key}" (${o.tx},${o.ty}) se sale de límites con su huella ${b.w}x${b.h}`);
+    if (o.type === 'pickup' || o.type === 'pickup_with_animation') continue;
+    // la huella de la decoración no debe tapar el corredor, el spawn ni un pickup
+    let hitPath = false, hitSpawn = false, hitPk = false;
+    for (let y = Math.max(0, b.y0); y <= b.y1 && y < rows; y++)
+      for (let x = Math.max(0, b.x0); x <= b.x1 && x < cols; x++) {
+        if (isPath(x, y)) hitPath = true;
+        if (x === spawn.tx && y === spawn.ty) hitSpawn = true;
+        if (pkSet.has(`${x},${y}`)) hitPk = true;
+      }
+    if (hitPath)  errors.push(`la huella de "${o.key}" (${o.tx},${o.ty}) pisa el corredor`);
+    if (hitSpawn) errors.push(`la huella de "${o.key}" (${o.tx},${o.ty}) pisa el spawn`);
+    if (hitPk)    errors.push(`la huella de "${o.key}" (${o.tx},${o.ty}) pisa un pickup`);
+    if (STILL_CUT[o.key])
+      warns.push(`"${o.key}" no es multi-tile (se corta) → usá "${STILL_CUT[o.key]}"`);
     else if (o.key === 'grass_props' && o.frame >= 0 && o.frame <= 8)
-      warns.push(`grass_props frame ${o.frame} en (${o.tx},${o.ty}) está en la fila de árboles (multi-tile) → se ve cortado`);
+      warns.push(`grass_props frame ${o.frame} (fila de árboles) se ve cortado → usá tree_full/tree_apple`);
   }
+  // solape entre huellas de objetos
+  for (let i = 0; i < boxes.length; i++)
+    for (let j = i + 1; j < boxes.length; j++) {
+      const a = boxes[i].b, c = boxes[j].b;
+      if (a.x0 <= c.x1 && a.x1 >= c.x0 && a.y0 <= c.y1 && a.y1 >= c.y0)
+        warns.push(`se solapan las huellas de "${boxes[i].o.key}" y "${boxes[j].o.key}"`);
+    }
 
   if (hasPath) {
     // 4. Corredor conectado + meta
@@ -215,9 +252,14 @@ function main() {
       if (walls[p.ty * cols + p.tx] !== 0) errors.push(`pickup en ${p.tx},${p.ty} cae sobre un muro`);
   }
 
-  // 7. GIDs no negativos (chequeo laxo)
-  for (const [name, arr] of [['floor', floor], ['path', pathFlat], ['walls', walls]])
+  // 7. GIDs no negativos (chequeo laxo) — incluye overlay (2º piso) y top
+  for (const [name, layer] of [
+    ['floor', lvl.layers.floor], ['path', lvl.layers.path], ['walls', lvl.layers.walls],
+    ['overlay', lvl.layers.overlay], ['top', lvl.layers.top],
+  ]) {
+    const arr = expandLayer(layer || [], cols, rows);
     if (arr.some(v => v < 0 || !Number.isInteger(v))) errors.push(`la capa ${name} tiene GIDs inválidos`);
+  }
 
   // ── Reporte ──
   console.log(`\nValidando: ${file}`);

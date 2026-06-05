@@ -307,7 +307,18 @@ function buildLevel(spec) {
   for (const t of tiles)
     if (t.x >= 0 && t.y >= 0 && t.x < cols && t.y < rows) pathFlat[t.y * cols + t.x] = pathGid;
 
-  const empty = () => new Array(cols * rows).fill(0);
+  // ── overlay / top (capas de terreno autotileadas ENCIMA del floor) ──
+  // overlay = 2º piso sobre el floor; top = tiles sobre el overlay. Vacías si no se especifican.
+  const terrainLayer = (rectsSpec) => {
+    if (!Array.isArray(rectsSpec) || rectsSpec.length === 0) return new Array(cols * rows).fill(0);
+    const grid = Array.from({ length: rows }, () => new Array(cols).fill(null));
+    for (const r of rectsSpec)
+      for (const c of rectCells(r.rect))
+        if (c.x >= 0 && c.y >= 0 && c.x < cols && c.y < rows) grid[c.y][c.x] = r.type;
+    return flatten(autotile(grid, cols, rows), cols, rows);
+  };
+  const overlayFlat = terrainLayer(spec.overlay);
+  const topFlat = terrainLayer(spec.top);
 
   const out = {
     version: 1, cols, rows, tile: TILE,
@@ -316,8 +327,8 @@ function buildLevel(spec) {
       floor: floorFlat,
       path: pathFlat,
       walls: wallsFlat,
-      overlay: empty(),
-      top: empty(),
+      overlay: overlayFlat,
+      top: topFlat,
     },
     spawn: spec.spawn || { tx: 1, ty: Math.floor(rows / 2) },
     objects: spec.objects || [],
