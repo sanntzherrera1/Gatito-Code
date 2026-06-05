@@ -26,6 +26,10 @@ export function initResult() {
     } else if (state === 'lose') {
       addAction('Reintentar', () => onRestart?.());
       addAction('Menu',       () => onMenu?.());
+    } else if (state === 'idle') {
+      // En niveles tutorial un intento fallido no es "perder": igual ofrecemos reintentar.
+      if (onRestart) addAction('Reintentar', () => onRestart?.());
+      if (onMenu)    addAction('Menu',       () => onMenu?.());
     }
 
     requestAnimationFrame(() => panel.classList.add('visible'));

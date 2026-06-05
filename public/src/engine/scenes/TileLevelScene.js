@@ -156,7 +156,8 @@ export class TileLevelScene extends Phaser.Scene {
     });
     btn.addEventListener('mouseenter', () => btn.style.background = '#ffd000');
     btn.addEventListener('mouseleave', () => btn.style.background = '#ffe600');
-    btn.addEventListener('click', () => this._runPathAnimation());
+    // Solo repite la animación del camino, sin disparar tutoriales (onComplete)
+    btn.addEventListener('click', () => animatePath(this));
     document.getElementById('result-panel')?.appendChild(btn);
     this.events.once('shutdown', () => btn.remove());
   }
@@ -290,6 +291,12 @@ export class TileLevelScene extends Phaser.Scene {
       onComplete: () => {
         const atGoal = !goal || (this.playerModel.tx === goal.tx && this.playerModel.ty === goal.ty);
         const isWin = atGoal && this.pickups.size === 0;
+        // Auto-demo del tutorial: el jugador todavía no jugó, así que no marcamos
+        // el nivel como completado ni mostramos el overlay de resultado.
+        if (this._demoRunning) {
+          this.playerView[isWin ? 'playCelebrate' : 'playSad']();
+          return;
+        }
         if (isWin) {
           markLevelCompleted(this.levelKey);
           this.playerView.playCelebrate();

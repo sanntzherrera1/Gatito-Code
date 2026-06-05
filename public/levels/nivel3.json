@@ -1036,11 +1036,110 @@
     "tx": 1,
     "ty": 6
   },
-  "objects": [],
+  "objects": [
+    {
+      "tx": 4,
+      "ty": 6,
+      "key": "grass_props",
+      "frame": 19,
+      "type": "pickup_with_animation"
+    },
+    {
+      "tx": 7,
+      "ty": 6,
+      "key": "grass_props",
+      "frame": 31,
+      "type": "pickup_with_animation"
+    },
+    {
+      "tx": 5,
+      "ty": 3,
+      "key": "grass_props",
+      "frame": 28,
+      "type": "deco"
+    },
+    {
+      "tx": 3,
+      "ty": 4,
+      "key": "plants",
+      "frame": 3,
+      "type": "deco"
+    },
+    {
+      "tx": 9,
+      "ty": 3,
+      "key": "mushrooms",
+      "frame": 0,
+      "type": "deco"
+    },
+    {
+      "tx": 12,
+      "ty": 4,
+      "key": "mushrooms",
+      "frame": 3,
+      "type": "deco"
+    },
+    {
+      "tx": 9,
+      "ty": 5,
+      "key": "plants",
+      "frame": 5,
+      "type": "deco"
+    },
+    {
+      "tx": 2,
+      "ty": 8,
+      "key": "plants",
+      "frame": 2,
+      "type": "deco"
+    },
+    {
+      "tx": 4,
+      "ty": 9,
+      "key": "plants",
+      "frame": 4,
+      "type": "deco"
+    },
+    {
+      "tx": 6,
+      "ty": 9,
+      "key": "grass_props",
+      "frame": 36,
+      "type": "deco"
+    },
+    {
+      "tx": 8,
+      "ty": 8,
+      "key": "mushrooms",
+      "frame": 1,
+      "type": "deco"
+    },
+    {
+      "tx": 10,
+      "ty": 7,
+      "key": "free_chicken",
+      "frame": 0,
+      "type": "deco"
+    },
+    {
+      "tx": 13,
+      "ty": 8,
+      "key": "plants",
+      "frame": 1,
+      "type": "deco"
+    },
+    {
+      "tx": 11,
+      "ty": 9,
+      "key": "mushrooms",
+      "frame": 2,
+      "type": "deco"
+    }
+  ],
   "weather": {
     "rain": 0,
     "snow": 0,
-    "pollen": 0,
+    "pollen": 0.3,
     "leaves": 0,
     "night": 0,
     "fog": 0,

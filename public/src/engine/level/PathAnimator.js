@@ -53,3 +53,35 @@ export function animatePath(scene, { delay = 300, duration = 700, color = 0xffe6
     });
   });
 }
+
+/**
+ * Recorre el corredor de la capa `path` desde el spawn hasta el extremo lejano y
+ * devuelve la lista ordenada de direcciones ('up' | 'down' | 'left' | 'right').
+ * Pensado para caminos lineales (cada tile tiene a lo sumo un vecino sin visitar),
+ * que es como se diseñan en el editor de niveles.
+ * @param {Phaser.Scene} scene - Debe tener pathFlat, cols, rows, level.spawn
+ * @returns {string[]} Direcciones en orden de recorrido (vacío si no hay path)
+ */
+export function pathDirections(scene) {
+  const path = scene.pathFlat;
+  if (!path?.some(v => v !== 0)) return [];
+
+  const cols = scene.cols, rows = scene.rows;
+  const isPath = (tx, ty) => tx >= 0 && ty >= 0 && tx < cols && ty < rows && path[ty * cols + tx] !== 0;
+  const DELTAS = [
+    { dx: 0, dy: -1, dir: 'up' }, { dx: 0, dy: 1, dir: 'down' },
+    { dx: -1, dy: 0, dir: 'left' }, { dx: 1, dy: 0, dir: 'right' },
+  ];
+
+  let { tx, ty } = scene.level.spawn;
+  const visited = new Set([`${tx},${ty}`]);
+  const dirs = [];
+  while (true) {
+    const next = DELTAS.find(({ dx, dy }) => isPath(tx + dx, ty + dy) && !visited.has(`${tx + dx},${ty + dy}`));
+    if (!next) break;
+    tx += next.dx; ty += next.dy;
+    visited.add(`${tx},${ty}`);
+    dirs.push(next.dir);
+  }
+  return dirs;
+}
