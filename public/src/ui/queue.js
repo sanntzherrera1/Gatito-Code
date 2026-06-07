@@ -3,7 +3,8 @@ import { showJumpPickerForEl, initJumpPicker } from './jump-picker.js';
 
 let slotsEl;
 let slotsFunc1El;
-let selectIfRockEl;
+let ifConditionSelect;
+let ifActionSelect;
 let dirsPanel;
 let runBtn;
 let clearBtn;
@@ -12,10 +13,10 @@ let trashZoneEl;
 let activeTarget = 'main';
 
 export function initQueue() {
-  prepararPanelSi();
   slotsEl = document.getElementById('slots');
   slotsFunc1El = document.getElementById('slots-func1');
-  selectIfRockEl = document.getElementById('if-rock-select');
+  ifConditionSelect = document.getElementById('if-condition-select');
+  ifActionSelect = document.getElementById('if-action-select');
   dirsPanel = document.getElementById('dirs');
   runBtn = document.getElementById('run');
   clearBtn = document.getElementById('clear');
@@ -66,7 +67,7 @@ export function initQueue() {
       if (GYM.running) return;
       e.stopPropagation();
       const queue = activeTarget === 'func1' ? GYM.queueFunc1 : GYM.queue;
-      const max = activeTarget === 'func1' ? 3 : MAX;
+      const max = obtenerMaximoQueue(queue);
       if (queue.length >= max) return;
       showJumpPickerForEl(jumpBtn, activeTarget, queue, max);
     });
@@ -113,7 +114,8 @@ export function initQueue() {
     if (GYM.running) return;
     GYM.queue.length = 0;
     GYM.queueFunc1.length = 0;
-    GYM.queueIfRock.length = 0;
+    GYM.ifCondition = '';
+    GYM.ifAction = '';
     renderAllSlots();
     GYM.onRestart?.();
   });
@@ -126,12 +128,14 @@ export function initQueue() {
       if (missionBox) missionBox.style.display = 'none';
     }
   };
+
   window.__setIfPanel = visible => {
-    const panel = document.getElementById('queue-if-rock') || document.getElementById('queue-if-rock-left');
+    const panel = document.getElementById('queue-if-rule');
     if (!panel) return;
     panel.style.display = visible ? '' : 'none';
     if (!visible) {
-      GYM.queueIfRock.length = 0;
+      GYM.ifCondition = '';
+      GYM.ifAction = '';
       renderIfSeleccionado();
     }
   };
@@ -169,9 +173,20 @@ export function renderAllSlots() {
   renderIfSeleccionado();
 }
 
+function initIfPanel() {
+  ifConditionSelect?.addEventListener('change', () => {
+    if (GYM.running) return;
+    GYM.ifCondition = ifConditionSelect.value;
+  });
+  ifActionSelect?.addEventListener('change', () => {
+    if (GYM.running) return;
+    GYM.ifAction = ifActionSelect.value;
+  });
+}
+
 function renderIfSeleccionado() {
-  if (!selectIfRockEl) return;
-  selectIfRockEl.value = GYM.queueIfRock[0] || '';
+  if (ifConditionSelect) ifConditionSelect.value = GYM.ifCondition || '';
+  if (ifActionSelect) ifActionSelect.value = GYM.ifAction || '';
 }
 
 function setRunning(on) {
@@ -180,7 +195,8 @@ function setRunning(on) {
   runBtn.querySelector('.queue-label').textContent = on ? 'ejecutando…' : 'ejecutar';
   runBtn.querySelector('.queue-icon').textContent = on ? '⏵' : '✓';
   dirsPanel.querySelectorAll('button:not(.target-opt)').forEach(b => b.disabled = on);
-  if (selectIfRockEl) selectIfRockEl.disabled = on;
+  if (ifConditionSelect) ifConditionSelect.disabled = on;
+  if (ifActionSelect) ifActionSelect.disabled = on;
   runBtn.disabled = on;
   clearBtn.disabled = on;
   clearFunc1Btn.disabled = on;
@@ -279,38 +295,5 @@ function obtenerMaximoQueue(queue) {
 }
 
 function esComandoPermitidoEnQueue(dir) {
-  return dir !== 'if-rock-jump';
-}
-
-function prepararPanelSi() {
-  const panelExistente = document.getElementById('queue-if-rock');
-  if (panelExistente) {
-    normalizarPanelSi(panelExistente);
-    return;
-  }
-
-  const panel = document.getElementById('queue-if-rock-left');
-  const rightPanels = document.getElementById('right-panels');
-  const panelFunc1 = document.getElementById('queue-func1');
-  if (!panel || !rightPanels || !panelFunc1) return;
-
-  panel.id = 'queue-if-rock';
-  normalizarPanelSi(panel);
-  rightPanels.insertBefore(panel, panelFunc1.nextSibling);
-}
-
-function normalizarPanelSi(panel) {
-  panel.querySelector('#clear-if-rock')?.remove();
-}
-
-function initIfPanel() {
-  if (!selectIfRockEl) return;
-  selectIfRockEl.addEventListener('change', () => {
-    if (GYM.running) return;
-    GYM.queueIfRock.length = 0;
-    if (selectIfRockEl.value) {
-      GYM.queueIfRock.push(selectIfRockEl.value);
-    }
-    renderIfSeleccionado();
-  });
+  return dir !== 'if-rock-jump' && dir !== 'if-navigate';
 }

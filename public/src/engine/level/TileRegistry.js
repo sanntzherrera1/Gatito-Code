@@ -98,6 +98,18 @@ export const TILESETS = [
 
 export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3', 'bosque_floral', 'if', 'si_1', 'si_2', 'si_3'];
 
+export function gidPerteneceATileset(gid, nombreTileset) {
+  const definicion = TILESETS.find(t => t.name === nombreTileset);
+  if (!definicion || !gid) return false;
+  const primerGid = definicion.firstgid;
+  const ultimoGid = primerGid + definicion.cols * definicion.rows - 1;
+  return gid >= primerGid && gid <= ultimoGid;
+}
+
+export function esGidDeRoca(gid) {
+  return gidPerteneceATileset(gid, 'dungeon_rocks');
+}
+
 export const OBJECTS = [
   // ── Objects (basicos / existentes) ──
   { key: 'plants',
