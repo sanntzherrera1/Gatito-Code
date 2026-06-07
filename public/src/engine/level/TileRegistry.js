@@ -88,7 +88,19 @@ export const TILESETS = [
   { key: 'ts_blue_grass_layers_4',  name: 'blue_grass_layers_4',  category: 'more', label: 'Blue 4',   name: 'blue_grass_layers_4',  url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Ground tilesets/blue_tint_Grass_Tile_Layers4.png', cols: 11, rows: 25, firstgid: 7800  },
 ];
 
-export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3'];
+export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3', 'if', 'si_1', 'si_2', 'si_3'];
+
+export function gidPerteneceATileset(gid, nombreTileset) {
+  const definicion = TILESETS.find(t => t.name === nombreTileset);
+  if (!definicion || !gid) return false;
+  const primerGid = definicion.firstgid;
+  const ultimoGid = primerGid + definicion.cols * definicion.rows - 1;
+  return gid >= primerGid && gid <= ultimoGid;
+}
+
+export function esGidDeRoca(gid) {
+  return gidPerteneceATileset(gid, 'dungeon_rocks');
+}
 
 export const OBJECTS = [
   // ── Objects (basicos / existentes) ──

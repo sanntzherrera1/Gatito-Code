@@ -18,12 +18,14 @@ export class Nivel0Scene extends TileLevelScene {
 
   create() {
     super.create();
+    window.__setIfPanel?.(false);
     this.debugText?.setVisible(false);
     this.fpsVisible = false;
     this._disableFunc1();
 
     const signal = { cancelled: false, _cbs: [], _onCancel(cb) { this._cbs.push(cb); } };
     this.events.once('shutdown', () => {
+      window.__setIfPanel?.(true);
       signal.cancelled = true;
       signal._cbs.forEach(cb => cb());
       signal._cbs = [];

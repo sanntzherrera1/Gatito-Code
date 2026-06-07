@@ -37,6 +37,10 @@ export const BUILTIN_LEVELS = [
   { key: 'gym',    name: 'Gym',     scene: 'Gym' },
   { key: 'main',   name: 'Main',    scene: 'Main' },
   { key: 'nivel3', name: 'Nivel 3', scene: 'Nivel3' },
+  { key: 'if',     name: 'IF',      scene: 'Custom' },
+  { key: 'si_1',   name: 'SI 1',    scene: 'Custom' },
+  { key: 'si_2',   name: 'SI 2',    scene: 'Custom' },
+  { key: 'si_3',   name: 'SI 3',    scene: 'Custom' },
 ];
 
 export function getCustomLevels() {
