@@ -90,6 +90,18 @@ export const TILESETS = [
 
 export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3'];
 
+export function gidPerteneceATileset(gid, nombreTileset) {
+  const definicion = TILESETS.find(t => t.name === nombreTileset);
+  if (!definicion || !gid) return false;
+  const primerGid = definicion.firstgid;
+  const ultimoGid = primerGid + definicion.cols * definicion.rows - 1;
+  return gid >= primerGid && gid <= ultimoGid;
+}
+
+export function esGidDeRoca(gid) {
+  return gidPerteneceATileset(gid, 'dungeon_rocks');
+}
+
 export const OBJECTS = [
   // ── Objects (basicos / existentes) ──
   { key: 'plants',      label: 'Plants',      url: 'assets/SproutLands-Sprites/Objects/Basic Plants.png',             cols: 6, rows: 2, frameW: 16, frameH: 16, category: 'objects' },
