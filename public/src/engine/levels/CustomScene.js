@@ -1,5 +1,24 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
 
+const LEVEL_COPY = {
+  if: {
+    welcome: 'Nuevo concepto: IF. SI sucede una condicion, Gatito hace otra cosa. En este nivel, si hay una roca adelante, la salta.',
+    mission: 'Mision: Activa SI ROCA SALTAR y usa mover a la derecha para cruzar la linea de piedras.',
+  },
+  si_1: {
+    welcome: 'Ahora que ya conoces IF, usalo junto con movimientos normales para cruzar y despues girar.',
+    mission: 'Mision: Usa SI junto con movimientos normales para cruzar las rocas y recolectar todo.',
+  },
+  si_2: {
+    welcome: 'Este tramo repite la misma idea dos veces. Usa FUNCION 1 como bloque reutilizable junto con SI ROCA SALTAR.',
+    mission: 'Mision: Repite una mini-rutina con F1 para juntar todo usando SI ROCA SALTAR.',
+  },
+  si_3: {
+    welcome: 'Este nivel mezcla saltos automaticos con giros. Si solo avanzas, no alcanza.',
+    mission: 'Mision: Usa SI ROCA SALTAR y cambia de direccion para juntar los dos objetos.',
+  },
+};
+
 export class CustomScene extends TileLevelScene {
   constructor() {
     super('Custom');
@@ -7,8 +26,34 @@ export class CustomScene extends TileLevelScene {
 
   init(data) {
     super.init(data);
-    this.welcomeMessage = `¡Jugando nivel: ${this.levelKey}!`;
-    this.missionText = `Mision: Recolecta todos los items en el nivel ${this.levelKey}.`;
+    const copy = LEVEL_COPY[this.levelKey];
+    this.welcomeMessage = copy?.welcome ?? `Jugando nivel: ${this.levelKey}.`;
+    this.missionText = copy?.mission ?? `Mision: Recolecta todos los items en el nivel ${this.levelKey}.`;
+    if (this.levelKey === 'if') {
+      this.onWelcomeClose = () => {
+        window.__setIfPanel?.(true);
+        this.showIdlePanel();
+      };
+    } else {
+      this.onWelcomeClose = null;
+    }
     if (!data?.returnScreen) this.returnScreen = 'levels';
+  }
+
+  create() {
+    super.create();
+
+    this.events.once('shutdown', () => {
+      window.__setIfPanel?.(true);
+    });
+
+    if (this.levelKey === 'if') {
+      window.__setIfPanel?.(false);
+      return;
+    }
+
+    if (['si_1', 'si_2', 'si_3'].includes(this.levelKey)) {
+      window.__setIfPanel?.(true);
+    }
   }
 }

@@ -90,6 +90,10 @@ export class MenuScene extends Phaser.Scene {
         { key: 'gym',    name: 'Gym' },
         { key: 'main',   name: 'Main' },
         { key: 'nivel3', name: 'Nivel 3' },
+        { key: 'if',     name: 'IF' },
+        { key: 'si_1',   name: 'SI 1' },
+        { key: 'si_2',   name: 'SI 2' },
+        { key: 'si_3',   name: 'SI 3' },
         ...getCustomLevels()
       ];
 

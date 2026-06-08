@@ -126,6 +126,15 @@ export function initQueue() {
       if (missionBox) missionBox.style.display = 'none';
     }
   };
+  window.__setIfPanel = visible => {
+    const panel = document.getElementById('queue-if-rock') || document.getElementById('queue-if-rock-left');
+    if (!panel) return;
+    panel.style.display = visible ? '' : 'none';
+    if (!visible) {
+      GYM.queueIfRock.length = 0;
+      renderIfSeleccionado();
+    }
+  };
 
   renderAllSlots();
 }

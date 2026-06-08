@@ -11,6 +11,7 @@ export class Nivel3Scene extends TileLevelScene {
 
   create() {
     super.create();
+    window.__setIfPanel?.(false);
     const els = [
       document.querySelector('[data-dir="func1"]'),
       document.getElementById('queue-func1'),
@@ -26,6 +27,7 @@ export class Nivel3Scene extends TileLevelScene {
     this.onPathAnimationComplete = () => this._unlockFunc1(els);
 
     this.events.once('shutdown', () => {
+      window.__setIfPanel?.(true);
       document.getElementById('intro-card')?.remove();
       const d = document.getElementById('dirs');
       if (d) {
