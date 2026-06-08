@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { Player } from '../public/src/domain/Player.js';
 import { Level } from '../public/src/domain/Level.js';
+import { executeProgram } from '../public/src/engine/program/ProgramExecutor.js';
 
 // ============================================================
 //  Helper: construye una matriz de solidos 5×5 con una pared
@@ -117,6 +118,92 @@ describe('domain/Player.js — Navegacion y colisiones del jugador', () => {
     expect(player.tx).toBe(player.spawnTx);
     expect(player.ty).toBe(player.spawnTy);
     expect(player.facing).toBe('down');
+  });
+});
+
+describe('engine/program/ProgramExecutor.js - IF con roca', () => {
+  function crearContexto(hayRocaAdelante) {
+    const llamadas = [];
+    return {
+      llamadas,
+      obtenerDireccion: () => 'right',
+      hayRocaAdelante: () => hayRocaAdelante,
+      step: async (dir) => llamadas.push(`step:${dir}`),
+      jumpInPlace: async () => llamadas.push('jump'),
+      jumpDir: async (dir) => llamadas.push(`jump:${dir}`),
+      onComplete: () => llamadas.push('complete'),
+    };
+  }
+
+  it('si hay una roca adelante, salta hacia la direccion actual', async () => {
+    const context = crearContexto(true);
+
+    await executeProgram(['if-rock-jump'], context, {});
+
+    expect(context.llamadas).toEqual(['jump:right', 'complete']);
+  });
+
+  it('si la regla automatica esta activa, salta antes del movimiento direccional', async () => {
+    const context = crearContexto(false);
+
+    await executeProgram(['right'], context, { queueIfRock: ['if-rock-jump'] });
+
+    expect(context.llamadas).toEqual(['step:right', 'complete']);
+  });
+
+  it('si la regla automatica ve roca, reemplaza el paso por un salto', async () => {
+    const context = crearContexto(true);
+
+    await executeProgram(['right'], context, { queueIfRock: ['if-rock-jump'] });
+
+    expect(context.llamadas).toEqual(['jump:right', 'complete']);
+  });
+
+  it('tambien evalua la regla automatica dentro de Funcion 1', async () => {
+    const context = crearContexto(true);
+
+    await executeProgram(['func1'], context, {
+      queueFunc1: ['right'],
+      queueIfRock: ['if-rock-jump'],
+    });
+
+    expect(context.llamadas).toEqual(['jump:right', 'complete']);
+  });
+
+  it('si la regla es rodear y adelante esta bloqueado, intenta por la izquierda', async () => {
+    const llamadas = [];
+    const context = {
+      llamadas,
+      obtenerDireccion: () => 'up',
+      hayRocaAdelante: () => false,
+      estaBloqueado: (dir) => dir === 'up',
+      step: async (dir) => llamadas.push(`step:${dir}`),
+      jumpInPlace: async () => llamadas.push('jump'),
+      jumpDir: async (dir) => llamadas.push(`jump:${dir}`),
+      onComplete: () => llamadas.push('complete'),
+    };
+
+    await executeProgram(['up'], context, { queueIfRock: ['if-navigate'] });
+
+    expect(context.llamadas).toEqual(['step:left', 'complete']);
+  });
+
+  it('si izquierda esta bloqueada, rodear intenta por la derecha', async () => {
+    const llamadas = [];
+    const context = {
+      llamadas,
+      obtenerDireccion: () => 'up',
+      hayRocaAdelante: () => false,
+      estaBloqueado: (dir) => dir === 'up' || dir === 'left',
+      step: async (dir) => llamadas.push(`step:${dir}`),
+      jumpInPlace: async () => llamadas.push('jump'),
+      jumpDir: async (dir) => llamadas.push(`jump:${dir}`),
+      onComplete: () => llamadas.push('complete'),
+    };
+
+    await executeProgram(['up'], context, { queueIfRock: ['if-navigate'] });
+
+    expect(context.llamadas).toEqual(['step:right', 'complete']);
   });
 });
 
