@@ -193,7 +193,7 @@ export const SLIDES = [
             <li><span class="icon">◈</span><span class="label">Juego en navegador</span>Sin instalacion, accesible desde cualquier dispositivo de escritorio con un navegador moderno.</li>
             <li><span class="icon">◈</span><span class="label">18 niveles en 6 secciones</span>Progresion pedagogica: secuencias, bucles, condicionales, variables y funciones.</li>
             <li><span class="icon">◈</span><span class="label">Editor de niveles</span>Herramienta interna para crear y testear niveles personalizados sin modificar el codigo.</li>
-            <li><span class="icon">◈</span><span class="label">Nivel tutorial "Gym"</span>Onboarding jugable sin instrucciones de texto que introduce las mecanicas basicas.</li>
+            <li><span class="icon">◈</span><span class="label">Nivel tutorial "Gym"</span>Onboarding jugable con minimas instrucciones de texto que introduce las mecanicas basicas.</li>
             <li><span class="icon">◈</span><span class="label">Feedback visual de error</span>El log muestra que instruccion fallo, promoviendo el aprendizaje por ensayo y error.</li>
           </ul>
         </div>
@@ -236,7 +236,17 @@ export const SLIDES = [
     id: 'slide-5',
     html: `
       <h2>Tablero SCRUM — Sprints</h2>
-      <p class="text-center">Iteraciones de 2 semanas con planning y review al inicio y cierre de cada ciclo.</p>
+      <p class="text-center">3 sprints completados y el siguiente en progreso para continuar el desarrollo del producto.</p>
+      <p class="text-center" style="font-size:0.8rem; color:var(--text-dim); margin-top:-0.25rem;">Hasta el Sprint 3 correspondia el alcance comprometido en el acta de cierre; el resto forma parte de la siguiente etapa.</p>
+      <div style="display:flex; justify-content:center; margin-top:0.2rem; margin-bottom:0.6rem;">
+        <div class="closing-stamp" id="sprint-commit-stamp" style="margin-top:0;">ALCANCE COMPROMETIDO: S1&ndash;S3</div>
+      </div>
+
+      <div class="stat-bar-container">
+        <span class="stat-bar-label">Progreso Global</span>
+        <div class="stat-bar-track"><div class="stat-bar-fill" id="global-progress" data-width="56"></div></div>
+        <span class="stat-bar-value">27 / 48 tareas</span>
+      </div>
 
       <div class="sprint-board">
         <div class="sprint-card completed" id="sprint-card-1">
@@ -270,38 +280,51 @@ export const SLIDES = [
             <li>Sistema de niveles custom</li>
             <li class="carried">Drag &amp; drop de comandos &rarr; S3</li>
             <li class="carried">Jump picker inline &rarr; S3</li>
-            <li class="carried">Selector de destino &rarr; S3</li>
           </ul>
         </div>
 
-        <div class="sprint-card partial" id="sprint-card-3">
+        <div class="sprint-card completed" id="sprint-card-3">
           <div class="sprint-name">Sprint 3</div>
           <div class="sprint-period">18 may &rarr; 31 may</div>
           <div style="display:flex; align-items:center; gap:0.4rem;">
-            <div class="progress-bar" style="flex:1;"><div class="progress-fill cyan" data-width="75"></div></div>
-            <span style="color:var(--accent); font-size:0.7rem;">9/12</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill green" data-width="100"></div></div>
+            <span style="color:var(--green); font-size:0.7rem;">12/12</span>
           </div>
-          <div class="sprint-status progress">EN PROGRESO</div>
+          <div class="sprint-status done">COMPLETADO</div>
           <ul class="sprint-tasks">
             <li>Ejecucion de niveles custom</li>
             <li>Modularizacion de dialogos</li>
             <li>Pickups definidos en JSON</li>
             <li>Animaciones de sprites</li>
             <li>Condicion de victoria</li>
-            <li>Efectos de sonido</li>
-            <li>Persistencia de progreso</li>
+            <li>Niveles pedagogicos progresivos</li>
+            <li>Sistema de progresion</li>
+            <li>Editor publico de niveles</li>
           </ul>
         </div>
 
-        <div class="sprint-card" id="sprint-card-4" style="border-color:var(--border-dim);">
-          <div class="sprint-name" style="color:var(--text-dim);">Sprint 4–5</div>
-          <div class="sprint-period">Proximas iteraciones</div>
+        <div class="sprint-card partial" id="sprint-card-4">
+          <div class="sprint-name">Sprint 4&ndash;6</div>
+          <div class="sprint-period">Junio &rarr; 2027</div>
           <div style="display:flex; align-items:center; gap:0.4rem;">
-            <div class="progress-bar" style="flex:1;"><div class="progress-fill green" data-width="0"></div></div>
-            <span style="color:var(--text-dim); font-size:0.7rem;">0/7</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill cyan" data-width="20"></div></div>
+            <span style="color:var(--accent); font-size:0.7rem;">3/15</span>
           </div>
+          <div class="sprint-status progress">EN PROGRESO</div>
+          <ul class="sprint-tasks">
+            <li>Bucles y condicionales</li>
+            <li>Sonidos y feedback</li>
+            <li>Hosting web publico</li>
+            <li>Playtest con usuarios reales</li>
+            <li>Secciones de niveles completos</li>
+            <li>Responsive basico para mobile y tablet</li>
+            <li>Publicacion en Steam</li>
+            <li>Randomizador de niveles generados por IA</li>
+          </ul>
+        </div>
         </div>
       </div>
+
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
@@ -317,6 +340,19 @@ export const SLIDES = [
           }
         }, 300 + idx * 200, sessionId);
       });
+
+      scheduleSession(() => {
+        const globalFill = document.getElementById('global-progress');
+        if (globalFill) globalFill.style.width = globalFill.dataset.width + '%';
+      }, 300 + cards.length * 200 + 300, sessionId);
+
+      scheduleSession(() => {
+        const stamp = document.getElementById('sprint-commit-stamp');
+        if (stamp) {
+          stamp.classList.add('show');
+          playSound('pickup');
+        }
+      }, 300 + cards.length * 200 + 420, sessionId);
     }
   },
 
