@@ -12,7 +12,22 @@ export function readLevelJson(scene, levelKey) {
       if (disk && (parsed.cols !== disk.cols || parsed.rows !== disk.rows)) {
         localStorage.removeItem(`level:${levelKey}`);
       } else {
-        return parsed;
+        // Validate GIDs: if any GID is > 10000, the saved data uses old firstgid (100100)
+        // and must be discarded since the tileset now has firstgid 8080.
+        const maxGid = Math.max(
+          ...(parsed.layers?.floor || []),
+          ...(parsed.layers?.walls || []),
+          ...(parsed.layers?.path || []),
+          ...(parsed.layers?.overlay || []),
+          ...(parsed.layers?.top || []),
+          0
+        );
+        if (maxGid > 10000) {
+          console.warn(`Level "${levelKey}" override has invalid GIDs (${maxGid}), discarding.`);
+          localStorage.removeItem(`level:${levelKey}`);
+        } else {
+          return parsed;
+        }
       }
     } catch { localStorage.removeItem(`level:${levelKey}`); }
   }
@@ -37,6 +52,7 @@ export const BUILTIN_LEVELS = [
   { key: 'gym',    name: 'Gym',     scene: 'Gym' },
   { key: 'main',   name: 'Main',    scene: 'Main' },
   { key: 'nivel3', name: 'Nivel 3', scene: 'Nivel3' },
+  { key: 'bosque_floral', name: 'Bosque Floral', scene: 'BosqueFloral' },
 ];
 
 export function getCustomLevels() {

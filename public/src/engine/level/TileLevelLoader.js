@@ -1,6 +1,6 @@
 import { readLevelJson } from '../../services/Storage.js';
 import { TILESETS } from './TileRegistry.js';
-import { expandLayer } from './TileRegistry.js';
+import { expandLayer, OBJECTS } from './TileRegistry.js';
 import { migrateWeather } from './WeatherSystem.js';
 import { Level } from '../../domain/Level.js';
 
@@ -11,6 +11,7 @@ import { Level } from '../../domain/Level.js';
  */
 export function loadLevel(scene, levelKey) {
   const lvl = readLevelJson(scene, levelKey);
+  if (!lvl) throw new Error(`Level "${levelKey}" not loaded`);
   if (!lvl) throw new Error(`Level "${levelKey}" not loaded`);
 
   const cols = lvl.cols, rows = lvl.rows;
@@ -74,6 +75,32 @@ export function loadLevel(scene, levelKey) {
       }
     }
   }
+
+  // Los objetos estructurados (con `occupyW`/`occupyH` explícito en el registry — árboles, casas,
+  // pozos, cofres…) bloquean su huella, salvo que declaren `solid: false`. Animales/NPC sin occupy
+  // siguen siendo solo visuales. Nunca solidificamos tiles de `path`, ni el spawn ni los pickups.
+  const pickupSet = new Set(
+    objects.filter(o => o.type === 'pickup' || o.type === 'pickup_with_animation')
+           .map(o => `${o.tx},${o.ty}`)
+  );
+  for (const obj of objects) {
+    if (obj.type === 'pickup' || obj.type === 'pickup_with_animation') continue;
+    const def = OBJECTS.find(o => o.key === obj.key);
+    if (!def || def.occupyW == null || def.solid === false) continue;
+    const occW = def.occupyW, occH = def.occupyH ?? 1;
+    const startTx = obj.tx - Math.floor((occW - 1) / 2);
+    const startTy = obj.ty - (occH - 1);
+    for (let y = startTy; y <= obj.ty; y++) {
+      for (let x = startTx; x < startTx + occW; x++) {
+        if (x < 0 || y < 0 || x >= cols || y >= rows) continue;
+        if (path[y * cols + x] !== 0) continue;            // no pisar el corredor
+        if (x === spawn.tx && y === spawn.ty) continue;     // no bloquear el spawn
+        if (pickupSet.has(`${x},${y}`)) continue;           // no bloquear pickups
+        if (solid[y]) solid[y][x] = true;
+      }
+    }
+  }
+
   const weather = migrateWeather(lvl.weather);
   const level = new Level(cols, rows, solid, spawn, objects, weather);
 

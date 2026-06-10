@@ -9,6 +9,7 @@ import { CustomScene } from './engine/levels/CustomScene.js';
 import { PruebaScene } from './engine/levels/PruebaScene.js';
 import { DungeonScene } from './engine/levels/DungeonScene.js';
 import { BosqueDePruebaScene } from './engine/levels/BosqueDePruebaScene.js';
+import { BosqueFloralScene } from './engine/levels/BosqueFloralScene.js';
 import { TILE, COLS, ROWS } from './config/game.js';
 
 export { TILE, COLS, ROWS };
@@ -23,5 +24,5 @@ new Phaser.Game({
   roundPixels: true,
   backgroundColor: '#12161d',
   physics: { default: 'arcade', arcade: { debug: false, gravity: { x: 0, y: 0 } } },
-  scene: [BootScene, MenuScene, Nivel0Scene, GymScene, MainScene, Nivel3Scene, EditorScene, CustomScene],
+  scene: [BootScene, MenuScene, Nivel0Scene, GymScene, MainScene, Nivel3Scene, BosqueFloralScene, EditorScene, CustomScene],
 });

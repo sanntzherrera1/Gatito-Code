@@ -103,6 +103,45 @@ export function injectStyles() {
       from { opacity: 1; transform: translateX(-50%) translateY(0)    scale(1);   }
       to   { opacity: 0; transform: translateX(-50%) translateY(14px) scale(.93); }
     }
+    @keyframes backdrop-in  { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes backdrop-out { from { opacity: 1; } to { opacity: 0; } }
+    #panel-backdrop {
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.82);
+      z-index: 8998;
+      animation: backdrop-in 0.35s ease forwards;
+    }
+    #panel-backdrop.out { animation: backdrop-out 0.3s ease forwards; }
+    @keyframes btn-press {
+      0%   { transform: scale(1); }
+      40%  { transform: scale(0.88); filter: brightness(1.4); }
+      100% { transform: scale(1); }
+    }
+    .btn-press { animation: btn-press 0.22s ease-out; }
+    /* Zoom fuerte para elementos chicos (switch) durante el tutorial */
+    .tut-bigzoom {
+      transform: scale(2.6) !important;
+      transform-origin: center !important;
+      transition: transform 0.45s cubic-bezier(.22,1,.36,1) !important;
+      position: relative !important;
+      z-index: 9003 !important;
+    }
+    @keyframes btn-press-big {
+      0%   { transform: scale(2.6); }
+      40%  { transform: scale(2.25); filter: brightness(1.5); }
+      100% { transform: scale(2.6); }
+    }
+    .btn-press-big { animation: btn-press-big 0.3s ease-out; }
+    /* Desbloqueo suave: el glow entra, respira despacio y se desvanece sin golpes */
+    .unlock-layer { position: relative !important; z-index: 9001 !important; }
+    .unlock-glow { animation: unlock-glow 3.2s ease-in-out forwards !important; }
+    @keyframes unlock-glow {
+      0%   { box-shadow: 0 0 0 0   rgba(255,230,0,0);                                 transform: scale(1);    }
+      20%  { box-shadow: 0 0 0 5px rgba(255,230,0,1),   0 0 40px rgba(255,230,0,.85); transform: scale(1.07); }
+      45%  { box-shadow: 0 0 0 3px rgba(255,230,0,.65), 0 0 24px rgba(255,230,0,.45); transform: scale(1.03); }
+      70%  { box-shadow: 0 0 0 5px rgba(255,230,0,1),   0 0 40px rgba(255,230,0,.85); transform: scale(1.07); }
+      100% { box-shadow: 0 0 0 0   rgba(255,230,0,0);                                 transform: scale(1);    }
+    }
   `;
   document.head.appendChild(s);
 }
