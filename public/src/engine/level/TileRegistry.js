@@ -75,7 +75,7 @@ export const TILESETS = [
   { key: 'ts_dungeon_items',              category: 'dungeon', label: 'Items',            name: 'dungeon_items',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/dungeon_items.png',                    cols: 5,  rows: 3,  firstgid: 4800  },
   { key: 'ts_dungeon_carts',              category: 'dungeon', label: 'Carts',            name: 'dungeon_carts',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Carts.png',                          cols: 3,  rows: 2,  firstgid: 4850  },
   { key: 'ts_dungeon_rails',              category: 'dungeon', label: 'Rails',            name: 'dungeon_rails',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rails.png',                          cols: 4,  rows: 3,  firstgid: 4900  },
-  { key: 'ts_dungeon_rocks',              category: 'dungeon', label: 'Rocks',            name: 'dungeon_rocks',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                          cols: 4,  rows: 4,  firstgid: 4950  },
+  { key: 'ts_dungeon_rocks',              category: 'dungeon', label: 'Rocks',            name: 'dungeon_rocks',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                          cols: 4,  rows: 4,  firstgid: 4950, properties: { isRock: true }  },
   { key: 'ts_dungeon_switch',             category: 'dungeon', label: 'Switch',           name: 'dungeon_switch',             url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/switch.png',                           cols: 3,  rows: 1,  firstgid: 5000  },
 
   // ── Winter ──
@@ -94,7 +94,7 @@ export const TILESETS = [
   { key: 'ts_blue_grass_layers_4',  name: 'blue_grass_layers_4',  category: 'more', label: 'Blue 4',   name: 'blue_grass_layers_4',  url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Ground tilesets/blue_tint_Grass_Tile_Layers4.png', cols: 11, rows: 25, firstgid: 7800  },
 ];
 
-export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3', 'bosque_floral'];
+export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3', 'bosque_floral', 'if', 'si_1', 'si_2', 'si_3'];
 
 export const OBJECTS = [
   // ── Objects (basicos / existentes) ──
@@ -226,7 +226,7 @@ export const OBJECTS = [
   { key: 'small_green_slime',    label: 'Green Slime',    url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/small_green_slime_animations.png', cols: 12, rows: 8, frameW: 38, frameH: 38, category: 'animals' },
   { key: 'dungeon_probs',        label: 'Dungeon Props',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Dungeon_probs.png',          cols: 4,  rows: 2, frameW: 32, frameH: 32, occupyW: 2, occupyH: 2, category: 'objects' },
   { key: 'dungeon_carts_obj',    label: 'Dungeon Carts',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Carts.png',                  cols: 3,  rows: 1, frameW: 16, frameH: 32, occupyW: 1, occupyH: 1, category: 'structures' },
-  { key: 'dungeon_rocks_obj',    label: 'Dungeon Rocks',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                  cols: 4,  rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'dungeon_rocks_obj',    label: 'Dungeon Rocks',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                  cols: 4,  rows: 4, frameW: 16, frameH: 16, category: 'nature', isRock: true },
   { key: 'dungeon_switch_obj',   label: 'Dungeon Switch', url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/switch.png',                 cols: 3,  rows: 1, frameW: 16, frameH: 16, category: 'structures' },
 
   // ── Ocean Pack ──
@@ -300,15 +300,7 @@ export const OBJECTS = [
   { key: 'small_huts_grass', group: 'small_hut', variant: {'door':'no','grass':'yes'}, label: 'Small Huts Grass',      url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_huts_with_grass.png',                       cols: 3, rows: 3, frameW: 64, frameH: 64, occupyW: 4, occupyH: 1, category: 'structures' },
   { key: 'small_hut_shadow', group: 'house_shadow', variant: {house: 'small_hut'}, label: 'Small Hut Shadow',      url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_hut_shadow.png',                             cols: 4,  rows: 1, frameW: 16, frameH: 16, category: 'shadow' },
   // ── Wooden Cabins ──
-  { key: 'wooden_cabins', group: 'wooden_cabin', variant: {'light':'off','door':'no','grass':'no'}, label: 'Wooden Cabin',          url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins.png',                              cols: 3, rows: 1, frameW: 96, frameH: 80, occupyW: 5, occupyH: 2, category: 'structures' },
-  { key: 'wooden_cabins_light', group: 'wooden_cabin', variant: {'light':'on','door':'no','grass':'no'}, label: 'Wooden Cabin Light',    url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins_light.png',                        cols: 3, rows: 1, frameW: 96, frameH: 80, occupyW: 5, occupyH: 2, category: 'structures' },
-  { key: 'wooden_cabins_with_doors', group: 'wooden_cabin', variant: {'light':'off','door':'yes','grass':'no'}, label: 'Wooden Cabin + Door', url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins_with_doors.png',                  cols: 3, rows: 1, frameW: 96, frameH: 80, occupyW: 5, occupyH: 2, category: 'structures' },
-  { key: 'wooden_cabins_with_doors_light', group: 'wooden_cabin', variant: {'light':'on','door':'yes','grass':'no'}, label: 'Wooden Cabin Lt Door',url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins_with_doors_light.png',              cols: 3, rows: 1, frameW: 96, frameH: 80, occupyW: 5, occupyH: 2, category: 'structures' },
-  { key: 'wooden_cabins_with_doors_grass', group: 'wooden_cabin', variant: {'light':'off','door':'yes','grass':'yes'}, label: 'Wooden Cabin D Grass',url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins_with_doors_grass.png',              cols: 3, rows: 1, frameW: 96, frameH: 80, occupyW: 5, occupyH: 2, category: 'structures' },
-  { key: 'wooden_cabins_with_doors_grass_light', group: 'wooden_cabin', variant: {'light':'on','door':'yes','grass':'yes'}, label: 'Wooden Cabin Lt D Grs',url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins_with_doors_grass_light.png',       cols: 3, rows: 1, frameW: 96, frameH: 80, occupyW: 5, occupyH: 2, category: 'structures' },
-  { key: 'wooden_cabins_with_grass', group: 'wooden_cabin', variant: {'light':'off','door':'no','grass':'yes'}, label: 'Wooden Cabin Grass',    url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins_with_grass.png',                  cols: 3, rows: 1, frameW: 96, frameH: 80, occupyW: 5, occupyH: 2, category: 'structures' },
-  { key: 'wooden_cabins_with_grass_light', group: 'wooden_cabin', variant: {'light':'on','door':'no','grass':'yes'}, label: 'Wooden Cabin Lt Grass', url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins_with_grass_light.png',              cols: 3, rows: 1, frameW: 96, frameH: 80, occupyW: 5, occupyH: 2, category: 'structures' },
-  { key: 'wooden_cabins_shadow', group: 'house_shadow', variant: {house: 'wooden_cabin'}, label: 'Wooden Cabin Shadow',   url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Wooden cabins/wooden_cabins_shadow.png',                        cols: 6,  rows: 2, frameW: 16, frameH: 16, category: 'shadow' },
+
   { key: 'brick_houses_shadow', group: 'house_shadow', variant: {house: 'brick_house'}, label: 'Brick House Shadow',    url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Grey brick house/brick_houses_shadow.png',                     cols: 6,  rows: 2, frameW: 16, frameH: 16, category: 'shadow' },
 
   // ── Tests (NPCs decorativos) ──
@@ -1062,20 +1054,7 @@ export const VARIANT_DEFS = {
       ]}
     ]
   },
-  wooden_cabin: {
-    label: 'Wooden Cabin',
-    dimensions: [
-      { key: 'light', label: 'Light', options: [
-        { value: 'off', label: 'Off' }, { value: 'on', label: 'On' }
-      ]},
-      { key: 'door', label: 'Door', options: [
-        { value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' }
-      ]},
-      { key: 'grass', label: 'Grass', options: [
-        { value: 'no', label: 'No' }, { value: 'yes', label: 'Yes' }
-      ]}
-    ]
-  },
+
   small_hut: {
     label: 'Small Hut',
     dimensions: [

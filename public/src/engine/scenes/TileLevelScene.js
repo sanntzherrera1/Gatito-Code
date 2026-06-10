@@ -1,4 +1,4 @@
-import { TILE, STEP_MS } from '../../config/game.js';
+import { DIRS, TILE, STEP_MS } from '../../config/game.js';
 import { loadLevel } from '../../engine/level/TileLevelLoader.js';
 import { createWeather, destroyWeather } from '../../engine/level/WeatherSystem.js';
 import { Player } from '../../domain/Player.js';
@@ -42,6 +42,7 @@ export class TileLevelScene extends Phaser.Scene {
     this.collected = 0;
 
     this.pathFlat = levelData.flat?.path || [];
+    this.wallsFlat = levelData.flat?.walls || [];
     this.drawPathMarkers(this.pathFlat);
 
     this.loadObjects(this.level.objects);
@@ -65,6 +66,7 @@ export class TileLevelScene extends Phaser.Scene {
     this.showIdlePanel();
 
     const onDocEsc = (e) => {
+      if (!this.puedeSalirPorEscape()) return;
       if (e.key !== 'Escape' && e.key !== 'Esc') return;
       const tag = (e.target?.tagName || '').toLowerCase();
       if (tag === 'input' || tag === 'textarea' || e.target?.isContentEditable) return;
@@ -104,7 +106,10 @@ export class TileLevelScene extends Phaser.Scene {
       F: Phaser.Input.Keyboard.KeyCodes.F,
       ESC: Phaser.Input.Keyboard.KeyCodes.ESC,
     });
-    this.keys.ESC.on('down', () => this.exitToMenu());
+    this.keys.ESC.on('down', () => {
+      if (!this.puedeSalirPorEscape()) return;
+      this.exitToMenu();
+    });
 
     this.grid = this.add.graphics().setDepth(100).setScrollFactor(0);
     this.drawGrid();
@@ -282,12 +287,44 @@ export class TileLevelScene extends Phaser.Scene {
     }
   }
 
+  puedeSalirPorEscape() {
+    if (document.visibilityState !== 'visible') return false;
+    if (typeof document.hasFocus === 'function' && !document.hasFocus()) return false;
+    return true;
+  }
+
+  casillaEnDireccion(dir, distancia = 1) {
+    const delta = DIRS[dir];
+    if (!delta) return { tx: this.playerModel.tx, ty: this.playerModel.ty };
+    return {
+      tx: this.playerModel.tx + delta.dx * distancia,
+      ty: this.playerModel.ty + delta.dy * distancia,
+    };
+  }
+
+  hayRocaEn(tx, ty) {
+    return this.level.isRock(tx, ty);
+  }
+
+  hayRocaAdelante(dir = this.playerModel.facing) {
+    const siguiente = this.casillaEnDireccion(dir);
+    return this.hayRocaEn(siguiente.tx, siguiente.ty);
+  }
+
+  estaBloqueado(dir = this.playerModel.facing) {
+    const siguiente = this.casillaEnDireccion(dir);
+    return !this.playerModel.canEnter(siguiente.tx, siguiente.ty);
+  }
+
   async runProgram(moves) {
     const goal = this._pathGoal();
     const context = {
       step: (dir) => this.step(dir),
       jumpInPlace: () => this.jumpInPlace(),
       jumpDir: (dir) => this.jumpDir(dir),
+      obtenerDireccion: () => this.playerModel.facing,
+      hayRocaAdelante: (dir) => this.hayRocaAdelante(dir),
+      estaBloqueado: (dir) => this.estaBloqueado(dir),
       onComplete: () => {
         const atGoal = !goal || (this.playerModel.tx === goal.tx && this.playerModel.ty === goal.ty);
         const isWin = atGoal && this.pickups.size === 0;

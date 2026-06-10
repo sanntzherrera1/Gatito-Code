@@ -1,12 +1,21 @@
 import { MAX, ARROW, LABEL, GYM } from './state.js';
 import { showJumpPickerForEl, initJumpPicker } from './jump-picker.js';
 
-let slotsEl, slotsFunc1El, dirsPanel, runBtn, clearBtn, clearFunc1Btn, trashZoneEl;
+let slotsEl;
+let slotsFunc1El;
+let selectIfRockEl;
+let dirsPanel;
+let runBtn;
+let clearBtn;
+let clearFunc1Btn;
+let trashZoneEl;
 let activeTarget = 'main';
 
 export function initQueue() {
+  prepararPanelSi();
   slotsEl = document.getElementById('slots');
   slotsFunc1El = document.getElementById('slots-func1');
+  selectIfRockEl = document.getElementById('if-rock-select');
   dirsPanel = document.getElementById('dirs');
   runBtn = document.getElementById('run');
   clearBtn = document.getElementById('clear');
@@ -22,37 +31,38 @@ export function initQueue() {
     e.preventDefault();
     trashZoneEl.classList.remove('drag-over');
     trashZoneEl.classList.remove('visible');
-    
+
     if (GYM.running) return;
     const dataStr = e.dataTransfer.getData('text/plain');
     try {
       const payload = JSON.parse(dataStr);
       if (payload.isMove && payload.queueId) {
-        const q = payload.queueId === 'func1' ? GYM.queueFunc1 : GYM.queue;
-        q.splice(payload.index, 1);
+        const queue = obtenerQueuePorId(payload.queueId);
+        if (!queue) return;
+        queue.splice(payload.index, 1);
         renderAllSlots();
       }
-    } catch(err) {}
+    } catch (err) {}
   });
 
   initTargetSwitch();
   initJumpPicker(renderAllSlots);
+  initIfPanel();
 
-  dirsPanel.querySelectorAll('button:not(.target-opt):not([data-dir="jump"]):not(.jump-dir-btn)').forEach(btn => {
+  dirsPanel.querySelectorAll('button[data-dir]:not([data-dir="jump"])').forEach(btn => {
     btn.addEventListener('click', () => {
       if (GYM.running) return;
       const queue = activeTarget === 'func1' ? GYM.queueFunc1 : GYM.queue;
-      const max = activeTarget === 'func1' ? 3 : MAX;
-      if (queue.length < max) {
-        queue.push(btn.dataset.dir);
-        renderAllSlots();
-      }
+      const max = obtenerMaximoQueue(queue);
+      if (queue.length >= max) return;
+      queue.push(btn.dataset.dir);
+      renderAllSlots();
     });
   });
 
   const jumpBtn = document.getElementById('jump-btn');
   if (jumpBtn) {
-    jumpBtn.addEventListener('click', (e) => {
+    jumpBtn.addEventListener('click', e => {
       if (GYM.running) return;
       e.stopPropagation();
       const queue = activeTarget === 'func1' ? GYM.queueFunc1 : GYM.queue;
@@ -62,7 +72,7 @@ export function initQueue() {
     });
   }
 
-  dirsPanel.querySelectorAll('button:not(.target-opt):not(.jump-dir-btn)').forEach(btn => {
+  dirsPanel.querySelectorAll('button[data-dir]:not([data-dir="jump"])').forEach(btn => {
     btn.setAttribute('draggable', 'true');
     btn.addEventListener('dragstart', e => {
       e.dataTransfer.setData('text/plain', btn.dataset.dir);
@@ -90,24 +100,39 @@ export function initQueue() {
     if (GYM.queue.length === 0) return;
     if (typeof GYM.onRun !== 'function') return;
     setRunning(true);
-    try { await GYM.onRun(GYM.queue.slice()); }
-    finally { GYM.queue.length = 0; renderAllSlots(); setRunning(false); }
+    try {
+      await GYM.onRun(GYM.queue.slice());
+    } finally {
+      GYM.queue.length = 0;
+      renderAllSlots();
+      setRunning(false);
+    }
   });
 
   document.getElementById('restart').addEventListener('click', () => {
     if (GYM.running) return;
     GYM.queue.length = 0;
     GYM.queueFunc1.length = 0;
+    GYM.queueIfRock.length = 0;
     renderAllSlots();
     GYM.onRestart?.();
   });
 
-  window.__setPanels = (visible) => {
+  window.__setPanels = visible => {
     document.getElementById('panels').style.display = visible ? 'flex' : 'none';
     document.getElementById('right-panels').style.display = visible ? 'flex' : 'none';
     if (!visible) {
       const missionBox = document.getElementById('mission');
       if (missionBox) missionBox.style.display = 'none';
+    }
+  };
+  window.__setIfPanel = visible => {
+    const panel = document.getElementById('queue-if-rock') || document.getElementById('queue-if-rock-left');
+    if (!panel) return;
+    panel.style.display = visible ? '' : 'none';
+    if (!visible) {
+      GYM.queueIfRock.length = 0;
+      renderIfSeleccionado();
     }
   };
 
@@ -128,19 +153,25 @@ function initTargetSwitch() {
 function renderQueue(queue, container) {
   if (!container) return;
   [...container.children].forEach((el, i) => {
-    const v = queue[i];
-    const varText = v ? `<span class="var-label">${i === 0 ? 'i' : 'i+' + i}</span>` : '';
-    const iconStyle = v === 'func1' ? 'style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;"' : '';
-    const labelStyle = v === 'func1' ? 'style="color:#1a4a7a"' : '';
-    el.innerHTML = v ? `<span class="dir-icon" ${iconStyle}>${ARROW[v]}</span><span class="dir-label" ${labelStyle}>${LABEL[v]}</span>${varText}` : '';
-    el.classList.toggle('filled', !!v);
-    el.draggable = !!v;
+    const value = queue[i];
+    const varText = value ? `<span class="var-label">${i === 0 ? 'i' : 'i+' + i}</span>` : '';
+    const iconStyle = value === 'func1' ? 'style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;"' : '';
+    const labelStyle = value === 'func1' ? 'style="color:#1a4a7a"' : '';
+    el.innerHTML = value ? `<span class="dir-icon" ${iconStyle}>${ARROW[value]}</span><span class="dir-label" ${labelStyle}>${LABEL[value]}</span>${varText}` : '';
+    el.classList.toggle('filled', !!value);
+    el.draggable = !!value;
   });
 }
 
 export function renderAllSlots() {
   renderQueue(GYM.queue, slotsEl);
   renderQueue(GYM.queueFunc1, slotsFunc1El);
+  renderIfSeleccionado();
+}
+
+function renderIfSeleccionado() {
+  if (!selectIfRockEl) return;
+  selectIfRockEl.value = GYM.queueIfRock[0] || '';
 }
 
 function setRunning(on) {
@@ -149,12 +180,14 @@ function setRunning(on) {
   runBtn.querySelector('.queue-label').textContent = on ? 'ejecutando…' : 'ejecutar';
   runBtn.querySelector('.queue-icon').textContent = on ? '⏵' : '✓';
   dirsPanel.querySelectorAll('button:not(.target-opt)').forEach(b => b.disabled = on);
+  if (selectIfRockEl) selectIfRockEl.disabled = on;
   runBtn.disabled = on;
   clearBtn.disabled = on;
   clearFunc1Btn.disabled = on;
 }
 
 function setupDropZone(container, queue, queueId) {
+  if (!container) return;
   [...container.children].forEach((slot, i) => {
     slot.addEventListener('dragover', e => {
       e.preventDefault();
@@ -166,9 +199,11 @@ function setupDropZone(container, queue, queueId) {
       slot.classList.remove('drag-over');
       if (GYM.running) return;
 
-      let dir, sourceQueueId, sourceIndex;
+      let dir;
+      let sourceQueueId;
+      let sourceIndex;
       const dataStr = e.dataTransfer.getData('text/plain');
-      
+
       try {
         const payload = JSON.parse(dataStr);
         if (payload.isMove) {
@@ -178,19 +213,19 @@ function setupDropZone(container, queue, queueId) {
         } else {
           dir = dataStr;
         }
-      } catch(err) {
+      } catch (err) {
         dir = dataStr;
       }
 
-      if (!dir) return;
+      if (!dir || !esComandoPermitidoEnQueue(dir)) return;
 
-      const maxAllowed = queue === GYM.queueFunc1 ? 3 : MAX;
+      const maxAllowed = obtenerMaximoQueue(queue);
 
       if (sourceQueueId) {
-        // Move operation (reordering or moving between queues)
-        const srcQueue = sourceQueueId === 'func1' ? GYM.queueFunc1 : GYM.queue;
+        const srcQueue = obtenerQueuePorId(sourceQueueId);
+        if (!srcQueue) return;
         if (srcQueue === queue) {
-          if (sourceIndex === i) return; // Dropped on itself
+          if (sourceIndex === i) return;
           srcQueue.splice(sourceIndex, 1);
           queue.splice(Math.min(i, queue.length), 0, dir);
         } else {
@@ -199,7 +234,6 @@ function setupDropZone(container, queue, queueId) {
           queue.splice(Math.min(i, queue.length), 0, dir);
         }
       } else {
-        // Copy operation from palette
         if (queue.length >= maxAllowed) return;
         queue.splice(Math.min(i, queue.length), 0, dir);
         if (queue.length > maxAllowed) queue.length = maxAllowed;
@@ -231,5 +265,52 @@ function setupDropZone(container, queue, queueId) {
       trashZoneEl.classList.remove('visible');
       trashZoneEl.classList.remove('drag-over');
     });
+  });
+}
+
+function obtenerQueuePorId(queueId) {
+  if (queueId === 'func1') return GYM.queueFunc1;
+  if (queueId === 'main') return GYM.queue;
+  return null;
+}
+
+function obtenerMaximoQueue(queue) {
+  return queue === GYM.queueFunc1 ? 3 : MAX;
+}
+
+function esComandoPermitidoEnQueue(dir) {
+  return dir !== 'if-rock-jump';
+}
+
+function prepararPanelSi() {
+  const panelExistente = document.getElementById('queue-if-rock');
+  if (panelExistente) {
+    normalizarPanelSi(panelExistente);
+    return;
+  }
+
+  const panel = document.getElementById('queue-if-rock-left');
+  const rightPanels = document.getElementById('right-panels');
+  const panelFunc1 = document.getElementById('queue-func1');
+  if (!panel || !rightPanels || !panelFunc1) return;
+
+  panel.id = 'queue-if-rock';
+  normalizarPanelSi(panel);
+  rightPanels.insertBefore(panel, panelFunc1.nextSibling);
+}
+
+function normalizarPanelSi(panel) {
+  panel.querySelector('#clear-if-rock')?.remove();
+}
+
+function initIfPanel() {
+  if (!selectIfRockEl) return;
+  selectIfRockEl.addEventListener('change', () => {
+    if (GYM.running) return;
+    GYM.queueIfRock.length = 0;
+    if (selectIfRockEl.value) {
+      GYM.queueIfRock.push(selectIfRockEl.value);
+    }
+    renderIfSeleccionado();
   });
 }

@@ -10,6 +10,7 @@ export class MainScene extends TileLevelScene {
 
   create() {
     super.create();
+    window.__setIfPanel?.(false);
     const els = [
       document.querySelector('[data-dir="func1"]'),
       document.getElementById('queue-func1'),
@@ -24,6 +25,7 @@ export class MainScene extends TileLevelScene {
     this._addRepeatPathButton();
 
     this.events.once('shutdown', () => {
+      window.__setIfPanel?.(true);
       for (const el of els) {
         if (!el) continue;
         el.style.opacity = '';

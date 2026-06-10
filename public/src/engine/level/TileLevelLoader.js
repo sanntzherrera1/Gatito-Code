@@ -101,8 +101,32 @@ export function loadLevel(scene, levelKey) {
     }
   }
 
+  const rockGids = new Set();
+  for (const ts of TILESETS) {
+    if (ts.properties?.isRock) {
+      const lastGid = ts.firstgid + ts.cols * ts.rows - 1;
+      for (let g = ts.firstgid; g <= lastGid; g++) rockGids.add(g);
+    }
+  }
+  const rockObjKeys = new Set(OBJECTS.filter(o => o.isRock).map(o => o.key));
+
+  const rocks = [];
+  for (let y = 0; y < rows; y++) {
+    const row = [];
+    for (let x = 0; x < cols; x++) {
+      const wGid = walls[y * cols + x] || 0;
+      row.push(rockGids.has(wGid));
+    }
+    rocks.push(row);
+  }
+  for (const obj of objects) {
+    if (rockObjKeys.has(obj.key) && rocks[obj.ty]) {
+      rocks[obj.ty][obj.tx] = true;
+    }
+  }
+
   const weather = migrateWeather(lvl.weather);
-  const level = new Level(cols, rows, solid, spawn, objects, weather);
+  const level = new Level(cols, rows, solid, spawn, objects, weather, rocks);
 
   return {
     map, floorLayer, pathLayer, wallsLayer, overlayLayer, topLayer, level, cols, rows,
