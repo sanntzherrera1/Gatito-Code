@@ -1,5 +1,4 @@
 import { playSound } from "../../presentacion-gestion/js/sound.js";
-import { startDemo, stopDemo } from "../../presentacion-gestion/js/demo-game.js";
 import { scheduleSession } from "../../presentacion-gestion/js/timers.js";
 
 const AVATARS = [
@@ -18,52 +17,63 @@ const CORNERS = `
   <div class="corner-ornament br"></div>
 `;
 
+function gifPlaceholder(description, size = "normal") {
+  const cls = {
+    small:  "gif-placeholder-sm",
+    large:  "gif-placeholder-lg",
+    card:   "gif-placeholder-card",
+  }[size] ?? "";
+  return `<div class="gif-placeholder ${cls}">
+    <div class="gif-placeholder-icon">🎬</div>
+    <div class="gif-placeholder-text">${description}</div>
+  </div>`;
+}
+
 export const SLIDES = [
   // ========================================================
   // Slide 1: Portada
+  // 🎤 ORADOR: Presentarse brevemente como equipo, dejar que el typewriter termine y
+  //    recalcar que el juego corre HOY en el navegador, sin instalar nada.
   // ========================================================
   {
     id: "slide-portada",
     html: `
       <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; position: relative;">
-        <div style="z-index: 1; text-align: center;">
-          <div id="cover-sprite"></div>
+        <div style="z-index: 1; text-align: center; width: 100%;">
           <h1>GATITO CODE</h1>
-          <p style="font-size: 1.15rem; margin-bottom: 0.2rem; text-shadow: 0 0 8px var(--glow-cyan); color: var(--accent-magenta);">Proyecto Integrador</p>
-          <p style="font-size: 1rem; margin-top: 0; text-shadow: 0 0 8px var(--glow-cyan);">Un juego para aprender programacion</p>
+          <p style="font-size: 1.3rem; margin-bottom: 0.2rem; text-shadow: 0 0 8px var(--glow-cyan); color: var(--accent-magenta);">Proyecto Integrador 2026</p>
+          <p style="font-size: 1.1rem; margin-top: 0.3rem; text-shadow: 0 0 8px var(--glow-cyan); color: var(--accent);">Ayudá a Tito a resolver puzzles programando</p>
         </div>
 
-        <div class="dialog-box" style="z-index: 1; margin-top: 40px; width: 80%; max-width: 900px;">
-          <p style="color: var(--accent-warm); margin-bottom: 8px; text-shadow: 1px 1px 0 #000;">Nuestra propuesta:</p>
-          <div id="typewriter-text" style="font-size: 0.9rem; line-height: 1.8; color: var(--text-primary); min-height: 50px;"></div>
+        <div style="display: flex; gap: 2rem; align-items: center; margin-top: 1.5rem; width: 90%; max-width: 1000px; z-index: 1;">
+          <div class="dialog-box" style="flex: 1;">
+            <p style="color: var(--accent-warm); margin-bottom: 8px; text-shadow: 1px 1px 0 #000; font-size: 1rem;">Nuestra propuesta:</p>
+            <div id="typewriter-text" style="font-size: 1rem; line-height: 1.8; color: var(--text-primary); min-height: 60px;"></div>
+          </div>
+
+          <!-- Tito + burbuja -->
+          <div style="display: flex; flex-direction: column; align-items: center; gap: 0.5rem; flex-shrink: 0;">
+            <div class="cover-bubble">
+              <span style="font-size: 1.2rem;">¡Hola!</span><br>
+              <span style="color: var(--text-primary); font-size: 0.9rem; line-height: 1.5;">Soy Tito.<br>¿Listos para programar?</span>
+            </div>
+            <div style="width: 288px; height: 288px; display: flex; align-items: center; justify-content: center; overflow: visible;">
+              <div id="cover-sprite" style="margin: 0;"></div>
+            </div>
+          </div>
         </div>
       </div>
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
       const text =
-        "Gatito-Code es un videojuego educativo de pensamiento computacional con estetica pixel-art, destinado a ninos y ninas de 6 a 10 anos sin conocimientos previos de programacion. El juego estara disponible originalmente en la web, sin necesidad de instalar nada. El jugador guia a un gatito en un mapa de tiles, construyendo programas mediante bloques de instrucciones arrastrables (arriba, abajo, izquierda, derecha) para recolectar objetos y completar niveles.";
+        "Un videojuego educativo de pensamiento computacional con estetica pixel-art, para ninos de 6 a 10 anos. El jugador guia a Tito construyendo programas con bloques arrastrables, sin necesidad de escribir codigo.";
       const highlightedText = text
-        .replace(
-          "videojuego educativo",
-          '<span style="color:var(--accent-warm);">videojuego educativo</span>',
-        )
-        .replace(
-          "pensamiento computacional",
-          '<span style="color:var(--accent);">pensamiento computacional</span>',
-        )
-        .replace(
-          "pixel-art",
-          '<span style="color:var(--green);">pixel-art</span>',
-        )
-        .replace(
-          "en la web",
-          '<span style="color:var(--accent-magenta);">en la web</span>',
-        )
-        .replace(
-          "sin necesidad de instalar nada",
-          '<span style="color:var(--green);">sin necesidad de instalar nada</span>',
-        );
+        .replace("videojuego educativo", '<span style="color:var(--accent-warm);">videojuego educativo</span>')
+        .replace("pensamiento computacional", '<span style="color:var(--accent);">pensamiento computacional</span>')
+        .replace("pixel-art", '<span style="color:var(--green);">pixel-art</span>')
+        .replace("bloques arrastrables", '<span style="color:var(--accent-magenta);">bloques arrastrables</span>')
+        .replace("sin necesidad de escribir codigo", '<span style="color:var(--green);">sin necesidad de escribir codigo</span>');
       const el = document.getElementById("typewriter-text");
       if (!el) return;
       el.innerHTML = "";
@@ -84,59 +94,37 @@ export const SLIDES = [
 
   // ========================================================
   // Slide 2: Equipo (Party Select)
+  // 🎤 ORADOR: Cada integrante se presenta a sí mismo cuando aparece su card;
+  //    mantenerlo dinámico y no leer los roles en voz alta.
   // ========================================================
   {
     id: "slide-equipo",
     html: `
       <h2>Equipo de Desarrollo</h2>
-      <p class="text-center" style="margin-bottom: 24px;">Conoce a los integrantes que hicieron posible Gatito Code.</p>
+      <p class="text-center" style="font-size: 1.1rem; margin-bottom: 24px;">Las personas detras de Gatito Code.</p>
 
       <div class="party-grid" id="party-grid"></div>
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
       const members = [
-        {
-          name: "Brian Herrera",
-          emoji: "🧠",
-          title: "Desarrollador",
-          desc: "Programacion de la logica del juego, movimiento del jugador, colisiones y sistema de ejecucion de comandos.",
-        },
-        {
-          name: "Lisett Castillo",
-          emoji: "📋",
-          title: "Scrum Master",
-          desc: "Facilitacion de ceremonias agiles, gestion del backlog y aseguramiento del flujo de trabajo.",
-        },
-        {
-          name: "Iara Baya",
-          emoji: "🛠️",
-          title: "Desarrolladora",
-          desc: "Desarrollo del motor de tilemaps, sistema de clima y editor visual de niveles.",
-        },
-        {
-          name: "Luis Herrera",
-          emoji: "🎨",
-          title: "Disenador UI/UX",
-          desc: "Creacion de interfaces, paletas de colores, tipografia pixel-art y experiencia de usuario.",
-        },
-        {
-          name: "Inti Taretto",
-          emoji: "⚡",
-          title: "Desarrollador",
-          desc: "Implementacion de mecanicas de niveles, integracion de assets y optimizacion de rendimiento.",
-        },
-        {
-          name: "Lucas Fernandez",
-          emoji: "🔍",
-          title: "QA y Documentacion",
-          desc: "Diseno de casos de prueba, control de calidad y redaccion de documentacion tecnica.",
-        },
+        { name: "Brian Herrera",   emoji: "🧠",  title: "Desarrollador"      },
+        { name: "Lisett Castillo", emoji: "📋",  title: "Scrum Master"       },
+        { name: "Iara Baya",       emoji: "🛠️",  title: "Desarrolladora"     },
+        { name: "Luis Herrera",    emoji: "🎮",  title: "Diseñador de Juego" },
+        { name: "Jose Martinez",   emoji: "⚡",  title: "Desarrollador"      },
       ];
 
       const grid = document.getElementById("party-grid");
       if (!grid) return;
       grid.innerHTML = "";
+
+      const row1 = document.createElement("div");
+      row1.className = "party-row";
+      const row2 = document.createElement("div");
+      row2.className = "party-row";
+      grid.appendChild(row1);
+      grid.appendChild(row2);
 
       members.forEach((m, idx) => {
         const slot = document.createElement("div");
@@ -146,10 +134,10 @@ export const SLIDES = [
           <div class="party-avatar" style="background-position: ${av.pos};"></div>
           <div class="party-card">
             <div class="party-name">${m.name}</div>
-            <div class="party-role"><span class="party-role-title">${m.emoji} ${m.title}</span> - ${m.desc}</div>
+            <div class="party-role-title">${m.emoji} ${m.title}</div>
           </div>
         `;
-        grid.appendChild(slot);
+        (idx < 3 ? row1 : row2).appendChild(slot);
 
         scheduleSession(
           () => {
@@ -164,13 +152,78 @@ export const SLIDES = [
   },
 
   // ========================================================
-  // Slide 3: El Problema
+  // Slide 3: ¿Qué es Gatito Code? (NUEVO — elevator pitch)
+  // 🎤 ORADOR: Mostrar el GIF mientras se explica el loop: "ven el mapa, arman
+  //    el programa con bloques, le dan ejecutar, y Tito lo hace". Mantenerlo simple.
+  // ========================================================
+  {
+    id: "slide-que-es",
+    html: `
+      <h2>¿Que es Gatito Code?</h2>
+
+      <div class="elevator-pitch-layout">
+        <div class="elevator-pitch-text">
+          <div class="pitch-item" id="pitch-1">
+            <div class="pitch-num">01</div>
+            <div class="pitch-content">
+              <span class="pitch-title">Un juego de puzzles</span>
+              <span class="pitch-desc">Tito, el gatito protagonista, queda atrapado en laberintos de tiles. El jugador tiene que guiarlo hasta la salida.</span>
+            </div>
+          </div>
+          <div class="pitch-item" id="pitch-2">
+            <div class="pitch-num">02</div>
+            <div class="pitch-content">
+              <span class="pitch-title">Programar sin escribir</span>
+              <span class="pitch-desc">Arrastras bloques (arriba, abajo, izquierda, derecha) a una cola, apretás ejecutar, y ves como Tito sigue tus instrucciones paso a paso.</span>
+            </div>
+          </div>
+          <div class="pitch-item" id="pitch-3">
+            <div class="pitch-num">03</div>
+            <div class="pitch-content">
+              <span class="pitch-title">Para chicos de 6 a 10 anos</span>
+              <span class="pitch-desc">Sin texto de codigo, 100% en espanol, gratis y directo en el navegador. Sin instalar nada.</span>
+            </div>
+          </div>
+          <div class="pitch-item" id="pitch-4">
+            <div class="pitch-num">04</div>
+            <div class="pitch-content">
+              <span class="pitch-title">Ensenando sin que se den cuenta</span>
+              <span class="pitch-desc">Secuencias, funciones, loops y condicionales: los fundamentos del pensamiento computacional envueltos en gameplay.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="elevator-pitch-visual">
+          ${gifPlaceholder("GIF: Loop completo de gameplay — el jugador arrastra bloques a la cola, presiona Ejecutar, y Tito recorre el mapa recolectando todos los objetos", "large")}
+        </div>
+      </div>
+      ${CORNERS}
+    `,
+    onEnter: (sessionId) => {
+      const items = document.querySelectorAll(".pitch-item");
+      items.forEach((item, idx) => {
+        scheduleSession(
+          () => {
+            item.classList.add("show");
+            playSound("blup");
+          },
+          200 + idx * 250,
+          sessionId,
+        );
+      });
+    },
+  },
+
+  // ========================================================
+  // Slide 4: El Problema
+  // 🎤 ORADOR: Ir card por card preguntando "¿quién conoce Scratch? ¿está en español?".
+  //    Conectar cada barrera con algo que el público ya conoce o vivió.
   // ========================================================
   {
     id: "slide-problema",
     html: `
       <h2>El Problema</h2>
-      <p class="text-center">Cuatro barreras que impiden que los ninos accedan al pensamiento computacional.</p>
+      <p class="text-center" style="font-size: 1.05rem;">Cuatro barreras que impiden que los ninos accedan al pensamiento computacional.</p>
 
       <div class="problem-cards">
         <div class="problem-card" id="problem-1">
@@ -182,15 +235,15 @@ export const SLIDES = [
         <div class="problem-card" id="problem-2">
           <div class="problem-icon">🌐</div>
           <div class="problem-stat">Las herramientas no hablan espanol</div>
-          <div class="problem-desc">Scratch, Code.org y similares estan en ingles o tienen traducciones deficientes. Los ninos de 6 a 10 anos necesitan interfaces en su idioma nativo para aprender sin frustracion.</div>
+          <div class="problem-desc">Scratch, Code.org y similares estan en ingles o tienen traducciones deficientes. Los ninos de 6 a 10 anos necesitan interfaces en su idioma nativo.</div>
         </div>
 
         <div class="problem-card" id="problem-3">
           <div class="problem-icon">🧑‍🏫</div>
           <div class="problem-stat">Sin guia, no hay autonomia</div>
-          <div class="problem-desc">Muchos juegos de programacion tienen una curva de aprendizaje inicial que no permite autonomia real. Si no hay un tutor que guie paso a paso, el nino se traba y abandona.</div>
+          <div class="problem-desc">Muchos juegos de programacion tienen una curva de aprendizaje que no permite autonomia real. Sin un tutor, el nino se traba y abandona.</div>
         </div>
-        
+
         <div class="problem-card" id="problem-4">
           <div class="problem-icon">✖</div>
           <div class="problem-stat">El texto y la sintaxis asustan</div>
@@ -199,7 +252,7 @@ export const SLIDES = [
       </div>
 
       <div class="dialog-box" style="margin-top:1rem; margin-bottom: 1.1rem; padding: 0.6rem 1.2rem; flex-shrink: 0;">
-        <p style="color: var(--text-primary); margin: 0; font-size: 1rem; line-height: 1.6; text-align: center;">
+        <p style="color: var(--text-primary); margin: 0; font-size: 1.05rem; line-height: 1.6; text-align: center;">
           Gatito-Code nace para resolver estos cuatro problemas:
           <span style="color: var(--green);">accesible</span>,
           <span style="color: var(--accent);">en espanol</span>,
@@ -225,47 +278,56 @@ export const SLIDES = [
   },
 
   // ========================================================
-  // Slide 4: La Solución
+  // Slide 5: La Solución — con GIF por pilar
+  // 🎤 ORADOR: Por cada pilar, señalar el GIF y explicar cómo se ve eso en el juego.
+  //    Los tres pilares son: sin escribir código, feedback inmediato, aprender del error.
   // ========================================================
   {
     id: "slide-solucion",
     html: `
-      <h2>La Solucion &mdash; Gatito Code</h2>
-      <p class="text-center">Tres pilares que hacen del juego una herramienta educativa efectiva.</p>
-
-      <div class="value-props">
-        <div class="value-prop-item" id="vp-1">
-          <div class="value-prop-icon">🎮</div>
-          <div class="value-prop-text">
-            <span class="value-prop-title">Programa sin escribir</span>
-            <span class="value-prop-desc">El jugador arrastra bloques de instrucciones (arriba, abajo, izquierda, derecha, saltar) a una cola visual. Sin teclado, sin sintaxis, sin frustracion.</span>
-          </div>
-        </div>
-
-        <div class="value-prop-item" id="vp-2">
-          <div class="value-prop-icon">⚡</div>
-          <div class="value-prop-text">
-            <span class="value-prop-title">Feedback inmediato</span>
-            <span class="value-prop-desc">Al ejecutar el programa, el gatito sigue las instrucciones paso a paso. El nino ve en tiempo real que hace cada comando y donde falla la secuencia.</span>
-          </div>
-        </div>
-
-        <div class="value-prop-item" id="vp-3">
-          <div class="value-prop-icon">🔄</div>
-          <div class="value-prop-text">
-            <span class="value-prop-title">Aprende del error</span>
-            <span class="value-prop-desc">El log muestra que instruccion fallo y por que. Corregir y reintentar es parte del flujo natural del juego, no un castigo.</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="pedagogy-loop" id="pedagogy-loop">
+      <h2>Como lo resuelve Tito</h2>
+      <div class="pedagogy-loop" style="margin-top:0; margin-bottom:0.75rem; opacity:1;">
         Loop pedagogico: <span style="color: var(--accent-warm);">ver mapa</span> &rarr;
         <span style="color: var(--accent-warm);">armar secuencia</span> &rarr;
         <span style="color: var(--accent-warm);">ejecutar</span> &rarr;
         <span style="color: var(--accent-warm);">observar resultado</span> &rarr;
         <span style="color: var(--accent-warm);">corregir</span> &rarr;
         <span style="color: var(--accent-warm);">iterar</span>
+      </div>
+
+      <div class="solution-grid">
+        <div class="value-prop-item" id="vp-1" style="display:flex; flex-direction:row; align-items:center; gap:1rem;">
+          <div style="flex:0 0 55%;">
+            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.4rem;">
+              <div class="value-prop-icon">🎮</div>
+              <span class="value-prop-title" style="font-size:1rem;">Programa sin escribir</span>
+            </div>
+            <span class="value-prop-desc" style="font-size:0.9rem;">El jugador arrastra bloques de instrucciones a una cola visual. Sin teclado, sin sintaxis, sin frustracion.</span>
+          </div>
+          ${gifPlaceholder("GIF: Mano arrastrando bloques (↑ ↓ ← →) a la cola de comandos", "small")}
+        </div>
+
+        <div class="value-prop-item" id="vp-2" style="display:flex; flex-direction:row; align-items:center; gap:1rem;">
+          <div style="flex:0 0 55%;">
+            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.4rem;">
+              <div class="value-prop-icon">⚡</div>
+              <span class="value-prop-title" style="font-size:1rem;">Feedback inmediato</span>
+            </div>
+            <span class="value-prop-desc" style="font-size:0.9rem;">Al ejecutar, Tito sigue las instrucciones paso a paso. El nino ve en tiempo real que hace cada comando y donde falla la secuencia.</span>
+          </div>
+          ${gifPlaceholder("GIF: Tito ejecutando la cola paso a paso, cada bloque se ilumina al ejecutarse", "small")}
+        </div>
+
+        <div class="value-prop-item" id="vp-3" style="display:flex; flex-direction:row; align-items:center; gap:1rem;">
+          <div style="flex:0 0 55%;">
+            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.4rem;">
+              <div class="value-prop-icon">🔄</div>
+              <span class="value-prop-title" style="font-size:1rem;">Aprende del error</span>
+            </div>
+            <span class="value-prop-desc" style="font-size:0.9rem;">El log muestra que instruccion fallo y por que. Corregir y reintentar es parte del flujo natural del juego, no un castigo.</span>
+          </div>
+          ${gifPlaceholder("GIF: Tito choca con una pared, el bloque fallido se marca en rojo, el jugador corrige y reintenta", "small")}
+        </div>
       </div>
       ${CORNERS}
     `,
@@ -277,38 +339,32 @@ export const SLIDES = [
             item.classList.add("show");
             playSound("blup");
           },
-          300 + idx * 250,
+          300 + idx * 280,
           sessionId,
         );
       });
-      scheduleSession(
-        () => {
-          const loop = document.getElementById("pedagogy-loop");
-          if (loop) loop.classList.add("show");
-        },
-        300 + items.length * 250 + 200,
-        sessionId,
-      );
     },
   },
 
   // ========================================================
-  // Slide 5: Público Objetivo
+  // Slide 6: Público Objetivo
+  // 🎤 ORADOR: Enfocar la mitad del tiempo en "la oportunidad": no existe hoy un juego
+  //    gratuito, en español y sin instalación para este rango etario.
   // ========================================================
   {
     id: "slide-publico",
     html: `
       <h2>Publico Objetivo</h2>
-      <p class="text-center">A quien le hablamos y en que contexto de mercado nos insertamos.</p>
+      <p class="text-center" style="font-size: 1.05rem;">A quien le hablamos y en que contexto de mercado nos insertamos.</p>
 
       <div class="scrum-container">
         <div class="scrum-panel" id="publico-panel-left">
           <h3>Nuestro Jugador</h3>
           <ul class="scrum-list">
-            <li><span class="icon">👦</span><span class="label">6 a 10 anos, hispanohablante</span>Ninos en etapa escolar primaria que leen textos cortos y manejan mouse o trackpad con soltura.</li>
+            <li><span class="icon">👦</span><span class="label">6 a 10 anos, hispanohablante</span>Ninos en etapa escolar primaria que manejan mouse o trackpad con soltura.</li>
             <li><span class="icon">🎯</span><span class="label">Sin experiencia previa</span>No conocen Scratch ni ningun lenguaje de programacion. Es su primer contacto con el pensamiento computacional.</li>
             <li><span class="icon">🧩</span><span class="label">Aprende mejor jugando</span>La gamificacion y la narrativa visual son mas efectivas que la instruccion textual a esta edad.</li>
-            <li><span class="icon">🔓</span><span class="label">Necesita autonomia</span>Las primeras secciones del juego deben ser completables sin ayuda de un adulto ni instrucciones escritas complejas.</li>
+            <li><span class="icon">🔓</span><span class="label">Necesita autonomia</span>Las primeras secciones del juego son completables sin ayuda de un adulto ni instrucciones escritas complejas.</li>
           </ul>
         </div>
 
@@ -316,8 +372,8 @@ export const SLIDES = [
           <h3>Contexto del Mercado</h3>
           <ul class="scrum-list">
             <li><span class="icon">📊</span><span class="label">Pocos juegos en espanol</span>El mercado de juegos educativos de programacion en espanol es escaso y dominado por traducciones parciales.</li>
-            <li><span class="icon">🧱</span><span class="label">Scratch es complejo</span>Scratch requiere lectura en ingles y presenta una interfaz compleja para menores de 10 anos. Bastante dificil de manejar sin un tutor formado exclusivo.</li>
-            <li><span class="icon">💰</span><span class="label">Alternativas pagas</span>Lightbot, Rodocodo y similares son pagos o tienen modelos freemium con contenido limitado.</li>
+            <li><span class="icon">🧱</span><span class="label">Scratch es complejo</span>Requiere lectura en ingles y tiene una interfaz compleja para menores de 10. Muy dificil sin un tutor.</li>
+            <li><span class="icon">💰</span><span class="label">Alternativas pagas</span>Lightbot, Rodocodo y similares tienen modelos freemium con contenido muy limitado.</li>
             <li><span class="icon">🚀</span><span class="label">Oportunidad clara</span>Un juego gratuito, en navegador, sin instalacion, 100% en espanol y con estetica atractiva no existe hoy.</li>
           </ul>
         </div>
@@ -334,20 +390,8 @@ export const SLIDES = [
         "#publico-panel-right .scrum-list li",
       );
 
-      scheduleSession(
-        () => {
-          if (leftH3) leftH3.classList.add("animate-underline");
-        },
-        300,
-        sessionId,
-      );
-      scheduleSession(
-        () => {
-          if (rightH3) rightH3.classList.add("animate-underline");
-        },
-        500,
-        sessionId,
-      );
+      scheduleSession(() => { if (leftH3) leftH3.classList.add("animate-underline"); }, 300, sessionId);
+      scheduleSession(() => { if (rightH3) rightH3.classList.add("animate-underline"); }, 500, sessionId);
 
       [...leftItems, ...rightItems].forEach((li, idx) => {
         scheduleSession(
@@ -363,49 +407,51 @@ export const SLIDES = [
   },
 
   // ========================================================
-  // Slide 6: Características del Producto
+  // Slide 7: El juego por dentro — Features con GIFs
+  // 🎤 ORADOR: Recorrer las 6 cards brevemente; el GIF habla por sí solo en cada una.
+  //    Destacar el editor de niveles como diferenciador: el jugador también puede crear.
   // ========================================================
   {
     id: "slide-features",
     html: `
-      <h2>Caracteristicas del Producto</h2>
-      <p class="text-center">Funcionalidades clave que distinguen a Gatito-Code como herramienta educativa.</p>
+      <h2>El Juego por Dentro</h2>
+      <p class="text-center" style="font-size: 1.05rem;">Las funcionalidades que hacen de Gatito-Code una herramienta educativa real.</p>
 
       <div class="feature-showcase">
         <div class="feature-card" id="feat-1">
           <div class="feature-card-icon">📋</div>
           <div class="feature-card-title">Cola de Comandos</div>
-          <div class="feature-card-desc">Arrastra instrucciones (arriba, abajo, izquierda, derecha, saltar) a una cola de hasta 5 slots para construir tu programa.</div>
+          ${gifPlaceholder("GIF: Cola de 5 slots con bloques ↑↓←→ apilados", "card")}
         </div>
 
         <div class="feature-card" id="feat-2">
           <div class="feature-card-icon">ƒ</div>
           <div class="feature-card-title">Funciones</div>
-          <div class="feature-card-desc">Agrupa bloques en subrutinas reutilizables con Function 1. Aprende abstraccion y reutilizacion sin escribir codigo.</div>
+          ${gifPlaceholder("GIF: Bloque Function 1 siendo llamado, expandiendose en sub-instrucciones", "card")}
         </div>
 
         <div class="feature-card" id="feat-3">
           <div class="feature-card-icon">🗺</div>
           <div class="feature-card-title">Editor de Niveles</div>
-          <div class="feature-card-desc">55 tilesets, 221+ sprites, sistema de clima, placement de objetos y spawn. Crea niveles personalizados sin codigo.</div>
+          ${gifPlaceholder("GIF: Editor con tiles pintando el mapa, colocando objetos y cambiando clima", "card")}
         </div>
 
         <div class="feature-card" id="feat-4">
           <div class="feature-card-icon">📈</div>
-          <div class="feature-card-title">Curva de Aprendizaje Guiada</div>
-          <div class="feature-card-desc">Progresion pedagogica cuidada para jugadores sin experiencia: comienza con secuencias simples e introduce gradualmente loops, funciones y condicionales con desafios claros y feedback inmediato.</div>
+          <div class="feature-card-title">Curva Guiada</div>
+          ${gifPlaceholder("GIF: Progresion de nivel simple a nivel complejo con mas bloques disponibles", "card")}
         </div>
 
         <div class="feature-card" id="feat-5">
           <div class="feature-card-icon">💬</div>
           <div class="feature-card-title">Dialogos de Mision</div>
-          <div class="feature-card-desc">Narrativa integrada con retratos de personajes para contextualizar cada nivel y guiar al jugador.</div>
+          ${gifPlaceholder("GIF: Dialogo de personaje apareciendo con retrato y texto de mision", "card")}
         </div>
 
         <div class="feature-card" id="feat-6">
           <div class="feature-card-icon">🌐</div>
           <div class="feature-card-title">Sin Instalacion</div>
-          <div class="feature-card-desc">Corre en cualquier navegador moderno. Sin descargas, sin cuentas, sin barreras de acceso.</div>
+          ${gifPlaceholder("GIF: Browser abriendo el juego directo desde la URL, sin popups de instalacion", "card")}
         </div>
       </div>
       ${CORNERS}
@@ -426,88 +472,20 @@ export const SLIDES = [
   },
 
   // ========================================================
-  // Slide 7: Arquitectura & Tecnologías
-  // ========================================================
-  {
-    id: "slide-arquitectura",
-    html: `
-      <h2>Tecnologias</h2>
-      <p class="text-center">Estructura en capas con separacion estricta entre logica pura y motor de renderizado.</p>
-
-      <div class="architecture-container">
-        <div class="tree-panel tree-current" style="flex: 3;">
-          <h3>Arquitectura en Capas</h3>
-          <div class="tree-content">
-            <span class="dir">public/src/</span>
-            ├── <span class="dir">config/</span>
-            │   └── <span class="file">game.js</span>         <span class="comment"># Constantes: TILE, COLS, ROWS, STEP_MS, DIRS</span>
-            ├── <span class="dir">domain/</span>             <span class="comment"># Puro JavaScript. Cero imports de Phaser.</span>
-            │   ├── <span class="file">Player.js</span>       <span class="comment"># Estado de movimiento, colision, facing</span>
-            │   ├── <span class="file">Level.js</span>        <span class="comment"># Geometria de grilla, solidos, spawn, objetos</span>
-            │   └── <span class="file">Program.js</span>      <span class="comment"># Secuencia inmutable de comandos</span>
-            ├── <span class="dir">engine/</span>             <span class="comment"># Todo lo que toca Phaser</span>
-            │   ├── <span class="dir">scenes/</span>         <span class="comment"># Boot, Menu, Editor, TileLevelScene</span>
-            │   ├── <span class="dir">levels/</span>         <span class="comment"># Gym, Main, Custom</span>
-            │   ├── <span class="dir">entities/</span>       <span class="comment"># PlayerView, PickupView</span>
-            │   ├── <span class="dir">level/</span>          <span class="comment"># TileRegistry, Loader, WeatherSystem</span>
-            │   └── <span class="dir">program/</span>        <span class="comment"># ProgramExecutor</span>
-            ├── <span class="dir">services/</span>
-            │   └── <span class="file">Storage.js</span>      <span class="comment"># localStorage: niveles, progreso</span>
-            └── <span class="dir">ui/</span>                 <span class="comment"># Modulos DOM: queue, dialog, mission</span>
-          </div>
-        </div>
-
-        <div class="scrum-panel" style="flex: 2;" id="tech-panel">
-          <h3>Stack Tecnologico</h3>
-          <ul class="scrum-list">
-            <li><span class="icon">🎮</span><span class="label">Phaser 3.80.1</span>Motor de juego 2D con soporte de tilemaps, fisicas y animaciones.</li>
-            <li><span class="icon">📦</span><span class="label">ES Modules puros</span>Sin bundler ni build step. Servido estaticamente desde cualquier servidor HTTP.</li>
-            <li><span class="icon">📄</span><span class="label">JSON Level Format</span>Niveles descritos como datos: tilesets, capas, spawn, objetos y clima.</li>
-            <li><span class="icon">💾</span><span class="label">localStorage</span>Persistencia de niveles custom y overrides sin backend.</li>
-            <li><span class="icon">🧪</span><span class="label">Vitest</span>Tests unitarios del dominio ejecutables con Node.</li>
-            <li><span class="icon">🌐</span><span class="label">HTML/CSS/JS</span>UI del DOM sin framework. Comunicacion via globals.</li>
-          </ul>
-        </div>
-      </div>
-      ${CORNERS}
-    `,
-    onEnter: (sessionId) => {
-      const h3 = document.querySelector("#tech-panel h3");
-      const items = document.querySelectorAll("#tech-panel .scrum-list li");
-
-      scheduleSession(
-        () => {
-          if (h3) h3.classList.add("animate-underline");
-        },
-        300,
-        sessionId,
-      );
-      items.forEach((li, idx) => {
-        scheduleSession(
-          () => {
-            li.classList.add("show");
-            if (idx % 2 === 0) playSound("bip");
-          },
-          500 + idx * 140,
-          sessionId,
-        );
-      });
-    },
-  },
-
-  // ========================================================
   // Slide 8: Estado Actual del Desarrollo
+  // 🎤 ORADOR: Ir sprint por sprint en 30 segundos; el foco es mostrar ritmo y
+  //    velocidad de entrega. La barra global del 56% cierra el mensaje.
   // ========================================================
   {
     id: "slide-estado",
     html: `
       <h2>Estado Actual del Desarrollo</h2>
-      <p class="text-center">3 sprints ejecutados con entregas incrementales y 1 planificado para completar el producto.</p>
+      <p class="text-center" style="font-size: 1.05rem;">3 sprints completados con entregas incrementales y 1 en progreso para completar el producto.</p>
 
       <div class="stat-bar-container">
         <span class="stat-bar-label">Progreso Global</span>
-        <div class="stat-bar-track"><div class="stat-bar-fill" id="global-progress" data-width="56"></div></div>
-        <span class="stat-bar-value">27 / 48 tareas</span>
+        <div class="stat-bar-track"><div class="stat-bar-fill" id="global-progress" data-width="63"></div></div>
+        <span class="stat-bar-value">30 / 48 tareas</span>
       </div>
 
       <div class="sprint-board">
@@ -545,14 +523,14 @@ export const SLIDES = [
           </ul>
         </div>
 
-        <div class="sprint-card partial" id="sprint-card-3">
+        <div class="sprint-card completed" id="sprint-card-3">
           <div class="sprint-name">Sprint 3</div>
           <div class="sprint-period">18 may &rarr; 31 may</div>
           <div style="display:flex; align-items:center; gap:0.4rem;">
-            <div class="progress-bar" style="flex:1;"><div class="progress-fill cyan" data-width="75"></div></div>
-            <span style="color:var(--accent); font-size:0.7rem;">9/12</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill green" data-width="100"></div></div>
+            <span style="color:var(--green); font-size:0.7rem;">12/12</span>
           </div>
-          <div class="sprint-status progress">EN PROGRESO</div>
+          <div class="sprint-status done">COMPLETADO</div>
           <ul class="sprint-tasks">
             <li>Ejecucion de niveles custom</li>
             <li>Modularizacion de dialogos</li>
@@ -562,32 +540,25 @@ export const SLIDES = [
           </ul>
         </div>
 
-        <div class="sprint-card" id="sprint-card-4" style="border-color:var(--border-dim);">
-          <div class="sprint-name" style="color:var(--text-dim);">Sprint 4&ndash;6</div>
+        <div class="sprint-card partial" id="sprint-card-4">
+          <div class="sprint-name">Sprint 4&ndash;6</div>
           <div class="sprint-period">Junio &rarr; 2027</div>
           <div style="display:flex; align-items:center; gap:0.4rem;">
-            <div class="progress-bar" style="flex:1;"><div class="progress-fill green" data-width="0"></div></div>
-            <span style="color:var(--text-dim); font-size:0.7rem;">0/15</span>
+            <div class="progress-bar" style="flex:1;"><div class="progress-fill cyan" data-width="13"></div></div>
+            <span style="color:var(--accent); font-size:0.7rem;">2/15</span>
           </div>
-          <div class="sprint-status planned">PLANIFICADO</div>
+          <div class="sprint-status progress">EN PROGRESO</div>
           <ul class="sprint-tasks">
             <li>Niveles pedagogicos progresivos</li>
             <li>Sistema de progresion</li>
             <li>Pantalla de victoria</li>
-            <li>Sonidos y feedback</li>
+            <li>Sonidos y feedback visual</li>
             <li>Hosting web publico</li>
             <li>Playtest con usuarios reales</li>
-            <li>Feedback visual de error</li>
             <li>30+ niveles completos</li>
             <li>Bucles y condicionales</li>
-            <li>Responsive basico</li>
             <li>Version mobile</li>
-            <li>Publicacion en Steam</li>
-            <li>Multiplayer cooperativo</li>
-            <li>Editor publico de niveles</li>
-            <li>Niveles generados por IA</li>
           </ul>
-        </div>
         </div>
       </div>
 
@@ -603,13 +574,7 @@ export const SLIDES = [
             const fill = card.querySelector(".progress-fill");
             if (fill) {
               const target = fill.dataset.width;
-              scheduleSession(
-                () => {
-                  fill.style.width = target + "%";
-                },
-                80,
-                sessionId,
-              );
+              scheduleSession(() => { fill.style.width = target + "%"; }, 80, sessionId);
             }
           },
           300 + idx * 200,
@@ -620,8 +585,7 @@ export const SLIDES = [
       scheduleSession(
         () => {
           const globalFill = document.getElementById("global-progress");
-          if (globalFill)
-            globalFill.style.width = globalFill.dataset.width + "%";
+          if (globalFill) globalFill.style.width = globalFill.dataset.width + "%";
         },
         300 + cards.length * 200 + 300,
         sessionId,
@@ -631,12 +595,14 @@ export const SLIDES = [
 
   // ========================================================
   // Slide 9: Roadmap del Producto
+  // 🎤 ORADOR: Señalar los ✓ completados con orgullo y detenerse en el nodo activo
+  //    (Playtest v1) para anticipar qué viene en las próximas semanas.
   // ========================================================
   {
     id: "slide-roadmap",
     html: `
       <h2>Roadmap del Producto</h2>
-      <p class="text-center">Hoja de ruta desde la infraestructura tecnica hasta la expansion multiplataforma.</p>
+      <p class="text-center" style="font-size: 1.05rem;">Hoja de ruta desde la infraestructura tecnica hasta la expansion multiplataforma.</p>
 
       <div class="roadmap-timeline">
         <div class="roadmap-step done">
@@ -649,7 +615,6 @@ export const SLIDES = [
               <li>55 tilesets registrados</li>
               <li>221+ sprites y animaciones</li>
               <li>JSON Level Format</li>
-              <li>Persistencia con localStorage</li>
               <li>Tests unitarios con Vitest</li>
             </ul>
           </div>
@@ -660,11 +625,10 @@ export const SLIDES = [
           <div class="roadmap-line"></div>
           <div class="roadmap-card">
             <div class="roadmap-card-title">Motor Jugable</div>
-            <div class="roadmap-card-date">Abril &ndash; Mayo 2026</div>
+            <div class="roadmap-card-date">Abr &ndash; May 2026</div>
             <ul class="roadmap-card-items">
               <li>Motor Phaser funcional</li>
               <li>2 niveles jugables</li>
-              <li>Sistema de colisiones por tiles</li>
               <li>Editor visual de niveles</li>
               <li>Sistema de clima (9 efectos)</li>
             </ul>
@@ -680,9 +644,23 @@ export const SLIDES = [
             <ul class="roadmap-card-items">
               <li>Cola de comandos visual</li>
               <li>Drag &amp; drop de instrucciones</li>
-              <li>Jump picker inline</li>
-              <li>Animaciones idle de sprites</li>
-              <li>Y-sorting 2D (depth por posicion)</li>
+              <li>Animaciones de sprites</li>
+              <li>Y-sorting 2D</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="roadmap-step done">
+          <div class="roadmap-node">&#10003;</div>
+          <div class="roadmap-line"></div>
+          <div class="roadmap-card">
+            <div class="roadmap-card-title">Playtest v1</div>
+            <div class="roadmap-card-date">Junio 2026</div>
+            <ul class="roadmap-card-items">
+              <li>Niveles pedagogicos</li>
+              <li>Sistema de progresion</li>
+              <li>Pantalla de victoria</li>
+              <li>Sonidos y feedback</li>
             </ul>
           </div>
         </div>
@@ -691,26 +669,11 @@ export const SLIDES = [
           <div class="roadmap-node">&#9654;</div>
           <div class="roadmap-line"></div>
           <div class="roadmap-card">
-            <div class="roadmap-card-title">Playtest v1</div>
-            <div class="roadmap-card-date">Junio 2026</div>
-            <ul class="roadmap-card-items">
-              <li>Niveles pedagogicos progresivos</li>
-              <li>Sistema de progresion</li>
-              <li>Pantalla de victoria</li>
-              <li>Sonidos y feedback</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="roadmap-step pending">
-          <div class="roadmap-node">○</div>
-          <div class="roadmap-line"></div>
-          <div class="roadmap-card">
             <div class="roadmap-card-title">Beta Publica</div>
             <div class="roadmap-card-date">Junio 2026</div>
             <ul class="roadmap-card-items">
               <li>Hosting web publico</li>
-              <li>Playtest con usuarios reales</li>
+              <li>Playtest con usuarios</li>
               <li>Feedback visual de error</li>
             </ul>
           </div>
@@ -737,10 +700,9 @@ export const SLIDES = [
             <div class="roadmap-card-date">2026 &ndash; 2027</div>
             <ul class="roadmap-card-items">
               <li>Version mobile</li>
-              <li>Publicacion en Steam</li>
+              <li>Steam &amp; Play Store</li>
+              <li>Editor publico</li>
               <li>Multiplayer cooperativo</li>
-              <li>Editor publico de niveles</li>
-              <li>Niveles generados por IA</li>
             </ul>
           </div>
         </div>
@@ -763,182 +725,152 @@ export const SLIDES = [
   },
 
   // ========================================================
-  // Slide 10: Estrategia de Lanzamiento
+  // Slide 10: Lanzamiento & Monetización (FUSIONADO)
+  // 🎤 ORADOR: Arrancar por itch.io como primer paso concreto y realista; luego
+  //    explicar el modelo freemium como decisión pedagógica, no solo económica.
   // ========================================================
   {
     id: "slide-lanzamiento",
     html: `
-      <h2>Estrategia de Lanzamiento</h2>
-      <p class="text-center">Plataformas candidatas ordenadas por prioridad y viabilidad tecnica.</p>
+      <h2>Lanzamiento y Monetizacion</h2>
+      <p class="text-center" style="font-size: 1.05rem;">Donde vamos a llegar y como nos sostenemos.</p>
 
-      <div class="platform-grid">
-        <div class="platform-card priority-high" id="plat-1">
-          <div class="platform-icon">🎮</div>
-          <div class="platform-name">itch.io</div>
-          <div class="platform-badge high">PRIORIDAD ALTA</div>
-          <ul class="platform-pros">
-            <li>Costo cero de publicacion</li>
-            <li>Publico indie receptivo</li>
-            <li>Soporte nativo para juegos web</li>
-          </ul>
-          <hr class="platform-divider">
-          <ul class="platform-cons">
-            <li>Menor visibilidad mainstream</li>
-            <li>Descubrimiento limitado</li>
-          </ul>
+      <div class="launch-mono-layout">
+        <div class="launch-platforms-col">
+          <h3 style="color: var(--accent-warm); margin-bottom: 0.75rem; font-size: 1.1rem;">Plataformas</h3>
+          <div class="platform-card priority-high" style="margin-bottom: 0.5rem; opacity:1; transform:none;" id="plat-1">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:1.2rem;">🎮</span>
+              <span class="platform-name" style="font-size:0.95rem;">itch.io</span>
+              <span class="platform-badge high" style="margin-left:auto;">AHORA</span>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-primary); margin:0.3rem 0 0;">Costo cero, publico indie receptivo, soporte nativo para juegos web.</p>
+          </div>
+          <div class="platform-card priority-medium" style="margin-bottom: 0.5rem; opacity:1; transform:none;" id="plat-2">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:1.2rem;">🖥</span>
+              <span class="platform-name" style="font-size:0.95rem;">Steam</span>
+              <span class="platform-badge medium" style="margin-left:auto;">FASE 2</span>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-primary); margin:0.3rem 0 0;">Mayor audiencia PC, reviews y wishlists. Fee de $100 USD.</p>
+          </div>
+          <div class="platform-card priority-medium" style="opacity:1; transform:none;" id="plat-3">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:1.2rem;">📱</span>
+              <span class="platform-name" style="font-size:0.95rem;">Play Store</span>
+              <span class="platform-badge medium" style="margin-left:auto;">FASE 2</span>
+            </div>
+            <p style="font-size:0.8rem; color:var(--text-primary); margin:0.3rem 0 0;">Android domina en Latam. Acceso masivo al publico objetivo. Fee de $25 USD.</p>
+          </div>
         </div>
 
-        <div class="platform-card priority-medium" id="plat-2">
-          <div class="platform-icon">🖥</div>
-          <div class="platform-name">Steam</div>
-          <div class="platform-badge medium">FASE 2</div>
-          <ul class="platform-pros">
-            <li>Mayor audiencia de PC</li>
-            <li>Sistema de reviews y comunidad</li>
-            <li>Wishlists para traccion</li>
-          </ul>
-          <hr class="platform-divider">
-          <ul class="platform-cons">
-            <li>Fee de $100 USD por juego</li>
-            <li>Requiere wrapper Electron</li>
-          </ul>
-        </div>
+        <div class="launch-model-col">
+          <h3 style="color: var(--accent-warm); margin-bottom: 0.75rem; font-size: 1.1rem;">Modelo de Ingresos</h3>
+          <div class="launch-model-item" id="model-1">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:1.2rem;">🆓</span>
+              <span style="color:var(--green); font-weight:bold; font-size:0.95rem;">Base gratuita</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-primary); margin:0.2rem 0 0;">Los niveles core del juego son gratuitos y completos, sin limites de funcionalidad.</p>
+          </div>
+          <div class="launch-model-item" id="model-2">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:1.2rem;">⭐</span>
+              <span style="color:var(--accent-warm); font-weight:bold; font-size:0.95rem;">Pack premium ($2&ndash;5 USD)</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-primary); margin:0.2rem 0 0;">Niveles avanzados, editor publico compartido y tematicas adicionales (dungeon, winter, village).</p>
+          </div>
+          <div class="launch-model-item" id="model-3">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:1.2rem;">🚫</span>
+              <span style="color:#ff7e7e; font-weight:bold; font-size:0.95rem;">Sin publicidad</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-primary); margin:0.2rem 0 0;">El publico son ninos. La publicidad es incompatible con la experiencia educativa y la confianza de los padres.</p>
+          </div>
+          <div class="launch-model-item" id="model-4">
+            <div style="display:flex; align-items:center; gap:0.5rem;">
+              <span style="font-size:1.2rem;">🏛</span>
+              <span style="color:var(--accent); font-weight:bold; font-size:0.95rem;">Licencias educativas</span>
+            </div>
+            <p style="font-size:0.82rem; color:var(--text-primary); margin:0.2rem 0 0;">Futuro: paquetes para escuelas con dashboard de progreso y metricas por alumno.</p>
+          </div>
 
-        <div class="platform-card priority-medium" id="plat-3">
-          <div class="platform-icon">📱</div>
-          <div class="platform-name">Play Store</div>
-          <div class="platform-badge medium">FASE 2</div>
-          <ul class="platform-pros">
-            <li>Android domina en Latam</li>
-            <li>Acceso masivo al publico objetivo</li>
-            <li>Fee unico de $25 USD</li>
-          </ul>
-          <hr class="platform-divider">
-          <ul class="platform-cons">
-            <li>Requiere port a mobile</li>
-            <li>Adaptacion de controles tactiles</li>
-          </ul>
+          <div style="margin-top: 0.75rem; padding: 0.5rem 0.75rem; background: var(--bg-surface); border: 2px solid var(--border-bright); border-left: 4px solid var(--accent-magenta); border-radius: 6px; font-size: 0.8rem; line-height: 1.5; color: var(--text-primary);">
+            📣 Difusion via <span style="color:var(--accent);">TikTok/Instagram</span>, comunidades docentes, game jams en itch.io y YouTube educativo en espanol.
+          </div>
         </div>
-
-        <div class="platform-card priority-low" id="plat-4">
-          <div class="platform-icon">🍎</div>
-          <div class="platform-name">Apple Store</div>
-          <div class="platform-badge low">FASE 3</div>
-          <ul class="platform-pros">
-            <li>Mercado premium y curado</li>
-            <li>Alta calidad percibida</li>
-          </ul>
-          <hr class="platform-divider">
-          <ul class="platform-cons">
-            <li>Fee de $99 USD por ano</li>
-            <li>Requiere Mac para builds</li>
-            <li>Review estricta de Apple</li>
-          </ul>
-        </div>
-      </div>
-
-      <div class="platform-note-card" id="launch-note">
-        <div class="platform-note-title">Estrategia inicial de distribucion y feedback</div>
-        <p>
-          La demo se va a lanzar primero en <span style="color: var(--green);">itch.io</span> para recibir feedback temprano.
-          Esta salida estara acompaniada por difusion en <span style="color: var(--accent);">LinkedIn</span> y
-          <span style="color: var(--accent);">Reddit</span> para llegar a distintos perfiles de usuarios,
-          agilizar reportes de bugs y sumar sugerencias reales de uso.
-          En paralelo, se contempla como posibilidad de distribucion institucional el trabajo con
-          <span style="color: var(--accent-warm);">escuelas publicas y privadas</span>.
-          <span style="color: var(--accent-magenta);"> 🚀 🐞 💡 🏫</span>
-        </p>
       </div>
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
-      const cards = document.querySelectorAll(".platform-card");
-      cards.forEach((card, idx) => {
+      const items = document.querySelectorAll(".launch-model-item");
+      items.forEach((item, idx) => {
         scheduleSession(
           () => {
-            card.classList.add("show");
-            playSound("blup");
+            item.classList.add("show");
+            playSound("bip");
           },
-          300 + idx * 220,
+          300 + idx * 180,
           sessionId,
         );
       });
-
-      scheduleSession(
-        () => {
-          const note = document.getElementById("launch-note");
-          if (note) note.classList.add("show");
-        },
-        300 + cards.length * 220 + 180,
-        sessionId,
-      );
     },
   },
 
   // ========================================================
-  // Slide 11: Marketing & Monetización
+  // Slide 11: Tecnologías (simplificado)
+  // 🎤 ORADOR: Mantenerlo muy breve; el punto clave es "cero dependencias externas,
+  //    corre en cualquier browser". No entrar en detalle técnico de cada capa.
   // ========================================================
   {
-    id: "slide-marketing",
+    id: "slide-tecnologias",
     html: `
-      <h2>Marketing y Monetizacion</h2>
-      <p class="text-center">Estrategia de difusion y modelo de ingresos alineado con la mision educativa.</p>
+      <h2>Tecnologias</h2>
+      <p class="text-center" style="font-size: 1.05rem;">El stack que hace posible Gatito-Code, elegido para simplificar el desarrollo y maximizar el alcance.</p>
 
-      <div class="scrum-container">
-        <div class="scrum-panel" id="marketing-panel-left">
-          <h3>Canales de Difusion</h3>
-          <ul class="scrum-list">
-            <li><span class="icon">📹</span><span class="label">Redes sociales</span>TikTok e Instagram con clips cortos de gameplay pixel-art. El formato visual encaja perfecto con estas plataformas.</li>
-            <li><span class="icon">🏫</span><span class="label">Comunidades educativas</span>Docentes de programacion, grupos de padres homeschooling y foros de educacion STEAM en espanol.</li>
-            <li><span class="icon">🎪</span><span class="label">Game jams y eventos indie</span>Participacion en jams de itch.io para ganar visibilidad organica en la comunidad de desarrollo.</li>
-            <li><span class="icon">🎬</span><span class="label">YouTube educativo</span>Colaboraciones con canales de divulgacion de programacion y educacion en espanol.</li>
-          </ul>
+      <div class="tech-grid" id="tech-panel">
+        <div class="tech-item" id="tech-1">
+          <div class="tech-item-icon">🎮</div>
+          <div class="tech-item-name">Phaser 3</div>
+          <div class="tech-item-desc">Motor de juego 2D para la web. Maneja tilemaps, fisicas, animaciones y particulas.</div>
         </div>
-
-        <div class="scrum-panel" id="marketing-panel-right">
-          <h3>Modelo de Monetizacion</h3>
-          <ul class="scrum-list">
-            <li><span class="icon">🆓</span><span class="label">Base gratuita</span>Los niveles core del juego (18 niveles) son gratuitos y completos. Sin limite de tiempo ni funcionalidad reducida.</li>
-            <li><span class="icon">⭐</span><span class="label">Pack premium ($2&ndash;5 USD)</span>Niveles avanzados, editor publico de niveles compartidos y tematicas adicionales (dungeon, winter, village).</li>
-            <li><span class="icon">🚫</span><span class="label">Sin publicidad</span>El publico objetivo son ninos. La publicidad es incompatible con la experiencia educativa y la confianza de los padres.</li>
-            <li><span class="icon">🏛</span><span class="label">Licencias educativas</span>Modelo institucional futuro: paquetes para escuelas con dashboard de progreso y metricas por alumno.</li>
-          </ul>
+        <div class="tech-item" id="tech-2">
+          <div class="tech-item-icon">📦</div>
+          <div class="tech-item-name">ES Modules puros</div>
+          <div class="tech-item-desc">Sin bundler ni build step. El juego corre directo desde un servidor HTTP estatico.</div>
+        </div>
+        <div class="tech-item" id="tech-3">
+          <div class="tech-item-icon">📄</div>
+          <div class="tech-item-name">JSON Level Format</div>
+          <div class="tech-item-desc">Niveles como datos: tilesets, capas, spawn, objetos y clima. Facil de editar y compartir.</div>
+        </div>
+        <div class="tech-item" id="tech-4">
+          <div class="tech-item-icon">💾</div>
+          <div class="tech-item-name">localStorage</div>
+          <div class="tech-item-desc">Persistencia de niveles custom y progreso del jugador sin necesidad de backend.</div>
+        </div>
+        <div class="tech-item" id="tech-5">
+          <div class="tech-item-icon">🧪</div>
+          <div class="tech-item-name">Vitest</div>
+          <div class="tech-item-desc">Tests unitarios del dominio del juego ejecutables con Node, sin necesidad del browser.</div>
+        </div>
+        <div class="tech-item" id="tech-6">
+          <div class="tech-item-icon">🌐</div>
+          <div class="tech-item-name">HTML / CSS / JS</div>
+          <div class="tech-item-desc">La UI del juego (cola de comandos, dialogos, editor) es DOM puro, sin framework.</div>
         </div>
       </div>
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
-      const leftH3 = document.querySelector("#marketing-panel-left h3");
-      const rightH3 = document.querySelector("#marketing-panel-right h3");
-      const leftItems = document.querySelectorAll(
-        "#marketing-panel-left .scrum-list li",
-      );
-      const rightItems = document.querySelectorAll(
-        "#marketing-panel-right .scrum-list li",
-      );
-
-      scheduleSession(
-        () => {
-          if (leftH3) leftH3.classList.add("animate-underline");
-        },
-        300,
-        sessionId,
-      );
-      scheduleSession(
-        () => {
-          if (rightH3) rightH3.classList.add("animate-underline");
-        },
-        500,
-        sessionId,
-      );
-
-      [...leftItems, ...rightItems].forEach((li, idx) => {
+      const items = document.querySelectorAll(".tech-item");
+      items.forEach((item, idx) => {
         scheduleSession(
           () => {
-            li.classList.add("show");
+            item.classList.add("show");
             if (idx % 2 === 0) playSound("bip");
           },
-          600 + idx * 130,
+          300 + idx * 160,
           sessionId,
         );
       });
@@ -946,71 +878,53 @@ export const SLIDES = [
   },
 
   // ========================================================
-  // Slide 12: Demo Interactiva
-  // ========================================================
-  {
-    id: "slide-demo",
-    html: `
-      <h2>Demo Visual</h2>
-      <p class="text-center" style="margin-bottom: 0.3rem;">Identidad Visual del Juego</p>
-      <p class="text-center" style="font-size: 0.85rem; color: var(--accent); margin-bottom: 0.75rem;">Nuestro personaje principal recorre un mapa de ejemplo con la estetica pixel-art del juego.</p>
-
-      <div class="arcade-machine">
-        <div class="arcade-screen" id="demo-container"></div>
-        <div class="arcade-controls">
-          <div class="arcade-stick"></div>
-          <div class="arcade-btn red"></div>
-          <div class="arcade-btn blue"></div>
-          <div class="arcade-btn green"></div>
-        </div>
-      </div>
-      ${CORNERS}
-    `,
-    onEnter: () => {
-      startDemo("demo-container");
-    },
-    onLeave: () => {
-      stopDemo();
-    },
-  },
-
-  // ========================================================
-  // Slide 13: Cierre
+  // Slide 12: Cierre con QR
+  // 🎤 ORADOR: Agradecer, mostrar el QR en pantalla y invitar a la audiencia a
+  //    probarlo en su celular mientras se abre el espacio de preguntas.
   // ========================================================
   {
     id: "slide-cierre",
     html: `
       <div style="flex:1; display:flex; flex-direction:column; justify-content:center; align-items:center;">
 
-        <div style="text-align:center; margin-bottom:1.5rem;">
-          <h1 style="margin-bottom:0.5rem;">Gatito Code</h1>
+        <div style="text-align:center; margin-bottom:1.2rem;">
+          <h1 style="margin-bottom:0.3rem;">Gatito Code</h1>
           <div style="display:flex; align-items:center; justify-content:center; gap:0.6rem;">
-          <div class="thanks-flag"></div>
-          <p style="font-size:1.1rem; text-shadow:0 0 8px var(--glow-cyan); margin:0;">Proyecto Integrador &mdash; 2026</p>
-          <div class="thanks-flag"></div>
+            <div class="thanks-flag"></div>
+            <p style="font-size:1.15rem; text-shadow:0 0 8px var(--glow-cyan); margin:0; color: var(--accent);">Proyecto Integrador &mdash; 2026</p>
+            <div class="thanks-flag"></div>
           </div>
+        </div>
+
+        <div class="thanks-grid" id="thanks-grid" style="flex:none;"></div>
+
+        <div style="display:flex; gap:2rem; align-items:center; margin-top:1.2rem; width:85%; max-width:900px;">
+          <div class="dialog-box" style="flex:1; text-align:center; padding:0.9rem 1.2rem;">
+            <p style="color:var(--text-primary); margin:0; font-size:0.92rem; line-height:1.7;">
+              Un juego hecho en Argentina para que los chicos aprendan a pensar como <span style="color:var(--green);">programadores</span>.
+            </p>
+            <p style="color:var(--accent-warm); margin:0.5rem 0 0; font-size:1rem; font-weight:bold;">Pronto en itch.io &mdash; ¡Escaneá el QR y probalo!</p>
           </div>
-          
-          <div class="thanks-grid" id="thanks-grid" style="flex:none;"></div>
-          
-          <div class="dialog-box" style="margin-top:1.1rem; width:70%; max-width:750px; text-align:center; padding:1rem 1.5rem;">
-          <p style="color:var(--text-primary); margin:0; font-size:0.85rem; line-height:1.7;">
-          Un juego hecho en Argentina para que los chicos aprendan a pensar como <span style="color:var(--green);">programadores</span>.<br>
-          <span style="color:var(--accent-warm);">Disponible pronto en itch.io</span> &mdash; Preguntas?
-          </p>
+
+          <div class="qr-placeholder">
+            <div class="qr-placeholder-inner">
+              <div class="qr-placeholder-icon">📱</div>
+              <div class="qr-placeholder-text">QR Code<br><span style="color:var(--text-dim); font-size:0.7rem;">Link al juego<br>en itch.io</span></div>
+            </div>
           </div>
-          <h2 style="margin-bottom:5rem; font-size:5rem;">¡Muchas gracias!</h2>
+        </div>
+
+        <h2 style="margin-top:1.2rem; font-size:3.5rem; text-shadow: 0 0 20px var(--glow-gold);">¡Muchas gracias!</h2>
       </div>
       ${CORNERS}
     `,
     onEnter: (sessionId) => {
       const members = [
-        { name: "Brian Herrera", pos: "0 0" },
-        { name: "Lisett Castillo", pos: "-72px 0" },
-        { name: "Iara Baya", pos: "-144px 0" },
-        { name: "Luis Herrera", pos: "-216px 0" },
-        { name: "Inti Taretto", pos: "-288px 0" },
-        { name: "Lucas Fernandez", pos: "-360px 0" },
+        { name: "Brian Herrera",   pos: "0 0"      },
+        { name: "Lisett Castillo", pos: "-72px 0"  },
+        { name: "Iara Baya",       pos: "-144px 0" },
+        { name: "Luis Herrera",    pos: "-216px 0" },
+        { name: "Jose Martinez",   pos: "-288px 0" },
       ];
 
       const grid = document.getElementById("thanks-grid");

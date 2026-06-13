@@ -2,14 +2,191 @@
    PROYECTO INTEGRADOR — Componentes específicos
    ========================================================= */
 
+/* --- Títulos grandes en slides de contenido --- */
+.value-prop-title  { font-size: 1.35rem !important; }
+.feature-card-title { font-size: 1.1rem; }
+.roadmap-card-title { font-size: 1.05rem; }
+.tech-item-name     { font-size: 1.1rem; }
+
+/* --- GIF Placeholders --- */
+.gif-placeholder {
+  border: 3px dashed var(--border-bright);
+  border-radius: 8px;
+  background: rgba(110, 231, 255, 0.04);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 1rem;
+  text-align: center;
+}
+
+/* Grande: slide "¿Qué es?" — ocupa más de la mitad del layout */
+.gif-placeholder-lg {
+  flex: 1.4;
+  min-height: 220px;
+  align-self: stretch;
+}
+
+/* Mediano: pilares de solución — ~40% del ancho de cada fila */
+.gif-placeholder-sm {
+  flex: 0 0 38%;
+  min-height: 110px;
+  align-self: stretch;
+}
+
+/* Card: features 3x2 — llena toda la card */
+.gif-placeholder-card {
+  width: 100%;
+  flex: 1;
+  min-height: 90px;
+}
+
+.gif-placeholder-icon {
+  font-size: 2rem;
+}
+
+.gif-placeholder-text {
+  font-size: 0.74rem;
+  color: var(--text-dim);
+  line-height: 1.45;
+  max-width: 90%;
+}
+
+.gif-placeholder-sm .gif-placeholder-icon { font-size: 1.6rem; }
+.gif-placeholder-sm .gif-placeholder-text { font-size: 0.7rem; }
+
+.gif-placeholder-lg .gif-placeholder-icon { font-size: 2.4rem; }
+.gif-placeholder-lg .gif-placeholder-text { font-size: 0.82rem; max-width: 85%; }
+
+.gif-placeholder-card .gif-placeholder-icon { font-size: 1.4rem; }
+.gif-placeholder-card .gif-placeholder-text { font-size: 0.65rem; }
+
+/* --- Speech Bubble Sprite (Slide Portada) --- */
+@keyframes bubbleGrowFrames {
+  from { background-position: 0 0; }
+  to   { background-position: -1344px 0; }
+}
+@keyframes bubbleAppear {
+  from { transform: scale(0); }
+  to   { transform: scale(1); }
+}
+
+/* Portada: cat sprite centrado y escalado 2× sin que breathe pise el transform */
+#slide-portada #cover-sprite {
+  margin: 0 !important;
+  transform: scale(2);
+  transform-origin: center;
+  animation: walkDown 0.5s steps(4) infinite !important;
+}
+
+/* --- Cover Bubble (Slide Portada) — legacy, kept for fallback --- */
+.cover-bubble {
+  position: relative;
+  background: var(--bg-surface);
+  border: 3px solid var(--border-bright);
+  border-radius: 12px;
+  padding: 1.2rem 1.6rem;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+  text-align: center;
+  color: var(--accent-warm);
+  min-width: 180px;
+  margin-bottom: 2rem;
+}
+
+/* cola de la burbuja apuntando hacia abajo (hacia el gato) */
+.cover-bubble::before {
+  content: '';
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 10px solid transparent;
+  border-top-color: var(--border-bright);
+}
+.cover-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -13px;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 7px solid transparent;
+  border-top-color: var(--bg-surface);
+}
+
+/* --- Slide 2: Equipo — grilla 3×2 vertical --- */
+#slide-equipo .party-grid {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 1.2rem;
+  padding: 0;
+  flex: 1;
+}
+
+.party-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  gap: 2rem;
+}
+
+#slide-equipo .party-slot {
+  width: 260px;
+  flex-shrink: 0;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  text-align: center;
+}
+
+#slide-equipo .party-card {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.2rem;
+  padding: 0.7rem 1.2rem;
+  width: 260px;
+  box-sizing: border-box;
+  border: 3px solid var(--border-bright) !important;
+  border-left: 4px solid var(--accent-warm) !important;
+}
+
+#slide-equipo .party-name {
+  min-width: unset;
+  font-size: 1rem;
+}
+
+#slide-equipo .party-role-title {
+  white-space: nowrap;
+}
+
+#slide-equipo .party-avatar {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 0.5rem;
+}
+
+/* --- Slide 6: Público Objetivo — títulos más grandes --- */
+#slide-publico .scrum-list li {
+  font-size: 0.92rem;
+  margin-bottom: 1.1rem;
+}
+
+#slide-publico .scrum-list .label {
+  font-size: 1.2rem;
+  margin-bottom: 5px;
+}
+
 /* --- Problem Cards (Slide El Problema) --- */
 .problem-cards {
   display: flex;
   gap: 1rem;
   flex: 1;
-  min-height: 280px;
-  max-height: 360px;
-  height: 44vh;
+  min-height: 260px;
+  max-height: 340px;
+  height: 42vh;
   align-items: stretch;
 }
 
@@ -50,10 +227,92 @@
 }
 
 .problem-desc {
-  font-size: 0.82rem;
+  font-size: 0.85rem;
+  color: var(--text-primary);
+  line-height: 1.55;
+  text-align: center;
+}
+
+/* --- Elevator Pitch (Slide ¿Qué es?) --- */
+.elevator-pitch-layout {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  min-height: 0;
+  align-items: stretch;
+}
+
+/* texto comprimido: ~40% del espacio */
+.elevator-pitch-text {
+  flex: 0 0 38%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+/* visual dominante: ~60% del espacio */
+.elevator-pitch-visual {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+}
+
+.pitch-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  background: var(--bg-surface);
+  border: 3px solid var(--border-bright);
+  border-left: 5px solid var(--accent);
+  border-radius: 6px;
+  padding: 0.65rem 1rem;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: translateX(-20px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.pitch-item.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.pitch-num {
+  font-size: 1.4rem;
+  font-weight: bold;
+  color: var(--accent);
+  opacity: 0.5;
+  flex-shrink: 0;
+  line-height: 1;
+  padding-top: 0.1rem;
+}
+
+.pitch-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.pitch-title {
+  font-size: 0.95rem;
+  font-weight: bold;
+  color: var(--accent-warm);
+  text-shadow: 1px 1px 0 #000;
+}
+
+.pitch-desc {
+  font-size: 0.83rem;
   color: var(--text-primary);
   line-height: 1.5;
-  text-align: center;
+}
+
+/* --- Solution Grid (Slide La Solución) --- */
+.solution-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 0 1 auto;
+  justify-content: center;
+  padding: 0 4vw;
 }
 
 /* --- Value Props (Slide La Solución) --- */
@@ -95,7 +354,7 @@
 .value-prop-text .value-prop-title {
   color: var(--accent-warm);
   font-weight: bold;
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   display: block;
   margin-bottom: 0.2rem;
   text-shadow: 1px 1px 0 #000;
@@ -103,7 +362,18 @@
 
 .value-prop-text .value-prop-desc {
   color: var(--text-primary);
-  font-size: 0.78rem;
+  font-size: 0.83rem;
+  line-height: 1.5;
+}
+
+.value-prop-title {
+  color: var(--accent-warm);
+  font-weight: bold;
+  text-shadow: 1px 1px 0 #000;
+}
+
+.value-prop-desc {
+  color: var(--text-primary);
   line-height: 1.5;
 }
 
@@ -111,12 +381,12 @@
   background: var(--bg-warm);
   border: 3px solid #3d2e1a;
   border-radius: 6px;
-  margin-top: 2rem;
-  margin-bottom: 0.8rem;
-  padding: 0.65rem 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  padding: 0.55rem 1.5rem;
   text-align: center;
   color: var(--accent);
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
   opacity: 0;
   transition: opacity 0.5s ease;
@@ -125,7 +395,7 @@
   opacity: 1;
 }
 
-/* --- Feature Showcase (Slide Características) --- */
+/* --- Feature Showcase (Slide El Juego por Dentro) --- */
 .feature-showcase {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -139,15 +409,16 @@
   background: var(--bg-surface);
   border: 3px solid var(--border-bright);
   border-radius: 8px;
-  padding: 0.75rem;
+  padding: 0.65rem;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0.35rem;
   box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
   opacity: 0;
   transform: scale(0.9) translateY(10px);
   transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
   border-top: 3px solid var(--accent);
+  align-items: center;
 }
 .feature-card.show {
   opacity: 1;
@@ -155,13 +426,13 @@
 }
 
 .feature-card-icon {
-  font-size: 1.4rem;
+  font-size: 1.3rem;
   text-align: center;
   color: var(--accent);
 }
 
 .feature-card-title {
-  font-size: 0.85rem;
+  font-size: 0.88rem;
   color: var(--accent-warm);
   font-weight: bold;
   text-align: center;
@@ -169,7 +440,7 @@
 }
 
 .feature-card-desc {
-  font-size: 0.72rem;
+  font-size: 0.73rem;
   color: var(--text-primary);
   line-height: 1.45;
   text-align: center;
@@ -293,7 +564,7 @@
 .roadmap-step.active .roadmap-card { border-color: #1e3a5a; }
 
 .roadmap-card-title {
-  font-size: 0.82rem;
+  font-size: 0.84rem;
   font-weight: bold;
   color: var(--accent-warm);
   text-shadow: 1px 1px 0 #000;
@@ -301,7 +572,7 @@
 }
 
 .roadmap-card-date {
-  font-size: 0.65rem;
+  font-size: 0.68rem;
   color: var(--text-dim);
   margin-bottom: 0.3rem;
 }
@@ -312,7 +583,7 @@
   margin: 0;
 }
 .roadmap-card-items li {
-  font-size: 0.68rem;
+  font-size: 0.7rem;
   color: var(--text-primary);
   padding: 0.15rem 0;
   line-height: 1.4;
@@ -322,7 +593,42 @@
   color: var(--accent-warm);
 }
 
-/* --- Platform Grid (Slide Estrategia de Lanzamiento) --- */
+/* --- Launch & Monetization (Slide Fusionado) --- */
+.launch-mono-layout {
+  display: flex;
+  gap: 2rem;
+  flex: 1;
+  min-height: 0;
+  align-items: flex-start;
+}
+
+.launch-platforms-col {
+  flex: 1;
+}
+
+.launch-model-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.launch-model-item {
+  background: var(--bg-surface);
+  border: 3px solid var(--border-bright);
+  border-radius: 6px;
+  padding: 0.5rem 0.75rem;
+  box-shadow: 3px 3px 0 rgba(0,0,0,0.4);
+  opacity: 0;
+  transform: translateX(15px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.launch-model-item.show {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+/* --- Platform Grid --- */
 .platform-grid {
   display: flex;
   gap: 0.75rem;
@@ -376,6 +682,7 @@
   letter-spacing: 1px;
   text-align: center;
   align-self: center;
+  white-space: nowrap;
 }
 .platform-badge.high   { color: var(--green);    border-color: var(--green);    background: rgba(126,240,126,0.08); }
 .platform-badge.medium { color: var(--accent);   border-color: var(--accent);   background: rgba(110,231,255,0.08); }
@@ -421,19 +728,52 @@
   transform: translateY(0);
 }
 
-.platform-note-title {
-  font-size: 1.5rem;
-  color: var(--accent-warm);
+/* --- Tech Grid (Slide Tecnologías simplificado) --- */
+.tech-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+  flex: 1;
+  min-height: 0;
+  align-content: center;
+}
+
+.tech-item {
+  background: var(--bg-surface);
+  border: 3px solid var(--border-bright);
+  border-radius: 8px;
+  padding: 1rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  align-items: center;
+  text-align: center;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+  border-top: 3px solid var(--accent-magenta);
+  opacity: 0;
+  transform: scale(0.92) translateY(8px);
+  transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.tech-item.show {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+.tech-item-icon {
+  font-size: 2rem;
+}
+
+.tech-item-name {
+  font-size: 0.9rem;
   font-weight: bold;
-  margin-bottom: 0.25rem;
+  color: var(--accent-warm);
   text-shadow: 1px 1px 0 #000;
 }
 
-.platform-note-card p {
-  margin: 0;
-  font-size: 1rem;
-  line-height: 1.6;
+.tech-item-desc {
+  font-size: 0.78rem;
   color: var(--text-primary);
+  line-height: 1.5;
 }
 
 /* --- Global Stat Bar --- */
@@ -451,7 +791,7 @@
 }
 
 .stat-bar-label {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: var(--accent-warm);
   font-weight: bold;
   white-space: nowrap;
@@ -476,30 +816,53 @@
 }
 
 .stat-bar-value {
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   color: var(--accent);
   font-weight: bold;
   white-space: nowrap;
 }
 
-/* --- Arquitectura (Slide 7) --- */
-.architecture-container .tree-panel.tree-current {
-  padding: 0 1rem;
-  font-size: 0.62rem;
-  line-height: 1.5;
-  display: block;
-  box-shadow: inset 0 0 20px rgba(0,0,0,0.3), 0 0 14px rgba(110, 231, 255, 0.12);
+/* --- QR Placeholder (Slide Cierre) --- */
+.qr-placeholder {
+  flex-shrink: 0;
+  width: 130px;
+  height: 130px;
+  border: 4px solid var(--border-bright);
+  border-radius: 8px;
+  background: var(--bg-surface);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 4px 4px 0 rgba(0,0,0,0.5);
+  position: relative;
+  overflow: hidden;
 }
 
-.architecture-container .tree-panel.tree-current .tree-content {
-  width: fit-content;
-  max-width: 100%;
-  margin: 0 auto;
-  text-align: left;
+.qr-placeholder::before {
+  content: '';
+  position: absolute;
+  inset: 6px;
+  border: 3px dashed var(--border-bright);
+  border-radius: 4px;
+  opacity: 0.4;
 }
 
-.architecture-container .tree-panel.tree-current h3 {
-  font-size: 2rem;
-  margin-bottom: 0.3rem;
+.qr-placeholder-inner {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
   text-align: center;
+  z-index: 1;
+}
+
+.qr-placeholder-icon {
+  font-size: 1.8rem;
+}
+
+.qr-placeholder-text {
+  font-size: 0.75rem;
+  color: var(--accent-warm);
+  font-weight: bold;
+  line-height: 1.4;
 }
