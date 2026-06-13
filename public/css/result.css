@@ -1,0 +1,114 @@
+/* ─── Result panel (explicaciones / victoria / derrota) ─── */
+/* Tamaño base PNG dialog box: 304×64 px. Escala ×2 → 608×128 px. */
+#result-panel {
+  display: none;
+  position: fixed;
+  left: 50%;
+  bottom: 20px;
+  transform: translate(-50%, 60px);
+  opacity: 0;
+  width: 608px;
+  height: 128px;
+  z-index: 400;
+  pointer-events: none;
+  transition: transform .4s cubic-bezier(.34, 1.56, .64, 1), opacity .25s ease;
+  background-image: url('../assets/SproutLands-UI/Sprite sheets/Dialouge UI/Premade dialog box  big.png');
+  background-size: 608px 128px;
+  background-repeat: no-repeat;
+  image-rendering: pixelated;
+}
+#result-panel.visible {
+  display: block;
+  transform: translate(-50%, 0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ─── Portrait (emote animado) ─── */
+/* Spritesheet Teemo: 160×480, frames 32×32. Escala ×2 → 320×960, frames 64×64. */
+.result-portrait {
+  position: absolute;
+  top: 24px;
+  left: 24px;
+  width: 64px;
+  height: 64px;
+  background-image: url('../assets/SproutLands-UI/Sprite sheets/Dialouge UI/Emotes/Teemo Basic emote animations sprite sheet.png');
+  background-size: 320px 960px;
+  background-repeat: no-repeat;
+  background-position: 0 0;
+  image-rendering: pixelated;
+}
+
+/* Neutral (idle) — frame fijo, sin animación. */
+.result-portrait.idle {
+  background-position: 0 0;
+}
+
+/* Animación feliz: cicla 2 frames (col 0 y col 1 de la fila 0). */
+@keyframes result-happy {
+  0%, 49%   { background-position: 0 0; }
+  50%, 100% { background-position: -64px 0; }
+}
+.result-portrait.win {
+  animation: result-happy 0.9s steps(1, end) infinite;
+}
+
+/* Animación triste: 2 frames con lágrima (fila 5 ≈ y=-320, ×2 escala). */
+@keyframes result-sad {
+  0%, 49%   { background-position: 0 -320px; }
+  50%, 100% { background-position: -64px -320px; }
+}
+.result-portrait.lose {
+  animation: result-sad 1.1s steps(1, end) infinite;
+}
+
+/* ─── Bubble (mensaje + botones) ─── */
+.result-bubble {
+  position: absolute;
+  top: 24px;
+  left: 112px;
+  right: 32px;
+  bottom: 24px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 10px;
+  padding: 2px 8px;
+}
+
+.result-message {
+  font-family: 'SproutPixel', monospace;
+  font-size: 15px;
+  line-height: 1.25;
+  color: var(--sprout-dark);
+  text-shadow: 0 1px 0 rgba(255, 255, 255, .35);
+  letter-spacing: 0.5px;
+  text-align: left;
+}
+.result-message.win  { color: #2e6032; }
+.result-message.lose { color: #8c2a2a; }
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+  align-self: flex-start;
+}
+.result-actions:empty { display: none; }
+.result-actions button {
+  background-color: rgba(255, 255, 255, .3);
+  border: 1px solid rgba(90, 58, 26, .4);
+  cursor: pointer;
+  font-family: 'SproutPixel', monospace;
+  font-size: 11px;
+  color: var(--sprout-dark);
+  padding: 4px 12px;
+  border-radius: 4px;
+  transition: background-color .15s ease, transform .1s ease, filter .15s ease;
+}
+.result-actions button:hover {
+  background-color: rgba(255, 235, 180, .65);
+  filter: brightness(1.08);
+}
+.result-actions button:active {
+  transform: translateY(1px) scale(.97);
+}

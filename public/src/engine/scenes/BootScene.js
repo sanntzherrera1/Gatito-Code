@@ -23,13 +23,22 @@ export class BootScene extends Phaser.Scene {
     );
     // Tilesets + level JSONs.
     preloadAssets(this);
-    // Object spritesheets.
+    // Object spritesheets. Si el objeto define `frames` (atlas de rects propios dentro de una
+    // hoja mixta), se carga como imagen y los frames se definen en create().
     for (const o of OBJECTS) {
-      if (!this.textures.exists(o.key))
-        this.load.spritesheet(o.key, o.url, { frameWidth: o.frameW, frameHeight: o.frameH });
+      if (this.textures.exists(o.key)) continue;
+      if (o.frames) this.load.image(o.key, o.url);
+      else this.load.spritesheet(o.key, o.url, { frameWidth: o.frameW, frameHeight: o.frameH });
     }
     // UI assets manifest.
     this.load.json('ui_manifest', 'assets/ui.json');
+
+    // Emote icons (happy/sad faces) for victory/defeat overlays.
+    this.load.spritesheet(
+      'emote_icons',
+      'assets/SproutLands-UI/Sprite sheets/Icons/special icons/Small Happines-Sadness icons.png',
+      { frameWidth: 16, frameHeight: 16 }
+    );
   }
 
   create() {
@@ -83,6 +92,17 @@ export class BootScene extends Phaser.Scene {
     idle('idle_up',    [8, 9, 10, 11, 12, 13, 14, 15]);
     idle('idle_right', [16, 17, 18, 19, 20, 21, 22, 23]);
     idle('idle_left',  [24, 25, 26, 27, 28, 29, 30, 31]);
+
+    // Definir sub-frames (atlas) para objetos con rects propios dentro de una hoja mixta.
+    // Cada objeto grande/multi-tile se "saca" de su hoja sin re-cortar el PNG.
+    for (const o of OBJECTS) {
+      if (!o.frames) continue;
+      const tex = this.textures.get(o.key);
+      if (!tex) continue;
+      o.frames.forEach((f, i) => {
+        if (!tex.has(String(i))) tex.add(i, 0, f.x, f.y, f.w, f.h);
+      });
+    }
 
     createObjectAnimations(this);
 

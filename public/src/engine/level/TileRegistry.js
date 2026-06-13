@@ -15,7 +15,10 @@ export const TILESET_CATEGORIES = {
 // No reutilizar este rango para evitar conflictos con niveles antiguos.
 export const TILESETS = [
   // ── Grass ──
-  { key: 'ts_grass',              category: 'grass', label: 'Classic',            name: 'grass',              url: `${BASE}/Grass.png`,                                                                            cols: 11, rows: 7,  firstgid: 1    },
+  { key: 'ts_grass',              category: 'grass', label: 'Verde',              name: 'grass',              url: `${BASE}/Grass.png`,                                                                            cols: 11, rows: 7,  firstgid: 1    },
+  { key: 'ts_grass_red',          category: 'grass', label: 'Rojo',               name: 'grass_red',          url: `${BASE}/Grass_red.png`,                                                                          cols: 11, rows: 7,  firstgid: 8080  },
+  { key: 'ts_grass_blue',         category: 'grass', label: 'Azul',               name: 'grass_blue',         url: `${BASE}/Grass_blue.png`,                                                                         cols: 11, rows: 7,  firstgid: 8157  },
+  { key: 'ts_grass_yellow',       category: 'grass', label: 'Amarillo',           name: 'grass_yellow',       url: `${BASE}/Grass_yellow.png`,                                                                       cols: 11, rows: 7,  firstgid: 8234  },
   { key: 'ts_grass_v2',           category: 'grass', label: 'v2',                 name: 'grass_v2',           url: `${BASE}/ground tiles/New tiles/Grass_tiles_v2.png`,                                            cols: 11, rows: 7,  firstgid: 2000  },
   { key: 'ts_grass_hills',        category: 'grass', label: 'Hills',              name: 'grass_hills',        url: `${BASE}/ground tiles/New tiles/Grass_Hill_Tiles_v2.png`,                                       cols: 11, rows: 7,  firstgid: 1700  },
   { key: 'ts_grass_hill_slopes',  category: 'grass', label: 'Hill Slopes',        name: 'grass_hill_slopes',  url: `${BASE}/ground tiles/New tiles/Grass_Hill_Tiles_Slopes v.2.png`,                               cols: 6,  rows: 3,  firstgid: 1600  },
@@ -27,7 +30,10 @@ export const TILESETS = [
   { key: 'ts_dgrass_layers',      category: 'grass', label: 'Dark Layers',        name: 'dgrass_layers',      url: `${BASE}/ground tiles/New tiles/Darker_Grass_Tile_Layers.png`,                                  cols: 11, rows: 7,  firstgid: 1100  },
   { key: 'ts_dgrass_layers2',     category: 'grass', label: 'Dark Layers 2',      name: 'dgrass_layers2',     url: `${BASE}/ground tiles/New tiles/Darker_Grass_Tile_Layers2.png`,                                 cols: 11, rows: 7,  firstgid: 1200  },
   { key: 'ts_dgrass_tiles',       category: 'grass', label: 'Dark Tiles',         name: 'dgrass_tiles',       url: `${BASE}/ground tiles/New tiles/Darker_Grass_Tiles_v2.png`,                                     cols: 11, rows: 7,  firstgid: 1300  },
-  { key: 'ts_bush',               category: 'grass', label: 'Bush',               name: 'bush',               url: `${BASE}/ground tiles/New tiles/Bush_Tiles.png`,                                                  cols: 11, rows: 11, firstgid: 800   },
+  { key: 'ts_bush',               category: 'grass', label: 'Arbusto Verde',       name: 'bush',               url: `${BASE}/ground tiles/New tiles/Bush_Tiles.png`,                                                  cols: 11, rows: 11, firstgid: 800   },
+  { key: 'ts_bush_red',           category: 'grass', label: 'Arbusto Rojo',        name: 'bush_red',           url: `${BASE}/ground tiles/New tiles/Bush_Tiles_red.png`,                                              cols: 11, rows: 11, firstgid: 2700  },
+  { key: 'ts_bush_blue',          category: 'grass', label: 'Arbusto Azul',        name: 'bush_blue',          url: `${BASE}/ground tiles/New tiles/Bush_Tiles_blue.png`,                                             cols: 11, rows: 11, firstgid: 2821  },
+  { key: 'ts_bush_yellow',        category: 'grass', label: 'Arbusto Amarillo',    name: 'bush_yellow',        url: `${BASE}/ground tiles/New tiles/Bush_Tiles_yellow.png`,                                           cols: 11, rows: 11, firstgid: 2942  },
   { key: 'ts_ground_hill_slopes', category: 'grass', label: 'Ground Slopes',      name: 'ground_hill_slopes', url: `${BASE}/ground tiles/New tiles/Ground_Hill_Tiles_Slopes.png`,                                   cols: 6,  rows: 2,  firstgid: 2100  },
   { key: 'ts_hills',              category: 'grass', label: 'Hills Classic',      name: 'hills',              url: `${BASE}/Hills.png`,                                                                              cols: 11, rows: 9,  firstgid: 300   },
 
@@ -69,7 +75,7 @@ export const TILESETS = [
   { key: 'ts_dungeon_items',              category: 'dungeon', label: 'Items',            name: 'dungeon_items',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/dungeon_items.png',                    cols: 5,  rows: 3,  firstgid: 4800  },
   { key: 'ts_dungeon_carts',              category: 'dungeon', label: 'Carts',            name: 'dungeon_carts',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Carts.png',                          cols: 3,  rows: 2,  firstgid: 4850  },
   { key: 'ts_dungeon_rails',              category: 'dungeon', label: 'Rails',            name: 'dungeon_rails',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rails.png',                          cols: 4,  rows: 3,  firstgid: 4900  },
-  { key: 'ts_dungeon_rocks',              category: 'dungeon', label: 'Rocks',            name: 'dungeon_rocks',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                          cols: 4,  rows: 4,  firstgid: 4950  },
+  { key: 'ts_dungeon_rocks',              category: 'dungeon', label: 'Rocks',            name: 'dungeon_rocks',              url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                          cols: 4,  rows: 4,  firstgid: 4950, properties: { isRock: true }  },
   { key: 'ts_dungeon_switch',             category: 'dungeon', label: 'Switch',           name: 'dungeon_switch',             url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/switch.png',                           cols: 3,  rows: 1,  firstgid: 5000  },
 
   // ── Winter ──
@@ -88,7 +94,7 @@ export const TILESETS = [
   { key: 'ts_blue_grass_layers_4',  name: 'blue_grass_layers_4',  category: 'more', label: 'Blue 4',   name: 'blue_grass_layers_4',  url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Ground tilesets/blue_tint_Grass_Tile_Layers4.png', cols: 11, rows: 25, firstgid: 7800  },
 ];
 
-export const LEVELS = ['gym', 'main', 'prueba', 'dungeon', 'bosque_de_prueba'];
+export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3', 'bosque_floral', 'if', 'si_1', 'si_2', 'si_3'];
 
 export const OBJECTS = [
   // ── Objects (basicos / existentes) ──
@@ -98,7 +104,11 @@ export const OBJECTS = [
 
 
   // ── Nature ──
-  { key: 'trees',       label: 'Trees',       url: 'assets/SproutLands-Sprites/Objects/Trees, stumps and bushes.png',  cols: 12, rows: 7, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'trees', group: 'trees', variant: {'color':'green'}, label: 'Trees',       url: 'assets/SproutLands-Sprites/Objects/Trees, stumps and bushes.png',  cols: 12, rows: 7, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'trees_red', group: 'trees', variant: {'color':'red'}, label: 'Trees Red',   url: 'assets/SproutLands-Sprites/Objects/Trees, stumps and bushes red.png',  cols: 12, rows: 7, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'trees_yellow', group: 'trees', variant: {'color':'yellow'}, label: 'Trees Yellow', url: 'assets/SproutLands-Sprites/Objects/Trees, stumps and bushes yellow.png',  cols: 12, rows: 7, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'trees_cherry', group: 'trees', variant: {'color':'cherry'}, label: 'Trees Cherry', url: 'assets/SproutLands-Sprites/Objects/Trees, stumps and bushes cherry.png',  cols: 12, rows: 7, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'trees_blue', group: 'trees', variant: {'color':'blue'}, label: 'Trees Blue', url: 'assets/SproutLands-Sprites/Objects/Trees, stumps and bushes blue.png',  cols: 12, rows: 7, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'mushrooms',   label: 'Mushrooms',   url: 'assets/SproutLands-Sprites/Objects/Mushrooms, Flowers, Stones.png',cols: 12, rows: 5, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'farming',     label: 'Farming',     url: 'assets/SproutLands-Sprites/Objects/Farming Plants.png',            cols: 5, rows: 15, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'water_objs',  label: 'Water Objs',  url: 'assets/SproutLands-Sprites/Objects/Water Objects.png',             cols: 12, rows: 2, frameW: 16, frameH: 16, category: 'nature' },
@@ -119,6 +129,7 @@ export const OBJECTS = [
 
   // ── Characters ──
   { key: 'premium_char', label: 'Premium Char',url:'assets/SproutLands-Sprites/Characters/Premium Charakter Spritesheet.png',cols: 8, rows: 24, frameW: 48, frameH: 48, category: 'characters' },
+  { key: 'premium_char_npc', label: 'NPC Animado', url:'assets/SproutLands-Sprites/Characters/Premium Charakter Spritesheet.png', cols: 8, rows: 24, frameW: 48, frameH: 48, category: 'characters', animGroupSize: 3 },
 
   // ── Items ──
 
@@ -134,7 +145,7 @@ export const OBJECTS = [
   { key: 'basic_char',         label: 'Basic Char',         url: 'assets/SproutLands-Sprites/Characters/Basic Charakter Spritesheet.png', cols: 4, rows: 4, frameW: 48, frameH: 48, category: 'characters' },
   { key: 'basic_char_actions', label: 'Char Actions',       url: 'assets/SproutLands-Sprites/Characters/Basic Charakter Actions.png',       cols: 2, rows: 12, frameW: 48, frameH: 48, category: 'characters' },
   { key: 'egg_and_nest',       label: 'Nest',               url: 'assets/SproutLands-Sprites/Characters/Egg_And_Nest.png',                 cols: 4, rows: 1, frameW: 16, frameH: 16, category: 'animals' },
-  { key: 'water_wateringcan',  label: 'Wateringcan',        url: 'assets/SproutLands-Sprites/Characters/water from wateringcan frames.png', cols: 27, rows: 9, frameW: 16, frameH: 16, category: 'characters' },
+  { key: 'water_wateringcan',  label: 'Wateringcan',        url: 'assets/SproutLands-Sprites/Characters/water from wateringcan frames.png', cols: 9, rows: 3, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'characters' },
 
   // ── Animals: Chickens ──
   { key: 'chicken_blue', group: 'chicken', variant: {'size':'normal','color':'blue'}, label: 'Chicken Blue',  url: 'assets/SproutLands-Sprites/Animals/Chicken/chicken blue.png',  cols: 8, rows: 27, frameW: 16, frameH: 16, category: 'animals' },
@@ -170,11 +181,15 @@ export const OBJECTS = [
   { key: 'cow_baby_purple', group: 'cow', variant: {'size':'baby','color':'purple'}, label: 'Baby Cow Purple', url: 'assets/SproutLands-Sprites/Animals/Cow_Baby/baby purple cow animations sprites.png',cols: 8, rows: 9, frameW: 32, frameH: 32, category: 'animals' },
 
   // ── Nature: Trees with fruit ──
-  { key: 'tree_full', group: 'tree', variant: {'fruit':'none'}, label: 'Tree Full',   url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites.png',      cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
-  { key: 'tree_apple', group: 'tree', variant: {'fruit':'apple'}, label: 'Tree Apple',  url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree apple sprites.png',  cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
-  { key: 'tree_orange', group: 'tree', variant: {'fruit':'orange'}, label: 'Tree Orange', url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree orange sprites.png', cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
-  { key: 'tree_peach', group: 'tree', variant: {'fruit':'peach'}, label: 'Tree Peach',  url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree peach sprites.png',  cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
-  { key: 'tree_pear', group: 'tree', variant: {'fruit':'pear'}, label: 'Tree Pear',   url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree pear sprites.png',   cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_full', group: 'tree', variant: {'fruit':'none','color':'green'}, label: 'Tree Full',   url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites.png',      cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_apple', group: 'tree', variant: {'fruit':'apple','color':'green'}, label: 'Tree Apple',  url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree apple sprites.png',  cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_orange', group: 'tree', variant: {'fruit':'orange','color':'green'}, label: 'Tree Orange', url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree orange sprites.png', cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_peach', group: 'tree', variant: {'fruit':'peach','color':'green'}, label: 'Tree Peach',  url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree peach sprites.png',  cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_pear', group: 'tree', variant: {'fruit':'pear','color':'green'}, label: 'Tree Pear',   url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree pear sprites.png',   cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_red', group: 'tree', variant: {'fruit':'none','color':'red'}, label: 'Tree Red', url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites red.png', cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_yellow', group: 'tree', variant: {'fruit':'none','color':'yellow'}, label: 'Tree Yellow', url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites yellow.png', cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_cherry', group: 'tree', variant: {'fruit':'none','color':'cherry'}, label: 'Tree Cherry', url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites cherry.png', cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
+  { key: 'tree_blue', group: 'tree', variant: {'fruit':'none','color':'blue'}, label: 'Tree Blue', url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites blue.png', cols: 12, rows: 5, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
 
   // ── Nature: Fruit without tree ──
   { key: 'no_tree_apple', group: 'no_tree_fruit', variant: {'type':'apple'}, label: 'Fruit Apple',  url: 'assets/SproutLands-Sprites/Objects/Tree animations/Fruit animations without tree/no_tree_appel_sprites.png',  cols: 12, rows: 4, frameW: 48, frameH: 48, occupyW: 1, occupyH: 1, category: 'nature' },
@@ -211,7 +226,7 @@ export const OBJECTS = [
   { key: 'small_green_slime',    label: 'Green Slime',    url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/enemies/small_green_slime_animations.png', cols: 12, rows: 8, frameW: 38, frameH: 38, category: 'animals' },
   { key: 'dungeon_probs',        label: 'Dungeon Props',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Dungeon_probs.png',          cols: 4,  rows: 2, frameW: 32, frameH: 32, occupyW: 2, occupyH: 2, category: 'objects' },
   { key: 'dungeon_carts_obj',    label: 'Dungeon Carts',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Carts.png',                  cols: 3,  rows: 1, frameW: 16, frameH: 32, occupyW: 1, occupyH: 1, category: 'structures' },
-  { key: 'dungeon_rocks_obj',    label: 'Dungeon Rocks',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                  cols: 4,  rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'dungeon_rocks_obj',    label: 'Dungeon Rocks',  url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',                  cols: 4,  rows: 4, frameW: 16, frameH: 16, category: 'nature', isRock: true },
   { key: 'dungeon_switch_obj',   label: 'Dungeon Switch', url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/switch.png',                 cols: 3,  rows: 1, frameW: 16, frameH: 16, category: 'structures' },
 
   // ── Ocean Pack ──
@@ -230,10 +245,15 @@ export const OBJECTS = [
   { key: 'birch_water_plants', group: 'water_plants', variant: {'type':'birch'}, label: 'Birch Water Plants',     url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Birch wood Biom water plants.png',          cols: 9, rows: 2, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'cherry_biom', group: 'biom', variant: {'type':'cherry'}, label: 'Cherry Biom',            url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Cherry Blossom Biom.png',                   cols: 10, rows: 5, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'cherry_water_plants', group: 'water_plants', variant: {'type':'cherry'}, label: 'Cherry Water Plants',    url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Cherry Blossom Biom water plants.png',      cols: 6, rows: 2, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'birch_water_plants_red', group: 'water_plants', variant: {'type':'red'}, label: 'Rojo Water Plants',     url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Birch wood Biom water plants red.png',          cols: 9, rows: 2, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'birch_water_plants_blue', group: 'water_plants', variant: {'type':'blue'}, label: 'Azul Water Plants',     url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Birch wood Biom water plants blue.png',          cols: 9, rows: 2, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'farming_items_v2', group: 'farming_items', variant: {version: 'v2'}, label: 'Farming Items v2',       url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Farming Plants items v2.png',               cols: 5,  rows: 14,frameW: 16, frameH: 16, category: 'items' },
   { key: 'farming_v2', group: 'farming_v2', variant: {'watered':'no'}, label: 'Farming v2',             url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Farming Plants v2.png',                    cols: 7,  rows: 33,frameW: 16, frameH: 16, category: 'nature' },
   { key: 'farming_v2_watered', group: 'farming_v2', variant: {'watered':'yes'}, label: 'Farming v2 Watered',     url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Farming Plants v2 watered.png',             cols: 7,  rows: 33,frameW: 16, frameH: 16, category: 'nature' },
   { key: 'pine_biom', group: 'biom', variant: {'type':'pine'}, label: 'Pine Biom',              url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Pine Tree Biome.png',                       cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'autumn_biom', group: 'biom', variant: {'type':'red'}, label: 'Rojo',           url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Birch wood Biom autumn.png',                cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'yellow_biom', group: 'biom', variant: {'type':'yellow'}, label: 'Amarillo',           url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Birch wood Biom yellow.png',                cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
+  { key: 'blue_biom', group: 'biom', variant: {'type':'blue'}, label: 'Azul',           url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Birch wood Biom blue.png',                cols: 10, rows: 4, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'pine_water_plants', group: 'water_plants', variant: {'type':'pine'}, label: 'Pine Water Plants',      url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Pine Tree Biome water plants.png',        cols: 9, rows: 2, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'trees_v2',                   label: 'Trees v2',               url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Trees, stumps and bushes v2.png',         cols: 12, rows: 8, frameW: 16, frameH: 16, category: 'nature' },
   { key: 'wood_shrooms',               label: 'Wood & Shrooms',         url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/wood n shroms.png',                         cols: 6,  rows: 5, frameW: 16, frameH: 16, category: 'nature' },
@@ -279,6 +299,8 @@ export const OBJECTS = [
   { key: 'small_huts_doors_grass', group: 'small_hut', variant: {'door':'yes','grass':'yes'}, label: 'Small Huts Doors Grass',url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_huts_with_doors_grass.png',                  cols: 3, rows: 3, frameW: 64, frameH: 64, occupyW: 4, occupyH: 1, category: 'structures' },
   { key: 'small_huts_grass', group: 'small_hut', variant: {'door':'no','grass':'yes'}, label: 'Small Huts Grass',      url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_huts_with_grass.png',                       cols: 3, rows: 3, frameW: 64, frameH: 64, occupyW: 4, occupyH: 1, category: 'structures' },
   { key: 'small_hut_shadow', group: 'house_shadow', variant: {house: 'small_hut'}, label: 'Small Hut Shadow',      url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/small hut/small_hut_shadow.png',                             cols: 4,  rows: 1, frameW: 16, frameH: 16, category: 'shadow' },
+  // ── Wooden Cabins ──
+
   { key: 'brick_houses_shadow', group: 'house_shadow', variant: {house: 'brick_house'}, label: 'Brick House Shadow',    url: 'assets/SproutLands-SorrySprites/Early Access/Village pack/houses/Grey brick house/brick_houses_shadow.png',                     cols: 6,  rows: 2, frameW: 16, frameH: 16, category: 'shadow' },
 
   // ── Tests (NPCs decorativos) ──
@@ -325,6 +347,45 @@ export const TERRAINS = [
       9: 25, 10: 13, 11: 24,
       12: 3, 13: 14, 14: 2,
       15: 13,
+    },
+  },
+  {
+    name: 'grass_red',
+    label: 'Grass Rojo',
+    tilesetName: 'grass_red',
+    tiles: {
+      0: 8092, 1: 8103, 2: 8091,
+      3: 8102, 4: 8081, 5: 8092,
+      6: 8080, 7: 8091, 8: 8093,
+      9: 8104, 10: 8092, 11: 8103,
+      12: 8082, 13: 8093, 14: 8081,
+      15: 8092,
+    },
+  },
+  {
+    name: 'grass_blue',
+    label: 'Grass Azul',
+    tilesetName: 'grass_blue',
+    tiles: {
+      0: 8169, 1: 8180, 2: 8168,
+      3: 8179, 4: 8158, 5: 8169,
+      6: 8157, 7: 8168, 8: 8170,
+      9: 8181, 10: 8169, 11: 8180,
+      12: 8159, 13: 8170, 14: 8158,
+      15: 8169,
+    },
+  },
+  {
+    name: 'grass_yellow',
+    label: 'Grass Amarillo',
+    tilesetName: 'grass_yellow',
+    tiles: {
+      0: 8246, 1: 8257, 2: 8245,
+      3: 8256, 4: 8235, 5: 8246,
+      6: 8234, 7: 8245, 8: 8247,
+      9: 8258, 10: 8246, 11: 8257,
+      12: 8236, 13: 8247, 14: 8235,
+      15: 8246,
     },
   },
   {
@@ -481,7 +542,7 @@ export const TERRAINS = [
   },
   {
     name: 'bush',
-    label: 'Bush',
+    label: 'Arbusto Verde',
     tilesetName: 'bush',
     tiles: {
       0: 812, 1: 823, 2: 811,
@@ -490,6 +551,45 @@ export const TERRAINS = [
       9: 824, 10: 812, 11: 823,
       12: 802, 13: 813, 14: 801,
       15: 812,
+    },
+  },
+  {
+    name: 'bush_red',
+    label: 'Arbusto Rojo',
+    tilesetName: 'bush_red',
+    tiles: {
+      0: 2712, 1: 2723, 2: 2711,
+      3: 2722, 4: 2701, 5: 2712,
+      6: 2700, 7: 2711, 8: 2713,
+      9: 2724, 10: 2712, 11: 2723,
+      12: 2702, 13: 2713, 14: 2701,
+      15: 2712,
+    },
+  },
+  {
+    name: 'bush_blue',
+    label: 'Arbusto Azul',
+    tilesetName: 'bush_blue',
+    tiles: {
+      0: 2833, 1: 2844, 2: 2832,
+      3: 2843, 4: 2822, 5: 2833,
+      6: 2821, 7: 2832, 8: 2834,
+      9: 2845, 10: 2833, 11: 2844,
+      12: 2823, 13: 2834, 14: 2822,
+      15: 2833,
+    },
+  },
+  {
+    name: 'bush_yellow',
+    label: 'Arbusto Amarillo',
+    tilesetName: 'bush_yellow',
+    tiles: {
+      0: 2954, 1: 2965, 2: 2953,
+      3: 2964, 4: 2943, 5: 2954,
+      6: 2942, 7: 2953, 8: 2955,
+      9: 2966, 10: 2954, 11: 2965,
+      12: 2944, 13: 2955, 14: 2943,
+      15: 2954,
     },
   },
   {
@@ -788,7 +888,12 @@ export function preloadAssets(scene) {
 
 /** Expand compact { fill, rects } layer into a flat GID array of cols*rows. */
 export function expandLayer(layer, cols, rows) {
-  if (Array.isArray(layer)) return layer.slice();
+  if (Array.isArray(layer)) {
+    const arr = new Array(cols * rows).fill(0);
+    const n = Math.min(layer.length, arr.length);
+    for (let i = 0; i < n; i++) arr[i] = layer[i] || 0;
+    return arr;
+  }
   const out = new Array(cols * rows).fill(layer.fill ?? 0);
   for (const r of (layer.rects || [])) {
     for (let y = r.y; y < r.y + r.h; y++) {
@@ -949,6 +1054,7 @@ export const VARIANT_DEFS = {
       ]}
     ]
   },
+
   small_hut: {
     label: 'Small Hut',
     dimensions: [
@@ -971,6 +1077,14 @@ export const VARIANT_DEFS = {
       ]}
     ]
   },
+  trees: {
+    label: 'Trees',
+    dimensions: [
+      { key: 'color', label: 'Color', options: [
+        { value: 'green', label: 'Verde' }, { value: 'red', label: 'Rojo' }, { value: 'yellow', label: 'Amarillo' }, { value: 'cherry', label: 'Cherry' }, { value: 'blue', label: 'Azul' }
+      ]}
+    ]
+  },
   tree: {
     label: 'Tree',
     dimensions: [
@@ -978,6 +1092,9 @@ export const VARIANT_DEFS = {
         { value: 'none', label: 'None' }, { value: 'apple', label: 'Apple' },
         { value: 'orange', label: 'Orange' }, { value: 'peach', label: 'Peach' },
         { value: 'pear', label: 'Pear' }
+      ]},
+      { key: 'color', label: 'Color', options: [
+        { value: 'green', label: 'Verde' }, { value: 'red', label: 'Rojo' }, { value: 'yellow', label: 'Amarillo' }, { value: 'cherry', label: 'Cherry' }, { value: 'blue', label: 'Blue' }
       ]}
     ]
   },
@@ -994,7 +1111,7 @@ export const VARIANT_DEFS = {
     dimensions: [
       { key: 'type', label: 'Type', options: [
         { value: 'birch', label: 'Birch' }, { value: 'cherry', label: 'Cherry' },
-        { value: 'pine', label: 'Pine' }
+        { value: 'pine', label: 'Pine' }, { value: 'red', label: 'Rojo' }, { value: 'yellow', label: 'Amarillo' }, { value: 'blue', label: 'Azul' }
       ]}
     ]
   },
@@ -1003,7 +1120,7 @@ export const VARIANT_DEFS = {
     dimensions: [
       { key: 'type', label: 'Type', options: [
         { value: 'birch', label: 'Birch' }, { value: 'cherry', label: 'Cherry' },
-        { value: 'pine', label: 'Pine' }
+        { value: 'pine', label: 'Pine' }, { value: 'red', label: 'Rojo' }, { value: 'blue', label: 'Azul' }
       ]}
     ]
   },

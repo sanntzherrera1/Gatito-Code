@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="css/editor.css">
     <link rel="stylesheet" href="css/dialog.css">
     <link rel="stylesheet" href="css/name-dialog.css">
+    <link rel="stylesheet" href="css/result.css">
   </head>
   <body>
     <div id="hud"><div><b>Gatito</b> · <kbd>Esc</kbd> back to menu</div></div>
@@ -36,9 +37,15 @@
           <button data-jdir="right" class="jump-dir-btn" aria-label="Jump right"><span class="dir-icon">▶</span></button>
         </div>
       </div>
-      <div id="mission">
-        <h3>Mision</h3>
-        <p id="mission-text"></p>
+      <div class="sprout-panel" id="queue-if-rock-left">
+        <h3>SI</h3>
+        <label class="if-select-label" for="if-rock-select">Condicion</label>
+        <select id="if-rock-select" class="if-select">
+          <option value="">sin condicion</option>
+          <option value="if-rock-jump">si roca salta</option>
+          <option value="if-navigate">rodear</option>
+        </select>
+        <button id="clear-if-rock" class="clear" style="margin-top: 10px;"><span class="queue-icon">âœ•</span><span class="queue-label">BORRAR IF</span></button>
       </div>
     </div>
 
@@ -98,6 +105,9 @@
         <div class="ed-layers" id="ed-layers">
           <button data-layer="floor">[1] Floor</button>
           <button data-layer="walls" class="active">[2] Walls</button>
+          <button data-layer="path">[3] Path</button>
+          <button data-layer="overlay">[4] Overlay</button>
+          <button data-layer="top">[5] Top</button>
         </div>
       </div>
       <hr class="ed-section-hr">
@@ -124,17 +134,24 @@
       <div>
         <div class="ed-obj-header">
           <h3>Objects</h3>
+          <button id="ed-clear-objects">🗑️ Clear all objects</button>
           <div class="ed-obj-type" id="ed-obj-type">
             <span class="ed-obj-type-label">Type:</span>
             <button data-objtype="pickup_with_animation">Pickup with animation</button>
             <button data-objtype="pickup">Pickup</button>
-            <button data-objtype="deco" class="active">Decoration</button>
+            <button data-objtype="deco">Decoration</button>
+            <button data-objtype="top">Top</button>
           </div>
         </div>
         <div class="ed-obj-categories" id="ed-obj-categories"></div>
         <div class="ed-tabs" id="ed-obj-tabs"></div>
         <div class="ed-variant-switches" id="ed-variant-switches"></div>
         <div class="ed-palette" id="ed-obj-palette"></div>
+      </div>
+      <hr class="ed-section-hr">
+      <div>
+        <h3>Puntos de Intro</h3>
+        <button id="ed-intro-mode">🎬 Marcar punto intro</button>
       </div>
       <hr class="ed-section-hr">
       <div>
@@ -208,6 +225,14 @@
       </div>
       <div class="ed-status">
         Left-click paint · right-click erase · <kbd>E</kbd> eyedrop · <kbd>G</kbd> grid
+      </div>
+    </div>
+
+    <div id="result-panel">
+      <div class="result-portrait" id="result-portrait"></div>
+      <div class="result-bubble">
+        <div class="result-message" id="result-message"></div>
+        <div class="result-actions" id="result-actions"></div>
       </div>
     </div>
 

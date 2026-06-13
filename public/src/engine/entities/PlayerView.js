@@ -43,6 +43,37 @@ export class PlayerView {
     this.sprite.anims.play(`walk_${dir}`, true);
   }
 
+  playCelebrate() {
+    this.sprite.anims.stop();
+    this.sprite.setFrame(PlayerView.getIdleFrameForDir('down'));
+    this.scene.tweens.add({
+      targets: this.sprite,
+      y: this.sprite.y - 12,
+      duration: 250,
+      yoyo: true,
+      repeat: -1,
+      ease: 'Sine.easeInOut'
+    });
+  }
+
+  playSad() {
+    this.sprite.anims.stop();
+    this.sprite.setFrame(PlayerView.getIdleFrameForDir('down'));
+    this.sprite.setTint(0x7777ff);
+    this.scene.tweens.add({
+      targets: this.sprite,
+      scaleY: 0.8,
+      duration: 500,
+      ease: 'Bounce.easeOut'
+    });
+  }
+
+  stopAnimations() {
+    this.scene.tweens.killTweensOf(this.sprite);
+    this.sprite.setTint(0xffffff);
+    this.sprite.setScale(1);
+  }
+
   setPosition(tx, ty) {
     const [x, y] = this._tileCenter(tx, ty);
     this.sprite.setPosition(x, y);

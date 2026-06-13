@@ -12,7 +12,22 @@ export function readLevelJson(scene, levelKey) {
       if (disk && (parsed.cols !== disk.cols || parsed.rows !== disk.rows)) {
         localStorage.removeItem(`level:${levelKey}`);
       } else {
-        return parsed;
+        // Validate GIDs: if any GID is > 10000, the saved data uses old firstgid (100100)
+        // and must be discarded since the tileset now has firstgid 8080.
+        const maxGid = Math.max(
+          ...(parsed.layers?.floor || []),
+          ...(parsed.layers?.walls || []),
+          ...(parsed.layers?.path || []),
+          ...(parsed.layers?.overlay || []),
+          ...(parsed.layers?.top || []),
+          0
+        );
+        if (maxGid > 10000) {
+          console.warn(`Level "${levelKey}" override has invalid GIDs (${maxGid}), discarding.`);
+          localStorage.removeItem(`level:${levelKey}`);
+        } else {
+          return parsed;
+        }
       }
     } catch { localStorage.removeItem(`level:${levelKey}`); }
   }
@@ -30,10 +45,43 @@ export function clearLevelOverride(levelKey) {
 // ── Custom level registry ────────────────────────────────────────────────────
 
 export const CUSTOM_LEVELS_KEY = 'gatito_custom_levels';
+export const PROGRESS_KEY = 'gatito_progress';
+
+export const BUILTIN_LEVELS = [
+  { key: 'nivel0', name: 'Nivel 0', scene: 'Nivel0' },
+  { key: 'gym',    name: 'Gym',     scene: 'Gym' },
+  { key: 'main',   name: 'Main',    scene: 'Main' },
+  { key: 'nivel3', name: 'Nivel 3', scene: 'Nivel3' },
+  { key: 'bosque_floral', name: 'Bosque Floral', scene: 'BosqueFloral' },
+  { key: 'if',     name: 'IF',      scene: 'Custom' },
+  { key: 'si_1',   name: 'SI 1',    scene: 'Custom' },
+  { key: 'si_2',   name: 'SI 2',    scene: 'Custom' },
+  { key: 'si_3',   name: 'SI 3',    scene: 'Custom' },
+];
 
 export function getCustomLevels() {
   try { return JSON.parse(localStorage.getItem(CUSTOM_LEVELS_KEY) || '[]'); }
   catch { return []; }
+}
+
+export function getAllLevels() {
+  return [
+    ...BUILTIN_LEVELS,
+    ...getCustomLevels().map(l => ({ ...l, scene: 'Custom' }))
+  ];
+}
+
+export function getCompletedLevels() {
+  try { return JSON.parse(localStorage.getItem(PROGRESS_KEY) || '[]'); }
+  catch { return []; }
+}
+
+export function markLevelCompleted(key) {
+  const completed = getCompletedLevels();
+  if (!completed.includes(key)) {
+    completed.push(key);
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(completed));
+  }
 }
 
 export function addCustomLevel(key, name) {
@@ -51,7 +99,10 @@ export function createNewLevel(key) {
     tilesets: TILESETS.map(t => t.name),
     layers: {
       floor: new Array(cols * rows).fill(13),
+      path: new Array(cols * rows).fill(0),
       walls: new Array(cols * rows).fill(0),
+      overlay: new Array(cols * rows).fill(0),
+      top: new Array(cols * rows).fill(0),
     },
     spawn: { tx: 8, ty: 6 },
     objects: [],
