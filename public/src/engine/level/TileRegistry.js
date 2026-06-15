@@ -231,7 +231,10 @@ export const OBJECTS = [
     { x: 96, y: 32, w: 16, h: 16 },
     { x: 112, y: 32, w: 16, h: 16 },
     { x: 0, y: 48, w: 16, h: 16 },
-    { x: 16, y: 48, w: 64, h: 16 },
+    { x: 16, y: 48, w: 16, h: 16 },
+    { x: 32, y: 48, w: 16, h: 16 },
+    { x: 48, y: 48, w: 16, h: 16 },
+    { x: 64, y: 48, w: 16, h: 16 },
     { x: 144, y: 48, w: 48, h: 48 },
     { x: 0, y: 64, w: 16, h: 16 },
     { x: 16, y: 64, w: 16, h: 16 },
@@ -270,7 +273,10 @@ export const OBJECTS = [
     { x: 96, y: 32, w: 16, h: 16 },
     { x: 112, y: 32, w: 16, h: 16 },
     { x: 0, y: 48, w: 16, h: 16 },
-    { x: 16, y: 48, w: 64, h: 16 },
+    { x: 16, y: 48, w: 16, h: 16 },
+    { x: 32, y: 48, w: 16, h: 16 },
+    { x: 48, y: 48, w: 16, h: 16 },
+    { x: 64, y: 48, w: 16, h: 16 },
     { x: 144, y: 48, w: 48, h: 48 },
     { x: 0, y: 64, w: 16, h: 16 },
     { x: 16, y: 64, w: 16, h: 16 },
@@ -309,7 +315,10 @@ export const OBJECTS = [
     { x: 96, y: 32, w: 16, h: 16 },
     { x: 112, y: 32, w: 16, h: 16 },
     { x: 0, y: 48, w: 16, h: 16 },
-    { x: 16, y: 48, w: 64, h: 16 },
+    { x: 16, y: 48, w: 16, h: 16 },
+    { x: 32, y: 48, w: 16, h: 16 },
+    { x: 48, y: 48, w: 16, h: 16 },
+    { x: 64, y: 48, w: 16, h: 16 },
     { x: 144, y: 48, w: 48, h: 48 },
     { x: 0, y: 64, w: 16, h: 16 },
     { x: 16, y: 64, w: 16, h: 16 },
@@ -348,7 +357,10 @@ export const OBJECTS = [
     { x: 96, y: 32, w: 16, h: 16 },
     { x: 112, y: 32, w: 16, h: 16 },
     { x: 0, y: 48, w: 16, h: 16 },
-    { x: 16, y: 48, w: 64, h: 16 },
+    { x: 16, y: 48, w: 16, h: 16 },
+    { x: 32, y: 48, w: 16, h: 16 },
+    { x: 48, y: 48, w: 16, h: 16 },
+    { x: 64, y: 48, w: 16, h: 16 },
     { x: 144, y: 48, w: 48, h: 48 },
     { x: 0, y: 64, w: 16, h: 16 },
     { x: 16, y: 64, w: 16, h: 16 },
@@ -387,7 +399,10 @@ export const OBJECTS = [
     { x: 96, y: 32, w: 16, h: 16 },
     { x: 112, y: 32, w: 16, h: 16 },
     { x: 0, y: 48, w: 16, h: 16 },
-    { x: 16, y: 48, w: 64, h: 16 },
+    { x: 16, y: 48, w: 16, h: 16 },
+    { x: 32, y: 48, w: 16, h: 16 },
+    { x: 48, y: 48, w: 16, h: 16 },
+    { x: 64, y: 48, w: 16, h: 16 },
     { x: 144, y: 48, w: 48, h: 48 },
     { x: 0, y: 64, w: 16, h: 16 },
     { x: 16, y: 64, w: 16, h: 16 },
@@ -540,14 +555,7 @@ export const OBJECTS = [
     label: 'Signs',
     url: 'assets/SproutLands-Sprites/Objects/signs.png',
     category: 'structures',
-    frames: [
-    { x: 0, y: 0, w: 16, h: 64 },
-    { x: 16, y: 0, w: 16, h: 64 },
-    { x: 32, y: 0, w: 16, h: 64 },
-    { x: 48, y: 0, w: 16, h: 64 },
-    { x: 64, y: 0, w: 16, h: 64 },
-    { x: 80, y: 0, w: 16, h: 64 }
-    ]},
+    cols: 6, rows: 4, frameW: 16, frameH: 16 },
   { key: 'signs_sides',
     group: 'signs',
     variant: {type: 'side'},
@@ -557,9 +565,12 @@ export const OBJECTS = [
     frames: [
     { x: 0, y: 0, w: 16, h: 16 },
     { x: 16, y: 0, w: 16, h: 16 },
-    { x: 32, y: 0, w: 16, h: 32 },
-    { x: 48, y: 0, w: 16, h: 32 },
-    { x: 64, y: 0, w: 16, h: 32 },
+    { x: 32, y: 0, w: 16, h: 16 },
+    { x: 32, y: 16, w: 16, h: 16 },
+    { x: 48, y: 0, w: 16, h: 16 },
+    { x: 48, y: 16, w: 16, h: 16 },
+    { x: 64, y: 0, w: 16, h: 16 },
+    { x: 64, y: 16, w: 16, h: 16 },
     { x: 80, y: 0, w: 16, h: 16 },
     { x: 96, y: 0, w: 16, h: 16 },
     { x: 112, y: 0, w: 16, h: 16 }
@@ -2494,9 +2505,12 @@ export const OBJECTS = [
     { x: 192, y: 0, w: 64, h: 80 },
     { x: 256, y: 0, w: 64, h: 80 },
     { x: 320, y: 0, w: 64, h: 80 },
-    { x: 0, y: 80, w: 48, h: 96 },
-    { x: 48, y: 80, w: 48, h: 96 },
-    { x: 96, y: 80, w: 48, h: 96 },
+    { x: 0, y: 80, w: 48, h: 48 },
+    { x: 0, y: 128, w: 48, h: 48 },
+    { x: 48, y: 80, w: 48, h: 48 },
+    { x: 48, y: 128, w: 48, h: 48 },
+    { x: 96, y: 80, w: 48, h: 48 },
+    { x: 96, y: 128, w: 48, h: 48 },
     { x: 160, y: 80, w: 32, h: 48 },
     { x: 192, y: 80, w: 32, h: 48 },
     { x: 224, y: 80, w: 32, h: 48 },
@@ -2509,7 +2523,9 @@ export const OBJECTS = [
     url: 'assets/SproutLands-Sprites/Tilesets/Building parts/Animal Structures/Water tray.png',
     category: 'structures',
     frames: [
-    { x: 0, y: 0, w: 96, h: 16, occupyW: 2, occupyH: 1 }
+    { x: 0, y: 0, w: 32, h: 16, occupyW: 2, occupyH: 1 },
+    { x: 32, y: 0, w: 32, h: 16, occupyW: 2, occupyH: 1 },
+    { x: 64, y: 0, w: 32, h: 16, occupyW: 2, occupyH: 1 }
     ]},
   { key: 'door_animation',
     label: 'Door Anim',
@@ -2828,16 +2844,7 @@ export const OBJECTS = [
     url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/Rocks.png',
     category: 'nature',
     isRock: true,
-    frames: [
-    { x: 0, y: 0, w: 48, h: 16 },
-    { x: 0, y: 16, w: 48, h: 16 },
-    { x: 0, y: 32, w: 16, h: 16 },
-    { x: 16, y: 32, w: 16, h: 16 },
-    { x: 32, y: 32, w: 16, h: 16 },
-    { x: 48, y: 32, w: 16, h: 16 },
-    { x: 0, y: 48, w: 48, h: 16 },
-    { x: 48, y: 48, w: 16, h: 16 }
-    ]},
+    cols: 4, rows: 4, frameW: 16, frameH: 16 },
   { key: 'dungeon_switch_obj',
     label: 'Dungeon Switch',
     url: 'assets/SproutLands-SorrySprites/Early Access/Dungeon Pack/tiles/switch.png',
@@ -5369,6 +5376,21 @@ export const TERRAINS = [
  * devuelve las dimensiones y ocupacion del frame indicado (pudiendo ser personalizadas por frame).
  * Si no, devuelve los valores por defecto basados en frameW/frameH y occupyW/occupyH globales.
  */
+export function getValidFrame(objDef, frameIndex) {
+  if (!objDef) return 0;
+  if (objDef.frames) {
+    const len = objDef.frames.length;
+    if (len === 0) return 0;
+    if (frameIndex < 0) return 0;
+    if (frameIndex >= len) return len - 1;
+    return frameIndex;
+  }
+  const total = (objDef.cols || 1) * (objDef.rows || 1);
+  if (frameIndex < 0) return 0;
+  if (frameIndex >= total) return total - 1;
+  return frameIndex;
+}
+
 export function getFrameDimensions(objDef, frameIndex) {
   if (objDef?.frames && objDef.frames[frameIndex]) {
     const f = objDef.frames[frameIndex];
@@ -5400,6 +5422,28 @@ export function preloadAssets(scene) {
   }
   for (const lv of LEVELS) {
     scene.load.json(`level_${lv}`, `levels/${lv}.json`);
+  }
+}
+
+/**
+ * Registra un sub-frame por celda en cada textura de tileset.
+ * Las texturas de tilesets se cargan con `load.image` (una sola imagen con `cols*rows` tiles
+ * de TILE×TILE), así que la textura solo expone `__BASE` (la imagen completa). Este helper
+ * agrega frames nombrados `"0"`, `"1"`, ..., `"cols*rows-1"` con sus coordenadas dentro del
+ * PNG, de forma análoga a como BootScene.create() procesa OBJECTS con `frames` propio.
+ * Habilita que `scene.add.sprite(tilesetKey, localIndex)` muestre un tile puntual.
+ * Asume tiles uniformes de TILE×TILE (todos los TILESETS actuales).
+ */
+export function defineTileFrames(scene) {
+  for (const t of TILESETS) {
+    const tex = scene.textures.get(t.key);
+    if (!tex) continue;
+    for (let r = 0; r < t.rows; r++) {
+      for (let c = 0; c < t.cols; c++) {
+        const idx = r * t.cols + c;
+        if (!tex.has(String(idx))) tex.add(idx, 0, c * TILE, r * TILE, TILE, TILE);
+      }
+    }
   }
 }
 

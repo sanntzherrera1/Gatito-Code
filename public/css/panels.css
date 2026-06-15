@@ -23,6 +23,7 @@
   display: none;
   flex-direction: column;
   gap: 8px;
+  flex-shrink: 0;
   /* width, max-height, overflow se definen en editor.css */
 }
 .panel h3, #editor-panel h3 {

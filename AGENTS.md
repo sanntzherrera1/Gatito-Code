@@ -17,7 +17,7 @@ Compact reference for agents working in this repo. For deeper architecture, see 
 | `services/` | localStorage persistence, level registry | `config/`, `domain/`, `engine/level/` |
 | `ui/` | DOM/HTML overlays. No Phaser imports. | `config/` (indirectly via globals) |
 
-**UI ↔ Phaser coupling:** `window.__GYM` (DOM → Phaser), `window.__setPanels`, `window.__showDialog`, `window.__setEditor`, `window.__setMission` (Phaser → DOM). Expect globals when debugging or adding features.
+**UI ↔ Phaser coupling:** `window.__GYM` (DOM → Phaser), `window.__setPanels`, `window.__showDialog`, `window.__setEditor`, `window.__setMission` (Phaser → DOM). The editor also uses `window.__setEditor_updateSummary`, `__setEditor_showToast`, `__setEditor_showLayerPicker`, `__setEditor_hideLayerPicker`, `__setEditor_markDirty`, `__setEditor_updateSelected`, `__setEditor_updateObjectSelected`. Expect globals when debugging or adding features.
 
 ## Hard-to-guess code facts
 

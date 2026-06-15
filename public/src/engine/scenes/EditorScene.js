@@ -1,7 +1,7 @@
 import { TILE, COLS, ROWS } from '../../config/game.js';
 import {
   TILESETS, TILESET_CATEGORIES, TERRAINS, OBJECTS, OBJECT_CATEGORIES, VARIANT_DEFS,
-  expandLayer, flatToRows, isSameTerrain, resolveTerrainGid, getFrameDimensions,
+  expandLayer, flatToRows, isSameTerrain, resolveTerrainGid, getFrameDimensions, getValidFrame,
 } from '../../engine/level/TileRegistry.js';
 import { loadLevel } from '../../engine/level/TileLevelLoader.js';
 import {
@@ -48,8 +48,21 @@ export class EditorScene extends Phaser.Scene {
     this.history = [];
     this.future = [];
 
+    this.dirty = false;
+    this.saveTimer = null;
+    this.dragState = null;
+    this.dragGhost = null;
+    this.hoverGhost = null;
+    this.selectionGhost = null;
+    this.activeEditorTab = 'tileset';
+    this.escTimer = null;
+
+    // Selection unificada: null = modo copiar; con valor = modo pegar/colocar
+    // { type: 'tile', gid } o { type: 'object', key, frame, objType }
+    this.selection = null;
+
     // Object mode state
-    this.edMode = 'tile';             // 'tile' | 'object' | 'spawn'
+    this.edMode = 'tile';             // 'tile' | 'object' | 'spawn' | 'intro'
     this.objects = (level.objects ?? []).slice();
     this.objectSprites = new Map();   // "tx,ty" → Phaser sprite
     this.selectedObject = { key: 'plants', frame: 0, type: 'deco' };
@@ -88,8 +101,8 @@ export class EditorScene extends Phaser.Scene {
       objects:  OBJECTS,
       variantDefs: VARIANT_DEFS,
       categories: OBJECT_CATEGORIES,
-      onSelect:       (gid)     => { this.activeTerrain = null; this.selectedGid = gid; this.setMode('tile'); this.updateHud(); },
-      onTerrain:      (terrain) => { this.activeTerrain = terrain; this.setMode('tile'); this.updateHud(); window.__setEditor_updateTerrain?.(terrain?.name ?? null); },
+      onSelect:       (gid)     => { this.activeTerrain = null; this.selectedGid = gid; this.setSelectionFromPalette('tile', gid); this.setEditorTab('tileset'); this.setMode('tile'); this.updateHud(); window.__setEditor_updateSelected?.(gid); },
+      onTerrain:      (terrain) => { this.activeTerrain = terrain; this.setEditorTab('tileset'); this.setMode('tile'); this.updateHud(); window.__setEditor_updateTerrain?.(terrain?.name ?? null); },
       onLayer:        (layer)   => this.setLayer(layer),
       onSave:         () => this.save(),
       onPlay:         () => this.playTest(),
@@ -100,13 +113,18 @@ export class EditorScene extends Phaser.Scene {
       onRedo:         () => this.redo(),
       onRevert:       () => this.revertToDisk(),
       getLayer:       () => this.activeLayer,
-      onObjectSelect: (key, frame, type) => { this.selectedObject = { key, frame, type }; this.setMode('object'); },
-      onObjectTypeChange: (type) => { this.selectedObject.type = type; this.updateHud(); },
+      onObjectSelect: (key, frame, type) => { this.selectedObject = { key, frame, type }; this.setSelectionFromPalette('object', null, key, frame, type); this.setEditorTab('objects'); this.setMode('object'); this.updateHud(); window.__setEditor_updateObjectSelected?.(key, frame, type); },
+      onObjectTypeChange: (type) => { this.selectedObject.type = type; if (this.selection?.type === 'object') this.selection.objType = type; this.updateHud(); },
       onSpawnMode:    () => this.setMode('spawn'),
       onIntroMode:    () => this.setMode(this.edMode === 'intro' ? 'tile' : 'intro'),
       getMode:        () => this.edMode,
       getWeather:     () => this.weather,
       onWeatherChange:(cfg) => this.setWeather(cfg),
+      getSummary:     ()      => this.getSummary(),
+      getTilesetForGid: (gid) => this.getTilesetForGid(gid),
+      getActiveTab:   ()      => this.activeEditorTab,
+      onTabChange:    (tab)   => this.setEditorTab(tab),
+      getSelection:   ()      => this.selection,
     });
 
     // Pointer input ---------------------------------------------------------
@@ -117,36 +135,19 @@ export class EditorScene extends Phaser.Scene {
 
     this.input.on('pointermove', (p) => {
       const { tx, ty } = tileAt(p);
-      if (inBounds(tx, ty)) {
-        if (this.edMode === 'object') {
-          const objDef = OBJECTS.find(o => o.key === this.selectedObject.key);
-          const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, this.selectedObject.frame);
-          const { startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH);
+      this.updateHover(tx, ty, p);
 
-          let valid = true;
-          for (let y = startTy; y <= endTy; y++) {
-            for (let x = startTx; x <= endTx; x++) {
-              if (!inBounds(x, y)) { valid = false; break; }
-              if (this.flat.walls[y * this.cols + x] !== 0) { valid = false; break; }
-            }
-            if (!valid) break;
-          }
-          if (valid && this._hasObjectCollision(startTx, startTy, endTx, endTy)) valid = false;
-
-          const width = (endTx - startTx + 1) * TILE;
-          const height = (endTy - startTy + 1) * TILE;
-          this.hoverRect.setPosition(startTx * TILE, startTy * TILE).setSize(width, height);
-          this.hoverRect.setStrokeStyle(1, valid ? 0x00ff00 : 0xff0000, 1);
-          this.hoverRect.setVisible(true);
-        } else {
-          this.hoverRect.setPosition(tx * TILE, ty * TILE).setSize(TILE, TILE);
-          this.hoverRect.setStrokeStyle(1, 0xffee88, 1);
-          this.hoverRect.setVisible(true);
-          if (this.painting && this.edMode === 'tile') this.paintAt(tx, ty, this.painting);
+      if (this.dragState?.active) {
+        this.updateDrag(tx, ty, p);
+      } else if (this.dragState && !this.dragState.dragDisabled) {
+        const dx = p.worldX - this.dragState.startX;
+        const dy = p.worldY - this.dragState.startY;
+        const dt = Date.now() - this.dragState.startTime;
+        if (Math.hypot(dx, dy) > 10 || dt > 220) {
+          this.startDrag();
         }
-      } else {
-        this.hoverRect.setVisible(false);
       }
+
       this.updateHud(tx, ty);
     });
 
@@ -156,7 +157,7 @@ export class EditorScene extends Phaser.Scene {
 
       if (this.edMode === 'intro') {
         this._toggleIntroPoint(tx, ty);
-        writeLevelJson(this.levelKey, this.serialize());
+        this.saveDeferred();
         return;
       }
 
@@ -165,35 +166,62 @@ export class EditorScene extends Phaser.Scene {
         this.spawnMarker.setPosition(tx * TILE, ty * TILE);
         this.spawnLabel.setPosition(tx * TILE + 2, ty * TILE + 2);
         this.setMode('tile');
-        writeLevelJson(this.levelKey, this.serialize());
+        this.saveDeferred();
         return;
       }
 
-      if (this.edMode === 'object') {
-        if (p.rightButtonDown()) {
-          this._removeObject(tx, ty);
-        } else {
-          this._placeObject(tx, ty);
-        }
-        writeLevelJson(this.levelKey, this.serialize());
+      if (p.rightButtonDown()) {
+        this._deleteAt(tx, ty);
         return;
       }
 
-      const mode = p.rightButtonDown() ? 'erase' : 'paint';
-      this.pushHistory();
-      this.painting = mode;
-      this.paintAt(tx, ty, mode);
+      if (this.selection) {
+        // Modo pegar: colocar el elemento seleccionado
+        this._tryPaste(tx, ty);
+        return;
+      }
+
+      // Modo copiar: preparar posible arrastre desde elemento de la capa activa
+      const source = this._getSourceAtActiveLayer(tx, ty);
+      if (source) {
+        this.pushHistory();
+        this.dragState = {
+          startTx: tx, startTy: ty,
+          startX: p.worldX, startY: p.worldY,
+          startTime: Date.now(),
+          active: false,
+          layer: this.activeLayer,
+          source,
+        };
+      }
     });
 
-    this.input.on('pointerup', () => { this.painting = null; });
-    this.input.on('pointerupoutside', () => { this.painting = null; });
+    this.input.on('pointerup', (p) => {
+      const { tx, ty } = tileAt(p);
+      if (this.dragState?.active) {
+        this.endDrag(tx, ty);
+      } else if (this.dragState && this.dragState.source) {
+        // Click corto sobre elemento: copiar a selection
+        this._copyFromSource(this.dragState.source);
+        window.__setEditor_showToast?.('Elemento copiado. Esc para limpiar selección.', 'success');
+      }
+      this.dragState = null;
+    });
+
+    this.input.on('pointerupoutside', () => {
+      if (this.dragState?.active) {
+        this.cancelDrag();
+      }
+      this.dragState = null;
+      this.painting = null;
+    });
 
     // Keyboard --------------------------------------------------------------
     const K = Phaser.Input.Keyboard.KeyCodes;
     this.keys = this.input.keyboard.addKeys({
-      ONE: K.ONE, TWO: K.TWO, THREE: K.THREE, FOUR: K.FOUR, FIVE: K.FIVE, E: K.E, G: K.G,
+      ONE: K.ONE, TWO: K.TWO, THREE: K.THREE, FOUR: K.FOUR, FIVE: K.FIVE, G: K.G,
       S: K.S, Z: K.Z, Y: K.Y, P: K.P, ESC: K.ESC,
-      C: K.C, O: K.O,
+      C: K.C, I: K.I,
     });
     this.keys.ONE.on('down', () => this.setLayer('floor'));
     this.keys.TWO.on('down', () => this.setLayer('walls'));
@@ -201,11 +229,10 @@ export class EditorScene extends Phaser.Scene {
     this.keys.FOUR.on('down', () => this.setLayer('overlay'));
     this.keys.FIVE.on('down', () => this.setLayer('top'));
     this.keys.G.on('down',   () => { this.gridVisible = !this.gridVisible; this.grid.setVisible(this.gridVisible); });
-    this.keys.E.on('down',   () => this.eyedrop());
     this.keys.P.on('down',   () => this.playTest());
-    this.keys.ESC.on('down', () => this.exitToMenu());
+    this.keys.ESC.on('down', () => this._handleEsc());
     this.keys.S.on('down',   (ev) => { if (!ev.ctrlKey) this.setMode(this.edMode === 'spawn' ? 'tile' : 'spawn'); });
-    this.keys.O.on('down',   () => this.setMode(this.edMode === 'object' ? 'tile' : 'object'));
+    this.keys.I.on('down',   () => this.setMode(this.edMode === 'intro' ? 'tile' : 'intro'));
     this.input.keyboard.on('keydown', (ev) => {
       if (ev.ctrlKey && !ev.shiftKey && ev.code === 'KeyS') { ev.preventDefault(); this.save(); }
       if (ev.ctrlKey && !ev.shiftKey && ev.code === 'KeyZ') { ev.preventDefault(); this.undo(); }
@@ -218,6 +245,10 @@ export class EditorScene extends Phaser.Scene {
       destroyWeather(this);
       window.__setEditor?.(null);
       this.painting = null;
+      if (this.saveTimer) { clearTimeout(this.saveTimer); this.saveTimer = null; }
+      if (this.escTimer) { clearTimeout(this.escTimer); this.escTimer = null; }
+      this._destroyHoverGhost();
+      this._destroySelectionGhost();
     });
 
     this.setLayer(this.activeLayer);
@@ -225,6 +256,7 @@ export class EditorScene extends Phaser.Scene {
   }
 
   exitToMenu() {
+    this.doSave();
     window.__setEditor?.(null);
     window.__setPanels?.(false);
     this.scene.start('Menu', { screen: this.returnScreen });
@@ -256,7 +288,7 @@ export class EditorScene extends Phaser.Scene {
       const gid = mode === 'erase' ? 0 : this.selectedGid;
       this._setGid(tx, ty, gid);
     }
-    writeLevelJson(this.levelKey, this.serialize());
+    this.saveDeferred();
   }
 
   _setGid(tx, ty, gid) {
@@ -332,14 +364,6 @@ export class EditorScene extends Phaser.Scene {
     }
   }
 
-  eyedrop() {
-    if (!this.hoverRect.visible) return;
-    const tx = this.hoverRect.x / TILE | 0;
-    const ty = this.hoverRect.y / TILE | 0;
-    const gid = this.flat[this.activeLayer][ty * this.cols + tx];
-    if (gid) { this.selectedGid = gid; this.updateHud(); window.__setEditor_updateSelected?.(gid); }
-  }
-
   setLayer(name) {
     if (!LAYERS.includes(name)) return;
     this.activeLayer = name;
@@ -404,7 +428,7 @@ export class EditorScene extends Phaser.Scene {
     this.redrawLayer('walls');
     this.redrawLayer('overlay');
     this.redrawLayer('top');
-    writeLevelJson(this.levelKey, this.serialize());
+    this.saveDeferred();
   }
 
   redrawLayer(name) {
@@ -420,11 +444,11 @@ export class EditorScene extends Phaser.Scene {
   }
 
   clearActiveLayer() {
-    if (!confirm(`Clear "${this.activeLayer}" layer?`)) return;
     this.pushHistory();
     this.flat[this.activeLayer].fill(0);
     this.redrawLayer(this.activeLayer);
-    writeLevelJson(this.levelKey, this.serialize());
+    this.saveDeferred();
+    window.__setEditor_showToast?.(`Capa "${this.activeLayer}" limpiada`, 'success');
   }
 
   revertToDisk() {
@@ -457,6 +481,8 @@ export class EditorScene extends Phaser.Scene {
   save() {
     const data = this.serialize();
     writeLevelJson(this.levelKey, data);
+    this.markDirty(false);
+    window.__setEditor_updateSummary?.(this.getSummary());
 
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -465,10 +491,12 @@ export class EditorScene extends Phaser.Scene {
     a.download = `${this.levelKey}.json`;
     a.click();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
+
+    window.__setEditor_showToast?.('Nivel guardado', 'success');
   }
 
   playTest() {
-    writeLevelJson(this.levelKey, this.serialize());
+    this.doSave();
     const targetScene = this.levelKey === 'nivel0' ? 'Nivel0'
                       : this.levelKey === 'gym' ? 'Gym'
                       : this.levelKey === 'main' ? 'Main'
@@ -490,6 +518,7 @@ export class EditorScene extends Phaser.Scene {
     if (Object.values(this.weather).some(v => v > 0)) {
       createWeather(this, this.weather);
     }
+    this.saveDeferred();
   }
 
   _inBounds(x, y) {
@@ -544,12 +573,13 @@ export class EditorScene extends Phaser.Scene {
 
   _renderObject(obj) {
     const objDef = OBJECTS.find(o => o.key === obj.key);
-    const { occupyW: occW } = getFrameDimensions(objDef, obj.frame);
+    const safeFrame = getValidFrame(objDef, obj.frame);
+    const { occupyW: occW } = getFrameDimensions(objDef, safeFrame);
     const startTx = obj.tx - Math.floor((occW - 1) / 2);
     const cx = startTx * TILE + (occW * TILE) / 2;
     const cy = obj.ty * TILE + TILE;
     const depth = obj.ty * this.cols + obj.tx + 2000;
-    const s = this.add.sprite(cx, cy, obj.key, obj.frame)
+    const s = this.add.sprite(cx, cy, obj.key, safeFrame)
       .setOrigin(0.5, 1)
       .setDepth(depth);
 
@@ -563,47 +593,64 @@ export class EditorScene extends Phaser.Scene {
     this.objectSprites.set(`${obj.tx},${obj.ty}`, s);
   }
 
-  _placeObject(tx, ty) {
-    const objDef = OBJECTS.find(o => o.key === this.selectedObject.key);
-    const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, this.selectedObject.frame);
+  _placeObject(tx, ty, key = null, frame = null, objType = null) {
+    const k = key ?? this.selectedObject.key;
+    const f = frame ?? this.selectedObject.frame;
+    const t = objType ?? this.selectedObject.type;
+    const objDef = OBJECTS.find(o => o.key === k);
+    const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, f);
     const { startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH);
 
     for (let y = startTy; y <= endTy; y++) {
       for (let x = startTx; x <= endTx; x++) {
-        if (!this._inBounds(x, y)) return;
-        if (this.flat.walls[y * this.cols + x] !== 0) return;
+        if (!this._inBounds(x, y)) {
+          window.__setEditor_showToast?.('Fuera del mapa', 'error');
+          return;
+        }
+        if (this.flat.walls[y * this.cols + x] !== 0) {
+          window.__setEditor_showToast?.('Hay una pared ahí', 'error');
+          return;
+        }
       }
     }
-    if (this._hasObjectCollision(startTx, startTy, endTx, endTy)) return;
+    if (this._hasObjectCollision(startTx, startTy, endTx, endTy)) {
+      window.__setEditor_showToast?.('Ya hay un objeto ahí', 'error');
+      return;
+    }
 
     this._removeObjectsInFootprint(startTx, startTy, endTx, endTy);
-    const obj = { tx, ty, key: this.selectedObject.key, frame: this.selectedObject.frame, type: this.selectedObject.type };
+    const obj = { tx, ty, key: k, frame: f, type: t };
     this.objects.push(obj);
     this._renderObject(obj);
+    this.saveDeferred();
   }
 
-  _removeObject(tx, ty) {
-    const targetObj = this.objects.find(obj => {
+  _objectUnderCursor(tx, ty) {
+    return this.objects.find(obj => {
       const objDef = OBJECTS.find(o => o.key === obj.key);
       const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, obj.frame);
       const { startTx, startTy, endTx, endTy } = this._getOccupancy(obj.tx, obj.ty, occW, occH);
       return tx >= startTx && tx <= endTx && ty >= startTy && ty <= endTy;
     });
+  }
 
+  _removeObject(tx, ty) {
+    const targetObj = this._objectUnderCursor(tx, ty);
     if (!targetObj) return;
     const key = `${targetObj.tx},${targetObj.ty}`;
     const s = this.objectSprites.get(key);
     if (s) { this.tweens.killTweensOf(s); s.destroy(); this.objectSprites.delete(key); }
     this.objects = this.objects.filter(o => !(o.tx === targetObj.tx && o.ty === targetObj.ty));
+    this.saveDeferred();
   }
 
   clearAllObjects() {
     if (!this.objects.length) return;
-    if (!confirm(`Eliminar todos los objetos (${this.objects.length})?`)) return;
     for (const [, s] of this.objectSprites) { this.tweens.killTweensOf(s); s.destroy(); }
     this.objectSprites.clear();
     this.objects = [];
-    writeLevelJson(this.levelKey, this.serialize());
+    this.saveDeferred();
+    window.__setEditor_showToast?.('Objetos eliminados', 'success');
   }
 
   // --- HUD ---------------------------------------------------------------
@@ -613,6 +660,7 @@ export class EditorScene extends Phaser.Scene {
     if (idx >= 0) this.introPoints.splice(idx, 1);
     else this.introPoints.push({ tx, ty });
     this._renderIntroMarkers();
+    this.saveDeferred();
   }
 
   _renderIntroMarkers() {
@@ -630,19 +678,487 @@ export class EditorScene extends Phaser.Scene {
 
   updateHud(tx, ty) {
     const modeHint = this.edMode === 'spawn'
-      ? 'CLICK TILE TO SET SPAWN'
+      ? 'CLICK PARA SPAWN'
       : this.edMode === 'intro'
-        ? `INTRO: click tile to add/remove point  (${this.introPoints.length} pts)`
-        : this.edMode === 'object'
-          ? `obj: ${this.selectedObject.key} f${this.selectedObject.frame} (${this.selectedObject.type})`
-          : (this.activeTerrain ? `terrain: ${this.activeTerrain.label}` : `gid ${this.selectedGid}`);
+        ? `INTRO: ${this.introPoints.length} pts`
+        : this.selection
+          ? (this.selection.type === 'tile'
+              ? `pegar tile GID ${this.selection.gid}`
+              : `pegar ${this.selection.key} f${this.selection.frame}`)
+          : 'modo copiar';
     const parts = [
-      `editing ${this.levelKey}`,
-      `layer ${this.activeLayer}`,
+      `${this.levelKey}`,
+      `capa ${this.activeLayer}`,
       modeHint,
     ];
     if (tx !== undefined && ty !== undefined) parts.push(`tile ${tx},${ty}`);
-    parts.push('[1/2/3/4/5] layer  [E] eyedrop  [S] spawn  [O] objects  [G] grid  [Ctrl+S] save  [P] play  [Esc] menu');
     this.hudText.setText(parts.join('  ·  '));
+  }
+
+  // --- Sistema de selección unificada --------------------------------------
+
+  setEditorTab(tab) {
+    this.activeEditorTab = tab;
+    this.updateHud();
+  }
+
+  setSelection(sel) {
+    this.selection = sel;
+    this.updateHud();
+    this._updateSelectionUI();
+  }
+
+  clearSelection() {
+    this.selection = null;
+    this._destroySelectionGhost();
+    this._updateSelectionUI();
+    this.updateHud();
+  }
+
+  setSelectionFromPalette(type, gid, key, frame, objType) {
+    if (type === 'tile') {
+      this.setSelection({ type: 'tile', gid, layer: this.activeLayer });
+    } else {
+      this.setSelection({ type: 'object', key, frame, objType });
+    }
+  }
+
+  _updateSelectionUI() {
+    if (!this.selection) {
+      window.__setEditor_updateSelected?.(0);
+      window.__setEditor_updateObjectSelected?.(null, 0, 'deco');
+      this._destroySelectionGhost();
+      return;
+    }
+    if (this.selection.type === 'tile') {
+      this.setLayer(this.selection.layer);
+      this.selectedGid = this.selection.gid;
+      this.activeTerrain = null;
+      window.__setEditor_updateSelected?.(this.selection.gid);
+    } else {
+      this.selectedObject = {
+        key: this.selection.key,
+        frame: this.selection.frame,
+        type: this.selection.objType,
+      };
+      window.__setEditor_updateObjectSelected?.(this.selection.key, this.selection.frame, this.selection.objType);
+    }
+  }
+
+  // --- Esc handling (doble Esc vuelve al menú) ---------------------------
+
+  _handleEsc() {
+    if (this.selection || this.edMode !== 'tile') {
+      // Primer Esc: limpia selección/modo
+      this.clearSelection();
+      if (this.edMode !== 'tile') this.setMode('tile');
+      this.escTimer = setTimeout(() => { this.escTimer = null; }, 1500);
+    } else if (this.escTimer) {
+      // Segundo Esc dentro de 1.5s: vuelve al menú
+      clearTimeout(this.escTimer);
+      this.escTimer = null;
+      this.exitToMenu();
+    } else {
+      // Sin selección y sin timer: iniciar timer para el doble Esc
+      this.escTimer = setTimeout(() => { this.escTimer = null; }, 1500);
+    }
+  }
+
+  // --- Hover ------------------------------------------------------------
+
+  updateHover(tx, ty, p) {
+    const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+    if (this.dragState?.active) {
+      this.hoverRect.setVisible(false);
+      this._destroyHoverGhost();
+      window.__setEditor_hideLayerPicker?.();
+      return;
+    }
+    if (this.edMode === 'spawn' || this.edMode === 'intro') {
+      this.hoverRect.setPosition(tx * TILE, ty * TILE).setSize(TILE, TILE);
+      this.hoverRect.setStrokeStyle(1, 0xffee88, 1);
+      this.hoverRect.setVisible(true);
+      this._destroyHoverGhost();
+      window.__setEditor_hideLayerPicker?.();
+      return;
+    }
+    if (!inBounds(tx, ty)) {
+      this.hoverRect.setVisible(false);
+      this._destroyHoverGhost();
+      window.__setEditor_hideLayerPicker?.();
+      return;
+    }
+
+    if (this.selection) {
+      this._showPlacementPreview(tx, ty);
+    } else {
+      this._showSourceHighlight(tx, ty);
+    }
+  }
+
+  // Con selección: muestra preview de colocación + fantasma del elemento
+  _showPlacementPreview(tx, ty) {
+    const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+    const sel = this.selection;
+    let valid = true;
+    let startTx, startTy, endTx, endTy;
+
+    if (sel.type === 'object') {
+      const objDef = OBJECTS.find(o => o.key === sel.key);
+      const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, sel.frame);
+      ({ startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH));
+      for (let y = startTy; y <= endTy; y++) {
+        for (let x = startTx; x <= endTx; x++) {
+          if (!inBounds(x, y)) { valid = false; break; }
+          if (this.flat.walls[y * this.cols + x] !== 0) { valid = false; break; }
+        }
+        if (!valid) break;
+      }
+      if (valid && this._hasObjectCollision(startTx, startTy, endTx, endTy)) valid = false;
+    } else {
+      startTx = endTx = tx;
+      startTy = endTy = ty;
+      if (this.flat[this.activeLayer][ty * this.cols + tx] !== 0) valid = true; // tiles pueden sobrescribir
+    }
+
+    const width = (endTx - startTx + 1) * TILE;
+    const height = (endTy - startTy + 1) * TILE;
+    this.hoverRect.setPosition(startTx * TILE, startTy * TILE).setSize(width, height);
+    this.hoverRect.setStrokeStyle(1, valid ? 0x00ff00 : 0xff0000, 1);
+    this.hoverRect.setVisible(true);
+    this._renderHoverGhost(sel, startTx, startTy, endTx, endTy, valid);
+    window.__setEditor_hideLayerPicker?.();
+  }
+
+  // Sin selección: resalta el elemento de la capa activa bajo el cursor
+  _showSourceHighlight(tx, ty) {
+    const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+    const source = this._getSourceAtActiveLayer(tx, ty);
+    if (source) {
+      const { startTx, startTy, endTx, endTy } = source.bounds;
+      const width = (endTx - startTx + 1) * TILE;
+      const height = (endTy - startTy + 1) * TILE;
+      this.hoverRect.setPosition(startTx * TILE, startTy * TILE).setSize(width, height);
+      this.hoverRect.setStrokeStyle(1, source.type === 'object' ? 0x66ff99 : 0xffee88, 1);
+      this.hoverRect.setVisible(true);
+      this._renderHoverGhost(source, startTx, startTy, endTx, endTy, true);
+    } else {
+      this.hoverRect.setPosition(tx * TILE, ty * TILE).setSize(TILE, TILE);
+      this.hoverRect.setStrokeStyle(1, 0xffee88, 1);
+      this.hoverRect.setVisible(true);
+      this._destroyHoverGhost();
+    }
+    const layers = this.getLayersAt(tx, ty);
+    if (layers.length > 0) {
+      window.__setEditor_showLayerPicker?.(tx, ty, layers);
+    } else {
+      window.__setEditor_hideLayerPicker?.();
+    }
+  }
+
+  _renderHoverGhost(sel, startTx, startTy, endTx, endTy, valid) {
+    this._destroyHoverGhost();
+    const cx = ((startTx + endTx + 1) / 2) * TILE;
+    const cy = (endTy + 1) * TILE;
+    const w = (endTx - startTx + 1) * TILE;
+    const h = (endTy - startTy + 1) * TILE;
+
+    let sprite = null;
+    if (sel.type === 'object' || (sel.type === undefined && sel.key)) {
+      const key = sel.key;
+      const objDef = OBJECTS.find(o => o.key === key);
+      const frame = getValidFrame(objDef, sel.frame ?? 0);
+      sprite = this.add.sprite(cx, cy, key, frame).setOrigin(0.5, 1).setDepth(99);
+    } else {
+      const gid = sel.gid;
+      const tileset = this.getTilesetForGid(gid);
+      if (tileset) {
+        const localIdx = getValidFrame({ cols: tileset.cols, rows: tileset.rows }, gid - tileset.firstgid);
+        sprite = this.add.sprite(cx, cy - h / 2, tileset.key, localIdx)
+          .setOrigin(0.5).setDepth(99);
+      }
+    }
+    if (sprite) {
+      sprite.setAlpha(0.45);
+      sprite.setSize(w, h);
+      if (!valid) sprite.setTint(0xff8888);
+      this.hoverGhost = sprite;
+    }
+  }
+
+  _destroyHoverGhost() {
+    if (this.hoverGhost) { this.hoverGhost.destroy(); this.hoverGhost = null; }
+  }
+
+  _destroySelectionGhost() {
+    if (this.selectionGhost) { this.selectionGhost.destroy(); this.selectionGhost = null; }
+  }
+
+  // --- Source / Copy / Paste / Delete -----------------------------------
+
+  _getSourceAtActiveLayer(tx, ty) {
+    const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+    if (!inBounds(tx, ty)) return null;
+
+    // Buscar objeto bajo el cursor
+    const obj = this._objectUnderCursor(tx, ty);
+    if (obj) {
+      const objDef = OBJECTS.find(o => o.key === obj.key);
+      const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, obj.frame);
+      const bounds = this._getOccupancy(obj.tx, obj.ty, occW, occH);
+      return { type: 'object', key: obj.key, frame: obj.frame, objType: obj.type, bounds };
+    }
+
+    // Buscar tile en la capa activa
+    const gid = this.flat[this.activeLayer][ty * this.cols + tx];
+    if (gid !== 0) {
+      return { type: 'tile', gid, layer: this.activeLayer, bounds: { startTx: tx, startTy: ty, endTx: tx, endTy: ty } };
+    }
+    return null;
+  }
+
+  _copyFromSource(source) {
+    if (source.type === 'object') {
+      this.setSelection({ type: 'object', key: source.key, frame: source.frame, objType: source.objType });
+      this.setEditorTab('objects');
+      this.setMode('object');
+    } else {
+      this.setSelection({ type: 'tile', gid: source.gid, layer: source.layer });
+      this.setEditorTab('tileset');
+      this.setMode('tile');
+      this.setLayer(source.layer);
+    }
+  }
+
+  _tryPaste(tx, ty) {
+    const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+    const sel = this.selection;
+    if (sel.type === 'object') {
+      this._placeObject(tx, ty, sel.key, sel.frame, sel.objType);
+    } else {
+      // Tile: coloca el GID en la capa activa
+      if (!inBounds(tx, ty)) {
+        window.__setEditor_showToast?.('Fuera del mapa', 'error');
+        return;
+      }
+      this.pushHistory();
+      this._setGid(tx, ty, sel.gid);
+      const terrain = TERRAINS.find(t => isSameTerrain(sel.gid, t));
+      if (terrain) this._refreshTerrainBlock(tx, ty, terrain);
+      this.saveDeferred();
+      window.__setEditor_showToast?.('Tile pegado', 'success');
+    }
+  }
+
+  _deleteAt(tx, ty) {
+    const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+    if (!inBounds(tx, ty)) return;
+    if (this._objectUnderCursor(tx, ty)) {
+      this._removeObject(tx, ty);
+      return;
+    }
+    // Borrar tile de la capa activa
+    const i = ty * this.cols + tx;
+    if (this.flat[this.activeLayer][i] !== 0) {
+      this.pushHistory();
+      this._setGid(tx, ty, 0);
+      this.saveDeferred();
+    }
+  }
+
+  // --- Drag (mover) -----------------------------------------------------
+
+  startDrag() {
+    if (!this.dragState || this.dragState.active || this.dragState.dragDisabled) return;
+    const { source } = this.dragState;
+    if (!source) { this.dragState.dragDisabled = true; return; }
+
+    this.dragState.active = true;
+    this.painting = null;
+
+    if (source.type === 'object') {
+      const objDef = OBJECTS.find(o => o.key === source.key);
+      const safeFrame = getValidFrame(objDef, source.frame);
+      const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, source.frame);
+      this.dragGhost = this.add.sprite(
+        source.bounds.startTx * TILE + ((source.bounds.endTx - source.bounds.startTx + 1) * TILE) / 2,
+        (source.bounds.endTy + 1) * TILE,
+        source.key, safeFrame
+      ).setOrigin(0.5, 1).setDepth(200).setAlpha(0.85);
+      this.dragSource = { type: 'object', key: source.key, frame: source.frame, objType: source.objType, objDef, occW, occH, tx: source.bounds.startTx + Math.floor((source.bounds.endTx - source.bounds.startTx) / 2), ty: source.bounds.endTy };
+    } else {
+      const tileset = this.getTilesetForGid(source.gid);
+      if (tileset) {
+        const localIdx = getValidFrame({ cols: tileset.cols, rows: tileset.rows }, source.gid - tileset.firstgid);
+        this.dragGhost = this.add.sprite(source.bounds.startTx * TILE + TILE / 2, source.bounds.startTy * TILE + TILE / 2, tileset.key, localIdx)
+          .setOrigin(0.5).setDepth(200).setAlpha(0.85);
+      }
+      this.dragSource = { type: 'tile', layer: source.layer, gid: source.gid, tx: source.bounds.startTx, ty: source.bounds.startTy };
+    }
+  }
+
+  updateDrag(tx, ty, p) {
+    if (!this.dragGhost) return;
+    this.dragGhost.setPosition(p.worldX, p.worldY);
+    const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+    this.dragGhost.setTint(inBounds(tx, ty) ? 0xffffff : 0xff8888);
+
+    const src = this.dragSource;
+    if (!src) return;
+
+    // Ocultar el rect si el destino coincide con el origen (no es un movimiento).
+    if (tx === src.tx && ty === src.ty) {
+      this.hoverRect.setVisible(false);
+      return;
+    }
+
+    let startTx, startTy, endTx, endTy;
+    if (src.type === 'object') {
+      const occ = this._getOccupancy(tx, ty, src.occW, src.occH);
+      startTx = occ.startTx; startTy = occ.startTy; endTx = occ.endTx; endTy = occ.endTy;
+    } else {
+      startTx = endTx = tx;
+      startTy = endTy = ty;
+    }
+
+    let valid = inBounds(tx, ty);
+    if (valid && src.type === 'object') {
+      for (let y = startTy; y <= endTy && valid; y++) {
+        for (let x = startTx; x <= endTx && valid; x++) {
+          if (!this._inBounds(x, y) || this.flat.walls[y * this.cols + x] !== 0) valid = false;
+        }
+      }
+      if (valid && this._hasObjectCollision(startTx, startTy, endTx, endTy)) valid = false;
+    }
+
+    const width = (endTx - startTx + 1) * TILE;
+    const height = (endTy - startTy + 1) * TILE;
+    this.hoverRect.setPosition(startTx * TILE, startTy * TILE).setSize(width, height);
+    this.hoverRect.setStrokeStyle(1, valid ? (src.type === 'object' ? 0x66ff99 : 0xffee88) : 0xff0000, 1);
+    this.hoverRect.setVisible(true);
+  }
+
+  endDrag(tx, ty) {
+    if (!this.dragState?.active || !this.dragSource) {
+      this.cancelDrag();
+      return;
+    }
+    const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
+    const src = this.dragSource;
+    if (!inBounds(tx, ty) || (tx === src.tx && ty === src.ty)) {
+      this.cancelDrag();
+      return;
+    }
+    this.pushHistory();
+
+    if (src.type === 'object') {
+      // Buscar y remover el objeto origen
+      const objIdx = this.objects.findIndex(o => o.key === src.key && o.frame === src.frame && o.tx === src.tx && o.ty === src.ty);
+      if (objIdx >= 0) {
+        const removed = this.objects.splice(objIdx, 1)[0];
+        const s = this.objectSprites.get(`${src.tx},${src.ty}`);
+        if (s) { this.tweens.killTweensOf(s); s.destroy(); this.objectSprites.delete(`${src.tx},${src.ty}`); }
+        // Colocar en destino
+        const objDef = OBJECTS.find(o => o.key === removed.key);
+        const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, removed.frame);
+        const { startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH);
+        let valid = true;
+        for (let y = startTy; y <= endTy; y++) {
+          for (let x = startTx; x <= endTx; x++) {
+            if (!inBounds(x, y)) { valid = false; break; }
+            if (this.flat.walls[y * this.cols + x] !== 0) { valid = false; break; }
+          }
+          if (!valid) break;
+        }
+        if (!valid || this._hasObjectCollision(startTx, startTy, endTx, endTy)) {
+          // Cancelar: restaurar origen
+          this.objects.splice(objIdx, 0, removed);
+          this._renderObject(removed);
+          this.cancelDrag();
+          window.__setEditor_showToast?.('No se puede mover ahí', 'error');
+          return;
+        }
+        this._removeObjectsInFootprint(startTx, startTy, endTx, endTy);
+        const newObj = { tx, ty, key: removed.key, frame: removed.frame, type: removed.type };
+        this.objects.push(newObj);
+        this._renderObject(newObj);
+        window.__setEditor_showToast?.('Objeto movido', 'success');
+      }
+    } else {
+      // Tile
+      const terrain = TERRAINS.find(t => isSameTerrain(src.gid, t));
+      this._setGid(src.tx, src.ty, 0);
+      if (terrain) this._refreshTerrainBlock(src.tx, src.ty, terrain);
+      this._setGid(tx, ty, src.gid);
+      if (terrain) this._refreshTerrainBlock(tx, ty, terrain);
+      window.__setEditor_showToast?.('Tile movido', 'success');
+    }
+    this.saveDeferred();
+    this.cancelDrag();
+  }
+
+  cancelDrag() {
+    if (this.dragGhost) { this.dragGhost.destroy(); this.dragGhost = null; }
+    this.dragSource = null;
+    this.hoverRect.setVisible(false);
+  }
+
+  // --- Save / dirty -----------------------------------------------------
+
+  markDirty(dirty) {
+    this.dirty = dirty;
+    window.__setEditor_markDirty?.(dirty);
+  }
+
+  saveDeferred() {
+    this.markDirty(true);
+    if (this.saveTimer) clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => this.doSave(), 600);
+  }
+
+  doSave() {
+    if (!this.dirty) return;
+    if (this.saveTimer) { clearTimeout(this.saveTimer); this.saveTimer = null; }
+    writeLevelJson(this.levelKey, this.serialize());
+    this.markDirty(false);
+    window.__setEditor_updateSummary?.(this.getSummary());
+  }
+
+  // --- Misc -------------------------------------------------------------
+
+  getSummary() {
+    const pickups = this.objects.filter(o => o.type === 'pickup' || o.type === 'pickup_with_animation').length;
+    return {
+      pickups,
+      objects: this.objects.length - pickups,
+      hasSpawn: this.spawn && this.spawn.tx >= 0 && this.spawn.ty >= 0,
+    };
+  }
+
+  getTilesetForGid(gid) {
+    if (!gid) return null;
+    return TILESETS.find(t => gid >= t.firstgid && gid < t.firstgid + t.cols * t.rows) || null;
+  }
+
+  getLayersAt(tx, ty) {
+    const i = ty * this.cols + tx;
+    const stack = [];
+    for (const obj of this.objects) {
+      const objDef = OBJECTS.find(o => o.key === obj.key);
+      if (!objDef) continue;
+      const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, obj.frame);
+      const occ = this._getOccupancy(obj.tx, obj.ty, occW, occH);
+      if (tx >= occ.startTx && tx <= occ.endTx && ty >= occ.startTy && ty <= occ.endTy) {
+        stack.push({ type: 'object', key: obj.key, frame: obj.frame, objType: obj.type, objDef });
+      }
+    }
+    const order = ['top', 'overlay', 'walls', 'path', 'floor'];
+    for (const layer of order) {
+      const gid = this.flat[layer][i];
+      if (gid !== 0) {
+        stack.push({ type: 'tile', layer, gid, tileset: this.getTilesetForGid(gid) });
+      }
+    }
+    return stack;
   }
 }

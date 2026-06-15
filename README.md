@@ -172,20 +172,50 @@ UI (DOM) ──window.__GYM──► engine/scenes/TileLevelScene
 
 Desde el menú: **Edit Gym**, **Edit Main** o **+ Nuevo nivel**
 
+El panel del editor usa el mismo estilo visual del juego (paneles Sprout Lands) y está organizado en dos columnas: resumen/capas/acciones a la izquierda, paleta y preview a la derecha.
+
+### Modelo de interacción
+
+El editor usa un modelo unificado sin modos. Existe un solo estado **selección** que se carga desde la paleta o desde el mapa, y determina qué hace el click.
+
+| Acción | Sin selección | Con selección |
+|---|---|---|
+| **Click izq. en elemento del mapa** | Lo copia a la selección | — |
+| **Click izq. en celda+layer vacía** | No pasa nada | Pega el elemento |
+| **Click der. en elemento** | Borra el elemento de la capa activa | Borra el elemento de la capa activa |
+| **Click izq. sostenido + mover** | Mueve el elemento (borra origen, pega destino) | — |
+| **Esc** | Primer Esc inicia temporizador | Primer Esc limpia selección |
+
+**Esc doble para menú**: hay que presionar `Esc` dos veces seguidas (con menos de 1.5 s entre ambas) para volver al menú. El primer Esc siempre limpia la selección/modo si hay algo.
+
+### Hover
+
+- **Sin selección**: se dibuja un borde alrededor del elemento de la capa activa bajo el cursor (verde para objetos, amarillo para tiles).
+- **Con selección**: el borde muestra el área de colocación (verde = válido, rojo = colisión), y un fantasma semi-transparente del elemento se renderiza sobre la celda destino.
+
+### Pegar en otra capa
+
+Al copiar un elemento del mapa o de la paleta, el pegar ocurre en la **capa activa** (la seleccionada con `1`–`5` o los botones de capa), no en la capa de origen.
+
+### Validaciones al pegar
+
+Iguales que al colocar desde la paleta: los objetos no se pueden pegar sobre paredes ni donde ya hay otro objeto. Los tiles pueden sobrescribir cualquier celda de la capa activa.
+
+### Teclas
+
 | Tecla | Acción |
 |-------|--------|
-| `1` / `2` | Capa floor / walls |
-| `E` | Eyedrop (copiar tile bajo el cursor) |
+| `1`–`5` | Cambiar capa activa |
 | `G` | Toggle grilla |
 | `S` | Modo spawn (click para mover el punto de inicio) |
-| `O` | Modo objeto (colocar/borrar objetos y pickups) |
+| `I` | Modo intro (click para marcar/desmarcar puntos de intro) |
 | `P` | Play test desde el editor |
+| `Esc` × 2 | Volver al menú (doble Esc en < 1.5 s) |
 | `Ctrl+S` | Guardar (descarga JSON + persiste en localStorage) |
 | `Ctrl+Z` / `Ctrl+Y` | Undo / Redo (50 snapshots) |
 | `Ctrl+Shift+C` | Limpiar capa activa |
-| `Esc` | Volver al menú |
 
-Los niveles editados se persisten en `localStorage` del browser. Para exportar, usar `Ctrl+S` que descarga el JSON y reemplazar el archivo en `public/levels/`.
+Los niveles editados se persisten en `localStorage` del browser de forma diferida (con indicador de "sin guardar"). Para exportar, usar `Ctrl+S` que descarga el JSON y reemplazar el archivo en `public/levels/`.
 
 ## Tests
 

@@ -1,4 +1,4 @@
-import { preloadAssets, OBJECTS } from '../../engine/level/TileRegistry.js';
+import { preloadAssets, OBJECTS, defineTileFrames } from '../../engine/level/TileRegistry.js';
 import { createObjectAnimations } from '../../engine/level/ObjectAnimations.js';
 
 const BASE = 'assets/SproutLands-Sprites';
@@ -112,6 +112,11 @@ export class BootScene extends Phaser.Scene {
         if (!tex.has(String(i))) tex.add(i, 0, f.x, f.y, f.w, f.h);
       });
     }
+
+    // Definir sub-frames (uno por celda de la grilla) en cada textura de tileset.
+    // Habilita que el editor (y cualquier consumidor) renderice un tile puntual
+    // con `scene.add.sprite(tilesetKey, localIndex)`.
+    defineTileFrames(this);
 
     createObjectAnimations(this);
 

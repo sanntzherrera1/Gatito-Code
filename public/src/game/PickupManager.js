@@ -1,4 +1,5 @@
 import { TILE } from '../main.js';
+import { OBJECTS, getValidFrame } from '../engine/level/TileRegistry.js';
 
 /**
  * Manages pickup sprites and collection mechanics.
@@ -22,8 +23,10 @@ export class PickupManager {
     addPickup(tx, ty, frame, textureKey = 'plants', force = false) {
         if (!force && this.scene.solid[ty]?.[tx]) return;
 
+        const objDef = OBJECTS.find(o => o.key === textureKey);
+        const safeFrame = getValidFrame(objDef, frame);
         const [cx, cy] = this._tileCenter(tx, ty);
-        const sprite = this.scene.add.sprite(cx, cy, textureKey, frame).setDepth(50);
+        const sprite = this.scene.add.sprite(cx, cy, textureKey, safeFrame).setDepth(50);
 
         // Float animation
         this.scene.tweens.add({
