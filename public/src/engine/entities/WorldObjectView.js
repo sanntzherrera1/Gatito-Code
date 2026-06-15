@@ -1,5 +1,5 @@
 import { TILE, COLS } from '../../config/game.js';
-import { OBJECTS } from '../../engine/level/TileRegistry.js';
+import { OBJECTS, getFrameDimensions } from '../../engine/level/TileRegistry.js';
 
 /**
  * Deriva la key de animacion idle a partir del textureKey y el frame inicial.
@@ -21,7 +21,7 @@ export function deriveAnimKey(textureKey, frame) {
 export class WorldObjectView {
   constructor(scene, tx, ty, textureKey, frame = 0) {
     const objDef = OBJECTS.find(o => o.key === textureKey);
-    const occW = objDef?.occupyW ?? Math.ceil((objDef?.frameW ?? TILE) / TILE);
+    const { occupyW: occW } = getFrameDimensions(objDef, frame);
     const startTx = tx - Math.floor((occW - 1) / 2);
     const cx = startTx * TILE + (occW * TILE) / 2;
     const cy = ty * TILE + TILE;

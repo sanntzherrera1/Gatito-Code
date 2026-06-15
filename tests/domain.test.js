@@ -170,40 +170,125 @@ describe('engine/program/ProgramExecutor.js - IF con roca', () => {
     expect(context.llamadas).toEqual(['jump:right', 'complete']);
   });
 
-  it('si la regla es rodear y adelante esta bloqueado, intenta por la izquierda', async () => {
+  it('si la regla es rodear, hace una U alrededor del obstaculo', async () => {
     const llamadas = [];
+    const posicion = { x: 0, y: 0 };
+    const bloqueados = new Set(['1,0']);
+    const delta = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 },
+    };
     const context = {
       llamadas,
-      obtenerDireccion: () => 'up',
-      hayRocaAdelante: () => false,
-      estaBloqueado: (dir) => dir === 'up',
-      step: async (dir) => llamadas.push(`step:${dir}`),
+      obtenerDireccion: () => 'right',
+      hayRocaAdelante: () => true,
+      estaBloqueado: (dir) => {
+        const d = delta[dir];
+        return bloqueados.has(`${posicion.x + d.x},${posicion.y + d.y}`);
+      },
+      step: async (dir) => {
+        const d = delta[dir];
+        posicion.x += d.x;
+        posicion.y += d.y;
+        llamadas.push(`step:${dir}`);
+      },
       jumpInPlace: async () => llamadas.push('jump'),
       jumpDir: async (dir) => llamadas.push(`jump:${dir}`),
       onComplete: () => llamadas.push('complete'),
     };
 
-    await executeProgram(['up'], context, { queueIfRock: ['if-navigate'] });
+    await executeProgram(['right'], context, { queueIfRock: ['if-navigate'] });
 
-    expect(context.llamadas).toEqual(['step:left', 'complete']);
+    expect(context.llamadas).toEqual(['step:down', 'step:right', 'step:right', 'step:up', 'complete']);
   });
 
-  it('si izquierda esta bloqueada, rodear intenta por la derecha', async () => {
+  it('si el primer lateral esta bloqueado, rodear intenta la U por el otro lado', async () => {
     const llamadas = [];
+    const posicion = { x: 0, y: 0 };
+    const bloqueados = new Set(['1,0', '0,1']);
+    const delta = {
+      up: { x: 0, y: -1 },
+      down: { x: 0, y: 1 },
+      left: { x: -1, y: 0 },
+      right: { x: 1, y: 0 },
+    };
     const context = {
       llamadas,
-      obtenerDireccion: () => 'up',
-      hayRocaAdelante: () => false,
-      estaBloqueado: (dir) => dir === 'up' || dir === 'left',
-      step: async (dir) => llamadas.push(`step:${dir}`),
+      obtenerDireccion: () => 'right',
+      hayRocaAdelante: () => true,
+      estaBloqueado: (dir) => {
+        const d = delta[dir];
+        return bloqueados.has(`${posicion.x + d.x},${posicion.y + d.y}`);
+      },
+      step: async (dir) => {
+        const d = delta[dir];
+        posicion.x += d.x;
+        posicion.y += d.y;
+        llamadas.push(`step:${dir}`);
+      },
       jumpInPlace: async () => llamadas.push('jump'),
       jumpDir: async (dir) => llamadas.push(`jump:${dir}`),
       onComplete: () => llamadas.push('complete'),
     };
 
-    await executeProgram(['up'], context, { queueIfRock: ['if-navigate'] });
+    await executeProgram(['right'], context, { queueIfRock: ['if-navigate'] });
 
-    expect(context.llamadas).toEqual(['step:right', 'complete']);
+    expect(context.llamadas).toEqual(['step:up', 'step:right', 'step:right', 'step:down', 'complete']);
+  });
+});
+
+// ============================================================
+//  SUITE 3: engine/program/ProgramExecutor.js
+//  Reglas automaticas SI condicion -> accion
+// ============================================================
+describe('engine/program/ProgramExecutor.js - reglas SI', () => {
+  function makeContext(rockAhead = false) {
+    const calls = [];
+    return {
+      calls,
+      context: {
+        step: async (dir) => calls.push(`step:${dir}`),
+        jumpInPlace: async () => calls.push('jump'),
+        jumpDir: async (dir) => calls.push(`jump:${dir}`),
+        hayRocaAdelante: () => rockAhead,
+      },
+    };
+  }
+
+  it('si hay roca adelante y la accion es saltar, ejecuta salto direccional', async () => {
+    const { calls, context } = makeContext(true);
+
+    await executeProgram(['right'], context, {
+      ifCondition: 'rock-ahead',
+      ifAction: 'jump',
+    });
+
+    expect(calls).toEqual(['jump:right']);
+  });
+
+  it('si la condicion no se cumple, ejecuta el movimiento normal', async () => {
+    const { calls, context } = makeContext(false);
+
+    await executeProgram(['right'], context, {
+      ifCondition: 'rock-ahead',
+      ifAction: 'jump',
+    });
+
+    expect(calls).toEqual(['step:right']);
+  });
+
+  it('la regla SI tambien se aplica dentro de FUNCION 1', async () => {
+    const { calls, context } = makeContext(true);
+
+    await executeProgram(['func1'], context, {
+      queueFunc1: ['right'],
+      ifCondition: 'rock-ahead',
+      ifAction: 'jump',
+    });
+
+    expect(calls).toEqual(['jump:right']);
   });
 });
 

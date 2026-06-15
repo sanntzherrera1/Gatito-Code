@@ -15,12 +15,6 @@ export class BootScene extends Phaser.Scene {
       `${BASE}/Characters/Premium Charakter Spritesheet.png`,
       { frameWidth: 48, frameHeight: 48 }
     );
-    // Plants — 96x32 → 6x2 grid of 16x16. Pickup frames used: 5 (corn), 11 (turnip).
-    this.load.spritesheet(
-      'plants',
-      `${BASE}/Objects/Basic Plants.png`,
-      { frameWidth: 16, frameHeight: 16 }
-    );
     // Tilesets + level JSONs.
     preloadAssets(this);
     // Object spritesheets. Si el objeto define `frames` (atlas de rects propios dentro de una

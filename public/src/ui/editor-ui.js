@@ -440,20 +440,61 @@ function renderObjPalette() {
     return;
   }
 
-  objPalette.style.setProperty('--cols', o.cols);
-  for (let r = 0; r < (o.editorRows ?? o.rows); r++) {
-    for (let c = 0; c < o.cols; c++) {
-      const frame = r * o.cols + c;
+  if (o.frames) {
+    // Frames variables (detect-props): cada frame tiene su propio {x,y,w,h}.
+    // Calculamos las dimensiones de la imagen a partir de los rects.
+    const imgW = Math.max(...o.frames.map(f => f.x + f.w));
+    const imgH = Math.max(...o.frames.map(f => f.y + f.h));
+    // Columnas automáticas: caben tantos tiles de 32px como permita el ancho.
+    objPalette.style.setProperty('--cols', Math.max(1, Math.floor(imgW / 16)));
+
+    for (let i = 0; i < o.frames.length; i++) {
+      const f = o.frames[i];
+      // Escala uniforme para que el frame quepa en 32×32
+      const scale = Math.min(32 / f.w, 32 / f.h);
+      const dispW = f.w * scale;
+      const dispH = f.h * scale;
+
       const d = document.createElement('div');
       d.className = 'ed-tile';
-      d.style.backgroundImage = `url("${o.url}")`;
-      d.style.backgroundSize = `${o.cols * 32}px ${o.rows * 32}px`;
-      d.style.backgroundPosition = `-${c * 32}px -${r * 32}px`;
-      d.title = `${o.label} frame ${frame}`;
+      d.style.display = 'flex';
+      d.style.justifyContent = 'center';
+      d.style.alignItems = 'center';
+      d.title = `${o.label} frame ${i} (${f.w}×${f.h})`;
+
+      const inner = document.createElement('div');
+      inner.style.width = `${dispW}px`;
+      inner.style.height = `${dispH}px`;
+      inner.style.backgroundImage = `url("${o.url}")`;
+      inner.style.backgroundSize = `${imgW * scale}px ${imgH * scale}px`;
+      inner.style.backgroundPosition = `-${f.x * scale}px -${f.y * scale}px`;
+      inner.style.backgroundRepeat = 'no-repeat';
+      inner.style.imageRendering = 'pixelated';
+
+      d.appendChild(inner);
+
       d.addEventListener('click', () => {
-        edCfg.onObjectSelect(o.key, frame, activeObjType);
+        edCfg.onObjectSelect(o.key, i, activeObjType);
       });
       objPalette.appendChild(d);
+    }
+  } else {
+    // Grilla uniforme estándar
+    objPalette.style.setProperty('--cols', o.cols);
+    for (let r = 0; r < (o.editorRows ?? o.rows); r++) {
+      for (let c = 0; c < o.cols; c++) {
+        const frame = r * o.cols + c;
+        const d = document.createElement('div');
+        d.className = 'ed-tile';
+        d.style.backgroundImage = `url("${o.url}")`;
+        d.style.backgroundSize = `${o.cols * 32}px ${o.rows * 32}px`;
+        d.style.backgroundPosition = `-${c * 32}px -${r * 32}px`;
+        d.title = `${o.label} frame ${frame}`;
+        d.addEventListener('click', () => {
+          edCfg.onObjectSelect(o.key, frame, activeObjType);
+        });
+        objPalette.appendChild(d);
+      }
     }
   }
 }

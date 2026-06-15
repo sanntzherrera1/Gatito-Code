@@ -1,5 +1,6 @@
 import { DIRS, TILE, STEP_MS } from '../../config/game.js';
 import { loadLevel } from '../../engine/level/TileLevelLoader.js';
+import { esGidDeRoca } from '../../engine/level/TileRegistry.js';
 import { createWeather, destroyWeather } from '../../engine/level/WeatherSystem.js';
 import { Player } from '../../domain/Player.js';
 import { executeProgram } from '../../engine/program/ProgramExecutor.js';

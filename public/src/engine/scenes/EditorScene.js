@@ -1,7 +1,7 @@
 import { TILE, COLS, ROWS } from '../../config/game.js';
 import {
   TILESETS, TILESET_CATEGORIES, TERRAINS, OBJECTS, OBJECT_CATEGORIES, VARIANT_DEFS,
-  expandLayer, flatToRows, isSameTerrain, resolveTerrainGid,
+  expandLayer, flatToRows, isSameTerrain, resolveTerrainGid, getFrameDimensions,
 } from '../../engine/level/TileRegistry.js';
 import { loadLevel } from '../../engine/level/TileLevelLoader.js';
 import {
@@ -120,8 +120,7 @@ export class EditorScene extends Phaser.Scene {
       if (inBounds(tx, ty)) {
         if (this.edMode === 'object') {
           const objDef = OBJECTS.find(o => o.key === this.selectedObject.key);
-          const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
-          const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+          const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, this.selectedObject.frame);
           const { startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH);
 
           let valid = true;
@@ -509,8 +508,7 @@ export class EditorScene extends Phaser.Scene {
     const toRemove = [];
     for (const obj of this.objects) {
       const objDef = OBJECTS.find(o => o.key === obj.key);
-      const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
-      const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+      const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, obj.frame);
       const occ = this._getOccupancy(obj.tx, obj.ty, occW, occH);
       if (occ.startTx <= endTx && occ.endTx >= startTx && occ.startTy <= endTy && occ.endTy >= startTy) {
         toRemove.push(obj);
@@ -527,8 +525,7 @@ export class EditorScene extends Phaser.Scene {
   _hasObjectCollision(startTx, startTy, endTx, endTy) {
     for (const obj of this.objects) {
       const objDef = OBJECTS.find(o => o.key === obj.key);
-      const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
-      const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+      const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, obj.frame);
       const occ = this._getOccupancy(obj.tx, obj.ty, occW, occH);
       if (occ.startTx <= endTx && occ.endTx >= startTx && occ.startTy <= endTy && occ.endTy >= startTy) {
         return true;
@@ -547,7 +544,7 @@ export class EditorScene extends Phaser.Scene {
 
   _renderObject(obj) {
     const objDef = OBJECTS.find(o => o.key === obj.key);
-    const occW = objDef?.occupyW ?? Math.ceil((objDef?.frameW ?? TILE) / TILE);
+    const { occupyW: occW } = getFrameDimensions(objDef, obj.frame);
     const startTx = obj.tx - Math.floor((occW - 1) / 2);
     const cx = startTx * TILE + (occW * TILE) / 2;
     const cy = obj.ty * TILE + TILE;
@@ -568,8 +565,7 @@ export class EditorScene extends Phaser.Scene {
 
   _placeObject(tx, ty) {
     const objDef = OBJECTS.find(o => o.key === this.selectedObject.key);
-    const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
-    const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+    const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, this.selectedObject.frame);
     const { startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH);
 
     for (let y = startTy; y <= endTy; y++) {
@@ -589,8 +585,7 @@ export class EditorScene extends Phaser.Scene {
   _removeObject(tx, ty) {
     const targetObj = this.objects.find(obj => {
       const objDef = OBJECTS.find(o => o.key === obj.key);
-      const occW = objDef.occupyW ?? Math.ceil(objDef.frameW / TILE);
-      const occH = objDef.occupyH ?? Math.ceil(objDef.frameH / TILE);
+      const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, obj.frame);
       const { startTx, startTy, endTx, endTy } = this._getOccupancy(obj.tx, obj.ty, occW, occH);
       return tx >= startTx && tx <= endTx && ty >= startTy && ty <= endTy;
     });

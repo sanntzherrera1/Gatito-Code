@@ -343,6 +343,66 @@
   font-size: 16px;
   text-align: left;
 }
+#queue-if-rule h3 {
+  display: block;
+  margin: 0 0 10px 0;
+  height: auto;
+  color: #5a7f3a;
+  text-shadow: none;
+  font-size: 16px;
+  text-align: left;
+}
+.if-select-label {
+  font-size: 11px;
+  color: rgba(90,58,26,.85);
+  font-family: 'SproutPixel', monospace;
+  text-transform: uppercase;
+  margin: 4px 0 4px;
+}
+.if-select {
+  width: 100%;
+  min-height: 34px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background:
+    linear-gradient(180deg, rgba(247,231,198,.7) 0%, rgba(222,191,143,.82) 100%),
+    linear-gradient(45deg, transparent 50%, rgba(90,58,26,.75) 50%),
+    linear-gradient(135deg, rgba(90,58,26,.75) 50%, transparent 50%);
+  background-color: #d7b07b;
+  background-repeat: no-repeat;
+  background-position:
+    0 0,
+    calc(100% - 16px) 14px,
+    calc(100% - 11px) 14px;
+  background-size:
+    100% 100%,
+    5px 5px,
+    5px 5px;
+  border: 1px solid rgba(90,58,26,.42);
+  border-radius: 4px;
+  color: var(--sprout-dark);
+  font-family: 'SproutPixel', monospace;
+  font-size: 12px;
+  padding: 6px 34px 6px 8px;
+  box-sizing: border-box;
+  margin-bottom: 8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.28),
+    inset 0 -1px 0 rgba(0,0,0,.08);
+}
+.if-select:focus {
+  outline: none;
+  border-color: rgba(90,58,26,.55);
+  box-shadow: inset 0 0 0 1px rgba(255,200,80,.25);
+}
+.if-select option {
+  background: #d3ae7a;
+  color: #4a2e12;
+}
+.if-select:disabled {
+  opacity: .5;
+}
 .sprout-panel .slot.filled {
   color: var(--sprout-mid);
   border-style: solid;

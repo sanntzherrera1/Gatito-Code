@@ -1,108 +1,103 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Guía de arquitectura para agentes de IA trabajando en Gatito-Code. Para referencia rápida de comandos y hechos clave, ver `AGENTS.md`.
 
-## Project Overview
+## Proyecto
 
-Gatito-Code is a 2D tile-based puzzle game built with Phaser 3 that teaches programming concepts to Spanish-speaking learners. Players queue movement commands (up/down/left/right) and execute them to navigate a pixel-art character across a tile map to collect objects. All code comments, variable names, and documentation are in Spanish.
+Juego educativo 2D tile-based con Phaser 3. El jugador programa secuencias de comandos (arriba/abajo/izquierda/derecha/saltar) para recolectar objetos en un mapa pixel-art. Todo el código, comentarios y documentación están en **español**.
 
-## Running the Project
-
-There is no build step, no bundler, and no package.json. The project is pure ES Modules served statically.
+## Ejecución
 
 ```bash
-# Option 1 (Node)
-npx serve public
-
-# Option 2 (Python)
-python -m http.server 3000 --directory public
+npm start      # browser-sync serve public/ → http://localhost:3000
+npm test       # vitest tests/domain.test.js
 ```
 
-Open `http://localhost:3000`. HTTP is required (ES Modules won't load from `file://`).
+> No hay bundler ni build step. Phaser 3 se carga desde CDN. Los ES Modules requieren HTTP; `file://` no funciona.
 
-## Architecture
+## Estructura de directorios
 
 ```
 public/
-├── index.html              # DOM shell: UI panels, palette, dialogs
-├── css/                    # Stylesheets for DOM UI
-├── levels/                 # Static JSON level files (gym.json, main.json)
-├── assets/                 # Sprites, tilesets, fonts, UI textures
-│   ├── SproutLands-Sprites/    # Character, tilesets, objects, animals
-│   ├── SproutLands-SorrySprites/ # Extended asset packs (dungeon, winter, village)
-│   ├── SproutLands-UI/         # UI sprites, fonts, dialog boxes
-│   └── ui.json                 # Asset manifest (textures + animations)
+├── index.html              # UI DOM: paneles, slots, diálogos
+├── css/                    # Estilos de la UI superpuesta
+├── levels/                 # JSON estáticos (gym.json, main.json, etc.)
+├── assets/
+│   ├── SproutLands-Sprites/      # Tilesets, personajes, objetos
+│   ├── SproutLands-SorrySprites/ # Packs extendidos (dungeon, invierno, aldea)
+│   ├── SproutLands-UI/           # Fuentes, botones, menús, dialogs
+│   └── ui.json                   # Manifest de texturas/animaciones UI
 └── src/
-    ├── main.js             # Phaser.Game bootstrap, re-exports TILE/COLS/ROWS
-    ├── config/
-    │   └── game.js         # Core constants: TILE, COLS, ROWS, STEP_MS, DIRS
-    ├── domain/             # Pure JavaScript. Zero Phaser imports. Testable with Node.
-    │   ├── Player.js       # Movement state, collision, facing
-    │   ├── Level.js        # Grid geometry, solids, spawn, objects, weather
-    │   └── Program.js      # Immutable command sequence
-    ├── engine/             # Everything that touches Phaser
+    ├── main.js             # Bootstrap Phaser.Game + registro de escenas
+    ├── config/game.js      # Constantes: TILE, COLS, ROWS, STEP_MS, DIRS
+    ├── domain/             # JS puro. Sin Phaser. Testable con Node.
+    │   ├── Player.js       # Estado, colisión, movimiento, facing
+    │   ├── Level.js        # Grilla, sólidos, spawn, objetos, clima
+    │   └── Program.js      # Secuencia inmutable de comandos
+    ├── engine/             # Todo lo que toca Phaser
     │   ├── scenes/
-    │   │   ├── BootScene.js    # Asset preload + global animation setup
-    │   │   ├── MenuScene.js    # Menu navigation (levels, editor, credits)
-    │   │   ├── EditorScene.js  # Visual tile editor with weather & object placement
-    │   │   └── TileLevelScene.js # Base gameplay: orchestrates domain + views
-    │   ├── levels/         # Content scenes extending TileLevelScene
-    │   │   ├── GymScene.js     # Tutorial level (key='gym')
-    │   │   ├── MainScene.js    # Main level (key='main')
-    │   │   └── CustomScene.js  # Dynamic user-created levels
-    │   ├── entities/       # Self-contained visual actors
-    │   │   ├── PlayerView.js   # Sprite, tweens, walk/idle/jump animations
-    │   │   └── PickupView.js   # Floating sprite + collection effect
+    │   │   ├── BootScene.js       # Preload dinámico de assets + anims globales
+    │   │   ├── MenuScene.js       # Menú principal
+    │   │   ├── EditorScene.js     # Editor visual de niveles
+    │   │   └── TileLevelScene.js  # Clase base de niveles jugables
+    │   ├── levels/          # Escenas concretas que extienden TileLevelScene
+    │   │   ├── GymScene.js
+    │   │   ├── MainScene.js
+    │   │   ├── CustomScene.js
+    │   │   ├── Nivel0Scene.js
+    │   │   ├── Nivel3Scene.js
+    │   │   ├── PruebaScene.js
+    │   │   ├── DungeonScene.js
+    │   │   ├── BosqueDePruebaScene.js
+    │   │   └── BosqueFloralScene.js
+    │   ├── entities/
+    │   │   ├── PlayerView.js      # Sprite, tweens, walk/idle/jump
+    │   │   ├── PickupView.js      # Sprite flotante + efecto de recolección
+    │   │   └── WorldObjectView.js # Sprite visual para objetos del mapa
     │   ├── level/
-    │   │   ├── TileRegistry.js     # Tilesets, GIDs, objects, terrains, variant defs
-    │   │   ├── TileLevelLoader.js  # JSON → Phaser Tilemap + domain/Level
-    │   │   └── WeatherSystem.js    # Rain, snow, wind, storm, night overlay
+    │   │   ├── TileRegistry.js      # 55 tilesets, ~221 objetos, GIDs, variantes
+    │   │   ├── ObjectAnimations.js  # Definición de animaciones de objetos
+    │   │   ├── TileLevelLoader.js   # JSON → Phaser Tilemap + domain/Level
+    │   │   └── WeatherSystem.js     # Lluvia, nieve, viento, tormenta, noche, etc.
     │   └── program/
-    │       └── ProgramExecutor.js  # Async command interpreter
+    │       └── ProgramExecutor.js   # Intérprete asíncrono de comandos
+    ├── game/
+    │   └── PickupManager.js     # Orquestación de pickups en runtime
     ├── services/
-    │   └── Storage.js      # localStorage: level overrides, custom levels registry
-    └── ui/                 # DOM modules (unchanged from refactor)
+    │   └── Storage.js             # localStorage: overrides, niveles personalizados
+    └── ui/                      # DOM: paleta, diálogos, cola de comandos
         ├── index.js
         ├── queue.js
         ├── dialog.js
         ├── mission.js
         ├── editor-ui.js
+        ├── jump-picker.js
         ├── name-dialog.js
         └── state.js
 ```
 
-## Layered Architecture
+## Reglas de importación (estrictas)
 
-The codebase is organized into four layers with strict import rules:
-
-| Layer | Can import from | Cannot import from |
+| Capa | Puede importar de | No puede importar de |
 |---|---|---|
-| **domain/** | `config/` | `engine/`, `services/`, `ui/` |
-| **engine/** | `config/`, `domain/`, `services/` | `ui/` |
-| **services/** | `config/`, `domain/`, `engine/level/` | `ui/` |
-| **ui/** | `config/` (indirectly via globals) | `engine/`, `domain/`, `services/` |
+| `domain/` | `config/` | `engine/`, `services/`, `ui/` |
+| `engine/` | `config/`, `domain/`, `services/` | `ui/` |
+| `services/` | `config/`, `domain/`, `engine/level/` | `ui/` |
+| `ui/` | `config/` (indirecto via globals) | `engine/`, `domain/`, `services/` |
 
-**Data flow:**
-```
-UI (DOM) ──window.__GYM──► engine/scenes/TileLevelScene
-                              │
-                              ├──► domain/Player (state + collision)
-                              ├──► engine/entities/PlayerView (rendering)
-                              └──► services/Storage (persist)
-```
+## Comunicación UI ↔ Phaser
 
-**Phaser → DOM**: Global functions — `window.__setPanels()`, `window.__showDialog()`, `window.__setEditor()`, `window.__setMission()`
+- **DOM → Phaser**: `window.__GYM` (bus global con `onRun(moves)` y `onRestart()`).
+- **Phaser → DOM**: `window.__setPanels()`, `window.__showDialog()`, `window.__setEditor()`, `window.__setMission()`.
 
-**DOM → Phaser**: Global bus at `window.__GYM` with `onRun(moves)` and `onRestart()` callbacks set by `TileLevelScene`
-
-## Core Constants (`config/game.js`)
+## Constantes (`config/game.js`)
 
 ```js
-export const TILE = 16;       // pixels per tile
-export const COLS = 16;       // map width in tiles
-export const ROWS = 12;       // map height in tiles
-export const STEP_MS = 160;   // duration of one step/jump tween
-export const DIRS = {         // cardinal direction vectors
+export const TILE = 16;      // píxeles por tile
+export const COLS = 16;      // ancho del mapa en tiles
+export const ROWS = 12;      // alto del mapa en tiles
+export const STEP_MS = 240;  // duración de un paso/salto
+export const DIRS = {        // vectores cardinales
     up:    { dx: 0, dy: -1 },
     down:  { dx: 0, dy: 1 },
     left:  { dx: -1, dy: 0 },
@@ -110,11 +105,11 @@ export const DIRS = {         // cardinal direction vectors
 };
 ```
 
-`main.js` imports these from `config/game.js` and re-exports them for backward compatibility. All new code should import directly from `config/game.js`.
+`main.js` re-exporta estas constantes por compatibilidad hacia atrás. Todo código nuevo debe importar directamente de `config/game.js`.
 
-Changing `COLS`/`ROWS` invalidates any `localStorage` level overrides (grid size mismatch triggers fallback to disk).
+> Cambiar `COLS`/`ROWS` invalida los niveles guardados en `localStorage` (mismatch de grilla dispara fallback al JSON del disco).
 
-## Level Format
+## Formato de nivel (JSON)
 
 ```json
 {
@@ -122,8 +117,8 @@ Changing `COLS`/`ROWS` invalidates any `localStorage` level overrides (grid size
   "cols": 16, "rows": 12, "tile": 16,
   "tilesets": ["grass", "fences", "dirt", "hills", "water"],
   "layers": {
-    "floor": [/* GIDs, length = cols*rows */],
-    "walls": [/* GIDs, non-zero = solid */]
+    "floor": [ /* GIDs, length = cols*rows */ ],
+    "walls": [ /* GID != 0 = tile sólido con colisión */ ]
   },
   "spawn": { "tx": 8, "ty": 6 },
   "objects": [
@@ -134,74 +129,82 @@ Changing `COLS`/`ROWS` invalidates any `localStorage` level overrides (grid size
 }
 ```
 
-Levels load from `localStorage` (key `level:${levelKey}`) first, then fall back to the preloaded JSON cache. The editor writes to `localStorage`.
+- `type: "pickup"` — recolectable, sprite flotante.
+- `type: "deco"` — decorativo estático.
+- `weather` — intensidad de 0.0 a 1.0 por efecto.
 
-## Tileset GID Registry — Do Not Change
+Los niveles cargan desde `localStorage` (clave `level:${levelKey}`) primero; si falla, fallback al JSON precargado en `public/levels/`. El editor persiste en `localStorage`.
 
-GID ranges in `TileRegistry.TILESETS` are **immutable**. Changing them invalidates all saved levels (both JSON files and any `localStorage` overrides).
+## Registro de GIDs — Inmutables
 
-The registry contains **55 tilesets** across **8 categories**:
+Los rangos de GIDs en `TileRegistry.TILESETS` **no deben cambiarse**. Cambiarlos rompe todos los niveles guardados (JSON y `localStorage`).
 
-| Category | Count | Example tilesets |
-|---|---|---|
-| grass | 15 | Classic, v2, Hills, Layers, Dark variants, Bush, Ground Slopes |
-| soil | 10 | Dirt, Tilled, Wide, Stone, Dark variants |
-| water | 1 | Classic (4-frame animation) |
-| fences | 2 | Classic, v2 |
-| buildings | 5 | Doors, Wooden House, Roof, Walls, Stone Path |
-| dungeon | 11 | Walls, Decor, Ground (orange, dark, darker), Items, Carts, Rails, Rocks, Switch |
-| winter | 3 | Ice, Snow 1, Snow 2 |
-| more | 8 | Layers 1-4, Blue Layers 1-4 |
-
-> Note: GIDs 2600–3003 are reserved/free (5 water tilesets removed). Do not reuse this range.
+- **55 tilesets** en 8 categorías (grass, soil, water, fences, buildings, dungeon, winter, more).
+- GIDs 2600–3003 están reservados/libres (5 tilesets de agua eliminados). No reutilizar.
 
 ## Assets
 
-`BootScene.js` dynamically preloads all assets registered in `TileRegistry.js`:
+`BootScene.js` precarga **dinámicamente** todo lo registrado en `TileRegistry.js`:
 
-- **Objects**: ~221 spritesheets across 7 categories: `objects`, `nature`, `structures`, `animals`, `characters`, `items`, `shadow`
-- **Variant system**: Objects with `group` + `variant` fields (e.g. `furniture` with versions `basic`, `new`, `new_2`) are filtered by the editor's variant picker (`VARIANT_DEFS`)
-- **Extended packs**: Includes `SproutLands-SorrySprites` (dungeon, ocean, plant update 2, winter, village packs)
+- **~221 spritesheets** en 7 categorías: `objects`, `nature`, `structures`, `animals`, `characters`, `items`, `shadow`.
+- **Variantes**: Objetos con campos `group` + `variant` se filtran por el picker de variantes del editor (`VARIANT_DEFS`).
+- **Packs extendidos**: `SproutLands-SorrySprites` (dungeon, océano, plant update 2, invierno, aldea).
 
-## Autotile Bitmask
+## Autotile
 
-Terrain tiles use a 4-neighbor cardinal bitmask: North=1, East=2, South=4, West=8 (values 0–15). `TileRegistry.resolveTerrainGid(terrain, bitmask)` maps the mask to the correct sprite frame.
+Terrenos usan bitmask de 4 vecinos cardinales: North=1, East=2, South=4, West=8 (valores 0–15). `TileRegistry.resolveTerrainGid(terrain, bitmask)` mapea la máscara al frame correcto.
 
 ## Gameplay Loop
 
-Each step executes at `STEP_MS = 160ms`. The loop is now delegated across layers:
+Cada paso se ejecuta a `STEP_MS = 240ms`:
 
-1. `TileLevelScene.runProgram(moves)` builds a `context` with callbacks.
-2. `ProgramExecutor.executeProgram()` iterates commands.
-3. `step(dir)` queries `playerModel.tryMove(dir)` (**domain** — state + collision).
-4. On success, `playerView.moveTo(tx, ty)` executes the visual tween (**engine/entities**).
-5. On arrival, `checkPickup(tx, ty)` finds the `PickupView` and calls `.collect()` (**engine/entities**).
-6. `jumpDir(dir)` follows the same flow via `playerModel.tryJump()` → `playerView.jumpTo()`.
+1. `TileLevelScene.runProgram(moves)` construye un `context` con callbacks.
+2. `ProgramExecutor.executeProgram()` itera los comandos.
+3. `step(dir)` consulta `playerModel.tryMove(dir)` (**domain** — estado + colisión).
+4. Si tiene éxito, `playerView.moveTo(tx, ty)` ejecuta el tween visual (**engine/entities**).
+5. Al llegar, `checkPickup(tx, ty)` encuentra el `PickupView` y llama `.collect()` (**engine/entities**).
+6. `jumpDir(dir)` sigue el mismo flujo vía `playerModel.tryJump()` → `playerView.jumpTo()`.
 
-The scene no longer handles sprite creation, tween logic, or animation frames directly. It **orchestrates** the domain model and visual entities.
+La escena **orquesta** el modelo de dominio y las entidades visuales; no maneja directamente sprites, tweens o frames de animación.
 
-## Weather System
+## Sistema de clima
 
-Location: `engine/level/WeatherSystem.js`
+Ubicación: `engine/level/WeatherSystem.js`
 
-Supports **9 simultaneous effects** (intensity 0.0–1.0):
+Soporta **9 efectos simultáneos** con intensidad `0.0 – 1.0`:
 
-| Effect | Type |
+| Efecto | Tipo |
 |---|---|
-| `rain` | Particle drops |
-| `snow` | Particle flakes with rotation |
-| `pollen` | Floating ascending particles |
-| `leaves` | Falling particles with rotation |
-| `night` | Dark semi-transparent overlay |
-| `fog` | Diffuse particle haze |
-| `dust` | Dust particles with rotation |
-| `wind` | Multi-layer sprite pools (haze + far/near streaks with wobble) |
-| `storm` | Periodic lightning with zigzag, branches, glow, and fade |
+| `rain` | Gotas de partículas |
+| `snow` | Copos con rotación |
+| `pollen` | Partículas flotantes ascendentes |
+| `leaves` | Partículas cayendo con rotación |
+| `night` | Overlay semitransparente oscuro |
+| `fog` | Niebla difusa |
+| `dust` | Partículas polvorientas con rotación |
+| `wind` | Sistema multicapa: bruma + streaks lejanos/cercanos con wobble |
+| `storm` | Relámpagos periódicos con zigzag, ramas, glow y fade |
 
-## Known Limitations
+## Limitaciones conocidas
 
-- No win condition when all pickups are collected
-- Pickups and objects are fully loaded from the level JSON; `MainScene` no longer hardcodes entities in `decorate()`
-- DOM ↔ Phaser communication relies on global `window.*` coupling
-- `domain/` is pure JavaScript and testable with Node; unit tests with Vitest exist in `tests/domain.test.js`, but no CI pipeline is configured yet
-- `CustomScene` uses dynamic `levelKey` but shares the same mechanic as `MainScene`/`GymScene`
+- No hay condición de victoria cuando se recolectan todos los pickups.
+- Pickups y objetos se cargan completamente desde el JSON del nivel; `MainScene` ya no hardcodea entidades en `decorate()`.
+- La comunicación DOM ↔ Phaser depende de variables globales (`window.*`).
+- `domain/` es JavaScript puro y testable con Node; existen tests unitarios con Vitest en `tests/domain.test.js`, pero no hay pipeline de CI configurada.
+- `CustomScene` usa `levelKey` dinámico pero comparte la misma mecánica que `MainScene`/`GymScene`.
+
+## Cómo agregar un nuevo objeto
+
+1. Colocar la imagen en `public/assets/SproutLands-Sprites/Objects/` (o la carpeta correspondiente).
+2. Registrarlo en `engine/level/TileRegistry.js` dentro del array `OBJECTS`:
+   ```js
+   { key: 'mi_objeto', label: 'Mi Objeto', url: 'assets/.../mi_objeto.png', cols: 4, rows: 2, frameW: 16, frameH: 16, category: 'objects' }
+   ```
+3. Si tiene variantes, definirlas en `VARIANT_DEFS` (mismo archivo).
+4. Recargar — `BootScene.js` precarga automáticamente todo `OBJECTS`.
+
+## Referencias
+
+- `AGENTS.md` — referencia compacta para sesiones rápidas.
+- `README.md` — hotkeys del editor, formato JSON detallado, guía de uso.
+- `docs/documentacion-tecnica.md` — documentación técnica legacy.
