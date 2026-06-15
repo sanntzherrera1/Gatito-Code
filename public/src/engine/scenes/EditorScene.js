@@ -216,6 +216,12 @@ export class EditorScene extends Phaser.Scene {
       this.painting = null;
     });
 
+    this.input.on('gameout', () => {
+      this.hoverRect.setVisible(false);
+      this._destroyHoverGhost();
+      window.__setEditor_hideLayerPicker?.();
+    });
+
     // Keyboard --------------------------------------------------------------
     const K = Phaser.Input.Keyboard.KeyCodes;
     this.keys = this.input.keyboard.addKeys({
@@ -919,14 +925,17 @@ export class EditorScene extends Phaser.Scene {
 
   _copyFromSource(source) {
     if (source.type === 'object') {
+      const objDef = OBJECTS.find(o => o.key === source.key);
       this.setSelection({ type: 'object', key: source.key, frame: source.frame, objType: source.objType });
       this.setEditorTab('objects');
       this.setMode('object');
+      window.__setEditor_syncObjectFromCanvas?.(objDef, source.frame, source.objType);
     } else {
       this.setSelection({ type: 'tile', gid: source.gid, layer: source.layer });
       this.setEditorTab('tileset');
       this.setMode('tile');
       this.setLayer(source.layer);
+      window.__setEditor_syncTileFromCanvas?.(source.gid);
     }
   }
 

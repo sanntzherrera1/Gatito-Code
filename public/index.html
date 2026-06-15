@@ -253,76 +253,19 @@
                 <div class="ed-palette" id="ed-obj-palette"></div>
               </div>
             </div>
-            <div id="ed-preview">
-              <div id="ed-preview-image"></div>
-              <div id="ed-preview-info">
-                <div class="ed-preview-placeholder">Seleccioná un tile u objeto para previsualizarlo</div>
-              </div>
-            </div>
           </div>
           <div id="ed-weather-panel" class="ed-main-panel">
             <div class="ed-section">
-              <h3>Clima</h3>
-              <div class="ed-weather-list" id="ed-weather-list">
-              <div class="ed-weather-item" data-weather="rain">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Rain</span>
+              <div class="ed-section-title-row">
+                <h3>Clima</h3>
+                <button id="ed-weather-clear" class="ed-section-title-btn" title="Limpiar clima">🧹</button>
               </div>
-              <div class="ed-weather-item" data-weather="snow">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Snow</span>
-              </div>
-              <div class="ed-weather-item" data-weather="pollen">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Pollen</span>
-              </div>
-              <div class="ed-weather-item" data-weather="leaves">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Leaves</span>
-              </div>
-              <div class="ed-weather-item" data-weather="night">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Night</span>
-              </div>
-              <div class="ed-weather-item" data-weather="fog">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Fog</span>
-              </div>
-              <div class="ed-weather-item" data-weather="dust">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Dust</span>
-              </div>
-              <div class="ed-weather-item" data-weather="wind">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Wind</span>
-              </div>
-              <div class="ed-weather-item" data-weather="storm">
-                <button class="ed-weather-up">▲</button>
-                <span class="ed-weather-val">0.0</span>
-                <button class="ed-weather-down">▼</button>
-                <span class="ed-weather-name">Storm</span>
-              </div>
+              <div class="ed-weather-presets" id="ed-weather-presets"></div>
+              <div class="ed-wx-list" id="ed-weather-list"></div>
             </div>
           </div>
         </div>
         </div>
-      </div>
 
       <div class="ed-footer">
         Click izq. copiar/pegar · click der. borrar · arrastrar para mover · <kbd>Esc</kbd> limpiar/volver · <kbd>G</kbd> grilla
@@ -342,6 +285,8 @@
     </div>
 
     <div id="ed-layer-picker" class="ed-layer-picker"></div>
+
+    <div id="ed-tile-hover-preview" class="ed-tile-hover-preview"></div>
 
     <div id="result-panel">
       <div class="result-portrait" id="result-portrait"></div>

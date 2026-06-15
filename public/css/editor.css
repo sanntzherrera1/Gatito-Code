@@ -297,8 +297,25 @@
 
 /* Panel de clima con altura reservada para rediseño futuro */
 #ed-weather-panel {
-  min-height: 300px;
+  min-height: 0;
+  flex: 1;
+  overflow: hidden;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+}
+#ed-weather-panel > .ed-section {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+#ed-weather-panel > .ed-section > .ed-wx-list {
+  flex: 1;
+  min-height: 0;
   overflow-y: auto;
+  padding-right: 2px;
 }
 
 /* Header de sección con título + acción inline */
@@ -393,7 +410,7 @@
 /* Paletas */
 .ed-palette {
   display: grid;
-  gap: 2px;
+  gap: 10px;
   padding: 6px;
   background: rgba(0,0,0,.18);
   border: 1px solid rgba(90,58,26,.2);
@@ -404,6 +421,7 @@
   grid-template-columns: repeat(var(--cols, 11), 24px);
   scrollbar-width: thin;
   scrollbar-color: rgba(90,58,26,.35) transparent;
+  align-content: flex-start;
 }
 .ed-palette::-webkit-scrollbar { width: 6px; height: 6px; }
 .ed-palette::-webkit-scrollbar-track { background: transparent; }
@@ -554,104 +572,216 @@
   cursor: default;
 }
 
-/* Preview */
-#ed-preview {
+/* Clima */
+.ed-weather-presets {
   display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px;
-  background: rgba(0,0,0,.12);
-  border: 1px solid rgba(90,58,26,.15);
-  border-radius: 8px;
-  flex-shrink: 0;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: 6px;
+  background: rgba(0,0,0,.1);
+  border: 1px solid rgba(90,58,26,.12);
+  border-radius: 7px;
 }
-#ed-preview-image {
-  width: 64px;
-  height: 64px;
-  flex-shrink: 0;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: contain;
-  image-rendering: pixelated;
-  border-radius: 6px;
-  background-color: rgba(255,255,255,.1);
-}
-#ed-preview-info {
+.ed-preset-chip {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  min-width: 0;
-  font-size: 10px;
-  color: rgba(90,58,26,.8);
-  font-family: ui-monospace, monospace;
-}
-#ed-preview-info .ed-preview-title {
-  font-weight: 700;
+  align-items: center;
+  gap: 3px;
+  padding: 5px 4px 4px;
+  min-width: 42px;
+  background: rgba(255,255,255,.2);
+  border: 1px solid rgba(90,58,26,.18);
+  border-radius: 6px;
   color: var(--sprout-dark);
-  font-size: 11px;
+  cursor: pointer;
   font-family: 'SproutPixel', monospace;
+  font-size: 7px;
+  text-transform: uppercase;
+  letter-spacing: .3px;
+  transition: background .1s ease, border-color .1s ease, transform .05s ease;
 }
-#ed-preview-info .ed-preview-placeholder {
-  color: rgba(90,58,26,.55);
-  font-style: italic;
+.ed-preset-chip:hover {
+  background: rgba(255,255,255,.32);
+  border-color: rgba(90,58,26,.32);
 }
-
-/* Clima */
-.ed-weather-list {
+.ed-preset-chip:active {
+  transform: translateY(1px);
+}
+.ed-preset-chip.active {
+  background: rgba(255,200,80,.5);
+  border-color: rgba(90,58,26,.4);
+}
+.ed-preset-chip-icon {
+  width: 22px;
+  height: 22px;
+  image-rendering: pixelated;
+  color: var(--sprout-mid);
+}
+.ed-preset-chip.active .ed-preset-chip-icon {
+  color: var(--sprout-dark);
+}
+.ed-wx-list {
   display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
+  flex-direction: column;
+  gap: 4px;
 }
 .ed-weather-item {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 1px;
-  flex: 1 0 calc(33.333% - 4px);
-  min-width: 52px;
-  padding: 5px 3px;
-  border-radius: 6px;
-  background: rgba(255,255,255,.14);
-  border: 1px solid rgba(90,58,26,.15);
+  gap: 8px;
+  padding: 5px 8px;
+  min-height: 50px;
+  background: rgba(255,255,255,.12);
+  border: 1px solid rgba(90,58,26,.12);
+  border-radius: 8px;
   transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
 }
 .ed-weather-item.active {
-  background: rgba(255,200,80,.3);
-  border-color: rgba(90,58,26,.35);
-  box-shadow: inset 0 0 8px rgba(160,110,30,.12);
+  background: rgba(255,200,80,.32);
+  border-color: rgba(90,58,26,.32);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.18);
 }
-.ed-weather-name {
-  font-size: 9px;
-  color: rgba(90,58,26,.65);
-  text-transform: capitalize;
+.ed-wx-icon-wrap {
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,.16);
+  border: 1px solid rgba(90,58,26,.14);
+  border-radius: 8px;
+}
+.ed-weather-item.active .ed-wx-icon-wrap {
+  background: rgba(255,255,255,.28);
+  border-color: rgba(90,58,26,.22);
+}
+.ed-wx-icon {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+  color: var(--sprout-mid);
+  transition: opacity .15s ease, filter .15s ease, color .15s ease;
+}
+.ed-wx-icon--off {
+  opacity: .45;
+  filter: grayscale(.4);
+}
+.ed-wx-icon--on {
+  opacity: 1;
+}
+.ed-wx-body {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.ed-wx-name {
+  font-size: 8px;
   font-family: 'SproutPixel', monospace;
+  color: rgba(90,58,26,.7);
+  text-transform: uppercase;
+  letter-spacing: .4px;
 }
-.ed-weather-item.active .ed-weather-name {
+.ed-weather-item.active .ed-wx-name {
   color: var(--sprout-dark);
 }
-.ed-weather-up, .ed-weather-down {
-  width: 100%;
+.ed-wx-slider {
+  position: relative;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  touch-action: pan-y;
+  user-select: none;
+}
+.ed-wx-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 3px;
+  background: rgba(90,58,26,.16);
+  border-radius: 2px;
+}
+.ed-wx-fill {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 3px;
+  background: currentColor;
+  opacity: .75;
+  border-radius: 2px 0 0 2px;
+  pointer-events: none;
+}
+.ed-wx-thumb {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border: 1px solid rgba(90,58,26,.45);
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.18);
+  pointer-events: auto;
+  cursor: grab;
+}
+.ed-wx-thumb::after {
+  content: '';
+  position: absolute;
+  inset: 2px;
+  background: var(--sprout-dark);
+  border-radius: 1px;
+}
+.ed-wx-thumb:active {
+  cursor: grabbing;
+}
+.ed-wx-actions {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.ed-wx-val {
+  font-size: 10px;
+  font-family: ui-monospace, monospace;
+  font-weight: 700;
+  color: rgba(90,58,26,.8);
+  min-width: 22px;
+  text-align: right;
+}
+.ed-weather-item.active .ed-wx-val {
+  color: var(--sprout-dark);
+}
+.ed-wx-up, .ed-wx-down {
+  width: 16px;
+  height: 16px;
   padding: 0 !important;
-  font-size: 12px !important;
+  font-size: 8px !important;
   line-height: 1 !important;
-  text-align: center !important;
-  background: transparent !important;
-  border: none !important;
-  color: rgba(90,58,26,.55) !important;
+  background: rgba(255,255,255,.2) !important;
+  border: 1px solid rgba(90,58,26,.22) !important;
+  border-radius: 3px !important;
+  color: rgba(90,58,26,.65) !important;
   cursor: pointer;
 }
-.ed-weather-up:hover, .ed-weather-down:hover {
+.ed-wx-up:hover, .ed-wx-down:hover {
+  background: rgba(255,255,255,.35) !important;
   color: var(--sprout-dark) !important;
 }
-.ed-weather-up:active, .ed-weather-down:active {
-  transform: scale(.9);
+.ed-wx-up:active, .ed-wx-down:active {
+  transform: translateY(1px);
 }
-.ed-weather-val {
-  font-size: 12px;
-  font-weight: 700;
-  font-family: monospace;
-  color: var(--sprout-dark);
-  min-height: 16px;
+.ed-wx-sr {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 1px;
+  height: 1px;
 }
 
 /* Footer */
@@ -787,12 +917,12 @@
 .ed-layer-picker-thumb {
   width: 20px;
   height: 20px;
-  background-repeat: no-repeat;
-  background-position: center;
-  background-size: contain;
-  image-rendering: pixelated;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   background-color: rgba(255,255,255,.1);
   border-radius: 3px;
+  flex-shrink: 0;
 }
 .ed-layer-picker-label {
   font-size: 10px;
@@ -805,6 +935,24 @@
   color: rgba(245,230,200,.6);
   font-family: ui-monospace, monospace;
   margin-left: auto;
+}
+
+/* Preview flotante al hacer hover sobre un .ed-tile de la paleta */
+.ed-tile-hover-preview {
+  position: fixed;
+  display: none;
+  border: 1px solid rgba(255,200,80,.35);
+  border-radius: 6px;
+  background-color: rgba(40,28,16,.92);
+  padding: 6px;
+  z-index: 998;
+  box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  pointer-events: none;
+}
+.ed-tile-hover-preview.visible {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 /* Separadores */

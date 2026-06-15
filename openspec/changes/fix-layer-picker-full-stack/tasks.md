@@ -18,10 +18,10 @@
 
 ## 4. Verificación manual
 
-- [ ] 4.1 Abrir el editor, hover sobre una celda con un único tile en `floor` (sin objeto encima): el picker debe aparecer listando ese tile.
-- [ ] 4.2 Hover sobre una celda con tiles en varias capas (`floor` + `walls` + `top`): el picker debe listar las 3 capas en orden `top → walls → floor`.
-- [ ] 4.3 Colocar un objeto (p. ej. un `tree`) en una celda con un `floor` tile debajo. Hover sobre esa celda: el picker debe listar primero el objeto y debajo el tile de `floor`.
-- [ ] 4.4 Hover sobre una celda vacía (sin tile ni objeto): el picker NO debe aparecer.
-- [ ] 4.5 Hover sobre un objeto multi-tile (p. ej. `well` de 2×1) en cada una de las 2 celdas que cubre: el picker debe listar el objeto en ambas celdas.
-- [ ] 4.6 Click sobre un item tile en el picker: el editor debe seleccionar ese tile (HUD muestra "pegar tile GID X") y ocultarse el picker.
-- [ ] 4.7 Click sobre un item objeto en el picker: el editor debe seleccionar ese objeto (HUD muestra "pegar <key> f<frame>") y el panel Objects debe resaltar el frame correspondiente.
+- [x] 4.1 Abrir el editor, hover sobre una celda con un único tile en `floor` (sin objeto encima): el picker debe aparecer listando ese tile.
+- [x] 4.2 Hover sobre una celda con tiles en varias capas (`floor` + `walls` + `top`): el picker debe listar las 3 capas en orden `top → walls → floor`.
+- [x] 4.3 Colocar un objeto (p. ej. un `tree`) en una celda con un `floor` tile debajo. Hover sobre esa celda: el picker debe listar primero el objeto y debajo el tile de `floor`.
+- [x] 4.4 Hover sobre una celda vacía (sin tile ni objeto): el picker NO debe aparecer.
+- [x] 4.5 Hover sobre un objeto multi-tile (p. ej. `well` de 2×1) en cada una de las 2 celdas que cubre: el picker debe listar el objeto en ambas celdas.
+- [x] 4.6 Click sobre un item tile en el picker: el editor debe seleccionar ese tile (HUD muestra "pegar tile GID X") y ocultarse el picker.
+- [x] 4.7 Click sobre un item objeto en el picker: el editor debe seleccionar ese objeto (HUD muestra "pegar <key> f<frame>") y el panel Objects debe resaltar el frame correspondiente.
