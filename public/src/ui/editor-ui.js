@@ -14,13 +14,13 @@ const WEATHER_HEX = {
 
 const WX_SVG = {
   rain:   `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="5" y="0" width="1" height="3" transform="rotate(25 5.5 1.5)"/><rect x="2" y="1" width="1" height="3" transform="rotate(25 2.5 2.5)"/><rect x="6" y="4" width="1" height="3" transform="rotate(25 6.5 5.5)"/><rect x="3" y="5" width="1" height="3" transform="rotate(25 3.5 6.5)"/></g></svg>`,
-  snow:   `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="3" y="0" width="2" height="2"/><rect x="3" y="6" width="2" height="2"/><rect x="0" y="3" width="2" height="2"/><rect x="6" y="3" width="2" height="2"/><rect x="1" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/><rect x="3" y="3" width="2" height="2"/></g></svg>`,
+  snow:   `<svg viewBox="0 0 11 11" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="5" y="0" width="1" height="1"/><rect x="4" y="1" width="3" height="1"/><rect x="2" y="2" width="1" height="1"/><rect x="5" y="2" width="1" height="1"/><rect x="8" y="2" width="1" height="1"/><rect x="3" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="4" y="4" width="3" height="1"/><rect x="9" y="4" width="1" height="1"/><rect x="0" y="5" width="11" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="4" y="6" width="3" height="1"/><rect x="9" y="6" width="1" height="1"/><rect x="3" y="7" width="1" height="1"/><rect x="5" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/><rect x="2" y="8" width="1" height="1"/><rect x="5" y="8" width="1" height="1"/><rect x="8" y="8" width="1" height="1"/><rect x="4" y="9" width="3" height="1"/><rect x="5" y="10" width="1" height="1"/></g></svg>`,
   pollen: `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="0" width="1" height="1"/><rect x="5" y="1" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="6" y="4" width="1" height="1"/><rect x="3" y="6" width="1" height="1"/><rect x="0" y="7" width="1" height="1"/></g></svg>`,
-  leaves: `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><path d="M4 0 L5 1 L6 0 L7 2 L6 3 L7 4 L6 6 L5 5 L4 7 L3 5 L2 6 L1 4 L2 3 L1 2 L2 0 L3 1 Z"/><rect x="3" y="5" width="2" height="3"/></g></svg>`,
-  night:  `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><path d="M6 0 A5 5 0 1 0 6 8 A4 4 0 1 1 6 0 Z"/><rect x="1" y="2" width="1" height="1"/><rect x="2" y="6" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/></g></svg>`,
+  leaves: `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="4" y="0" width="1" height="1"/><rect x="3" y="1" width="3" height="1"/><rect x="2" y="2" width="5" height="1"/><rect x="1" y="3" width="2" height="1"/><rect x="4" y="3" width="1" height="1"/><rect x="6" y="3" width="2" height="1"/><rect x="1" y="4" width="2" height="1"/><rect x="6" y="4" width="2" height="1"/><rect x="1" y="5" width="2" height="1"/><rect x="4" y="5" width="1" height="1"/><rect x="6" y="5" width="2" height="1"/><rect x="2" y="6" width="5" height="1"/><rect x="3" y="7" width="3" height="1"/></g></svg>`,
+  night:  `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="2" y="1" width="4" height="1"/><rect x="1" y="2" width="3" height="1"/><rect x="1" y="3" width="2" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="1" y="4" width="2" height="1"/><rect x="1" y="5" width="2" height="1"/><rect x="1" y="6" width="3" height="1"/><rect x="2" y="7" width="4" height="1"/></g></svg>`,
   fog:    `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor" opacity="0.7"><rect x="0" y="1" width="6" height="1"/><rect x="2" y="3" width="6" height="1"/><rect x="0" y="5" width="7" height="1"/><rect x="1" y="7" width="5" height="1"/></g></svg>`,
   dust:   `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="1" width="1" height="1"/><rect x="3" y="0" width="1" height="1"/><rect x="6" y="2" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="5" y="5" width="1" height="1"/><rect x="2" y="7" width="1" height="1"/><rect x="7" y="7" width="1" height="1"/></g></svg>`,
-  wind:   `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="2" width="6" height="1"/><rect x="1" y="5" width="5" height="1"/><rect x="2" y="3" width="1" height="1"/><rect x="5" y="6" width="1" height="1"/></g></svg>`,
+  wind:   `<svg viewBox="0 0 8 10" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="0" width="8" height="1"/><rect x="7" y="1" width="1" height="1"/><rect x="1" y="2" width="5" height="1"/><rect x="7" y="2" width="1" height="1"/><rect x="1" y="3" width="1" height="1"/><rect x="5" y="3" width="1" height="1"/><rect x="7" y="3" width="1" height="1"/><rect x="1" y="4" width="1" height="1"/><rect x="7" y="4" width="1" height="1"/><rect x="1" y="5" width="7" height="1"/><rect x="0" y="7" width="8" height="1"/><rect x="7" y="8" width="1" height="1"/><rect x="2" y="9" width="6" height="1"/></g></svg>`,
   storm:  `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><path d="M4 0 L6 0 L5 3 L7 3 L3 8 L4 5 L2 5 Z"/><rect x="1" y="2" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/></g></svg>`,
 };
 
@@ -90,6 +90,17 @@ export function initEditor() {
 
   window.__setEditor = (cfg) => { if (!cfg) hideEditor(); else showEditor(cfg); };
   window.__setEditor_updateLayer = (name) => updateLayerHighlight(name);
+  window.__setEditor_updateHover = (pos) => {
+    const el = document.getElementById('ed-hover-text');
+    if (!el) return;
+    if (pos) {
+      el.textContent = `tile ${pos.tx},${pos.ty}`;
+      el.classList.remove('empty');
+    } else {
+      el.textContent = '—';
+      el.classList.add('empty');
+    }
+  };
   window.__setEditor_updateSelected = (gid) => { selectedGid = gid; activeTerrainName = null; selectedObject = { key: null, frame: 0, type: 'deco' }; highlightSelected(); highlightTerrain(); updateSelectionInfo(); };
   window.__setEditor_updateTerrain = (name) => { activeTerrainName = name; selectedGid = 0; selectedObject = { key: null, frame: 0, type: 'deco' }; highlightTerrain(); updateSelectionInfo(); };
   window.__setEditor_updateObjectSelected = (key, frame, type) => { selectedObject = { key, frame, type }; selectedGid = 0; activeTerrainName = null; updateSelectionInfo(); };
@@ -234,7 +245,7 @@ function renderLayerPicker(tx, ty, layers) {
     const layerBadge = document.createElement('span');
     layerBadge.className = 'ed-layer-picker-type';
     // Para objetos no hay "layer" propio, pero se renderizan sobre el top layer,
-    // así que usamos "TOP" como badge (siempre uno de los 5 nombres válidos).
+    // asi que usamos "TOP" como badge (siempre uno de los 5 nombres validos).
     const badgeLayer = item.type === 'object' ? 'top' : item.layer;
     layerBadge.textContent = badgeLayer.toUpperCase();
     const layerColors = {
@@ -567,7 +578,7 @@ function updateSelectionInfo() {
     text.innerHTML = `<b>${selectedObject.key}</b> · frame ${selectedObject.frame} · ${selectedObject.type}`;
     text.classList.remove('empty');
   } else {
-    text.textContent = 'Sin selección · elige tile u objeto';
+    text.textContent = 'Sin seleccion · elige tile u objeto';
     text.classList.add('empty');
   }
 }
@@ -690,7 +701,7 @@ function _shortVariantLabel(text) {
     'Window': 'vent.',
     'Roof': 'techo',
     'Color': 'color',
-    'Size': 'tamaño',
+    'Size': 'tamano',
     'Style': 'estilo',
   };
   return map[text] || text;

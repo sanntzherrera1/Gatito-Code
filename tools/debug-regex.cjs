@@ -6,7 +6,7 @@ if (m) {
   console.log('Length:', m[1].length);
   console.log('First 500 chars:', m[1].substring(0, 500));
 } else {
-  // Buscar el índice de OBJECTS y OBJECT_CATEGORIES
+  // Buscar el indice de OBJECTS y OBJECT_CATEGORIES
   const idx1 = content.indexOf('export const OBJECTS');
   const idx2 = content.indexOf('export const OBJECT_CATEGORIES');
   console.log('OBJECTS index:', idx1);

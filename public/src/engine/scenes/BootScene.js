@@ -51,7 +51,7 @@ export class BootScene extends Phaser.Scene {
   }
 
   create() {
-    // Generar textura de píxel blanco 2×2 para particulas climáticas.
+    // Generar textura de pixel blanco 2×2 para particulas climaticas.
     const canvas = document.createElement('canvas');
     canvas.width = 2;
     canvas.height = 2;
@@ -60,7 +60,7 @@ export class BootScene extends Phaser.Scene {
     ctx.fillRect(0, 0, 2, 2);
     this.textures.addCanvas('pixel', canvas);
 
-    // Textura de línea horizontal para viento: 128×1 pixeles.
+    // Textura de linea horizontal para viento: 128×1 pixeles.
     const windCanvas = document.createElement('canvas');
     windCanvas.width = 128;
     windCanvas.height = 1;

@@ -5,7 +5,7 @@ export class GymScene extends TileLevelScene {
     super('Gym');
     this.levelKey = 'gym';
     this.welcomeMessage = '¡Bienvenido al Nivel 1! 🌱\nUsa los botones para mover al personaje.';
-    this.missionText = 'Intenta usar combinación de movimientos para llegar a la casilla final.';
+    this.missionText = 'Intenta usar combinacion de movimientos para llegar a la casilla final.';
   }
 
   addPickup() {}

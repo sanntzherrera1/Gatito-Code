@@ -203,7 +203,7 @@ function parseObjects(content) {
     }
     
     if (objEnd === -1) {
-      console.warn("No se pudo encontrar el fin del objeto en posición " + objStart);
+      console.warn("No se pudo encontrar el fin del objeto en posicion " + objStart);
       break;
     }
     

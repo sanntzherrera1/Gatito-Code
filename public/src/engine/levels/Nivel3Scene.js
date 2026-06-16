@@ -6,13 +6,13 @@ export class Nivel3Scene extends TileLevelScene {
   constructor() {
     super('Nivel3');
     this.levelKey = 'nivel3';
-    this.missionText = 'Usá el botón de función para agregarlo al panel principal.';
-    this.welcomeMessage = '¡Bienvenido al Nivel 3! 🌿\nRecolectá objetos y llegá a la casilla final.';
+    this.missionText = 'Usa el boton de funcion para agregarlo al panel principal.';
+    this.welcomeMessage = '¡Bienvenido al Nivel 3! 🌿\nRecolecta objetos y llega a la casilla final.';
   }
 
   create() {
     super.create();
-    // Bloquear toda interacción durante el tutorial (welcome → path → demo)
+    // Bloquear toda interaccion durante el tutorial (welcome → path → demo)
     this._lockPanels(true);
     window.__setIfPanel?.(false);
     window.__setForPanel?.(false);
@@ -72,8 +72,8 @@ export class Nivel3Scene extends TileLevelScene {
     window.__showResult?.({
       state: 'idle',
       message: pickupsLeft > 0
-        ? '¡Casi! Agregá más movimientos para juntar todo. Volvé a intentarlo 💪'
-        : '¡Buen intento! Ajustá tu programa y probá de nuevo 💪',
+        ? '¡Casi! Agrega mas movimientos para juntar todo. Volve a intentarlo 💪'
+        : '¡Buen intento! Ajusta tu programa y proba de nuevo 💪',
       onRestart: () => {
         const domRestart = document.getElementById('restart');
         if (domRestart) domRestart.click();
@@ -83,7 +83,7 @@ export class Nivel3Scene extends TileLevelScene {
     });
   }
 
-  // Bloquea/desbloquea toda interacción con los paneles (pointer-events).
+  // Bloquea/desbloquea toda interaccion con los paneles (pointer-events).
   _lockPanels(locked) {
     for (const p of ['panels', 'right-panels']) {
       const el = document.getElementById(p);
@@ -96,7 +96,7 @@ export class Nivel3Scene extends TileLevelScene {
     const dirsPanel = document.getElementById('dirs');
     const func1Btn = document.querySelector('[data-dir="func1"]');
 
-    // Paso 1: backdrop + cámara se acerca al panel (body zoom centrado en #dirs)
+    // Paso 1: backdrop + camara se acerca al panel (body zoom centrado en #dirs)
     const backdrop = document.createElement('div');
     backdrop.id = 'panel-backdrop';
     document.body.appendChild(backdrop);
@@ -108,16 +108,16 @@ export class Nivel3Scene extends TileLevelScene {
       dirsPanel.style.position = 'relative';
       dirsPanel.style.zIndex = '9002';
     }
-    // El panel hace zoom, pero el resalte va ÚNICAMENTE en el botón de la Función.
+    // El panel hace zoom, pero el resalte va uNICAMENTE en el boton de la Funcion.
     // Lo revelamos (sale del gris) para que el glow se vea con nitidez.
     if (func1Btn) {
       func1Btn.style.opacity = '1';
       func1Btn.style.filter = 'none';
       func1Btn.classList.add('intro-highlight');
     }
-    // Paso 2a: mensaje mientras se resalta el botón de la Función
+    // Paso 2a: mensaje mientras se resalta el boton de la Funcion
     await showCard(
-      'Ahora desbloqueaste la Función 🎉<br><br>Con este panel vas a poder tener movimientos extras…',
+      'Ahora desbloqueaste la Funcion 🎉<br><br>Con este panel vas a poder tener movimientos extras…',
       null
     );
     if (func1Btn) func1Btn.classList.remove('intro-highlight');   // apaga el pulso, queda revelado
@@ -139,7 +139,7 @@ export class Nivel3Scene extends TileLevelScene {
       queueFunc1.classList.add('intro-highlight');
     }
     await showCard(
-      'Si tocás <b>F1</b> y apretás un movimiento, se verá en el panel de la Función 1.',
+      'Si tocas <b>F1</b> y apretas un movimiento, se vera en el panel de la Funcion 1.',
       null
     );
     if (targetSwitch) {
@@ -171,7 +171,7 @@ export class Nivel3Scene extends TileLevelScene {
     // Paso 4: revelar (gris → color) y, al mismo tiempo, un glow amarillo notorio
     // que entra, respira y se desvanece. Colorizamos enseguida para que el glow se
     // vea a opacidad plena (con el panel gris a opacity 0.3 la sombra queda apagada).
-    const GLOW_MS = 3200;   // debe coincidir con la duración de .unlock-glow en intro.js
+    const GLOW_MS = 3200;   // debe coincidir con la duracion de .unlock-glow en intro.js
     for (const el of els) {
       if (!el) continue;
       el.classList.add('unlock-glow', 'unlock-layer');
@@ -225,7 +225,7 @@ export class Nivel3Scene extends TileLevelScene {
       document.getElementById('clear')?.click();
       document.getElementById('clear-func1')?.click();
 
-      // Backdrop + elevar paneles sobre él
+      // Backdrop + elevar paneles sobre el
       const backdrop = document.createElement('div');
       backdrop.id = 'panel-backdrop';
       document.body.appendChild(backdrop);
@@ -249,10 +249,10 @@ export class Nivel3Scene extends TileLevelScene {
       for (const dir of mainDirs) await tapDir(dir);
       await delay(300);
 
-      // 2. Quinto slot: la Función ƒ (los movimientos "extra")
+      // 2. Quinto slot: la Funcion ƒ (los movimientos "extra")
       const func1Btn = dirBtn('func1');
       func1Btn?.classList.add('intro-highlight');
-      await showCard('Ya usamos 4 slots. En el último metemos la <b>Función ƒ</b>, que nos da movimientos extra.', null);
+      await showCard('Ya usamos 4 slots. En el ultimo metemos la <b>Funcion ƒ</b>, que nos da movimientos extra.', null);
       press(func1Btn);
       await delay(180);
       func1Btn?.click();
@@ -263,7 +263,7 @@ export class Nivel3Scene extends TileLevelScene {
       const targetSwitch = document.getElementById('target-switch');
       const f1Btn        = document.querySelector('[data-target="func1"]');
       targetSwitch?.classList.add('intro-highlight');
-      await showCard('Ahora cambiamos a <b>F1</b> para cargar los movimientos extra de la función.', null);
+      await showCard('Ahora cambiamos a <b>F1</b> para cargar los movimientos extra de la funcion.', null);
       f1Btn?.classList.add('intro-highlight');
       await delay(250);
       press(f1Btn);
@@ -274,10 +274,10 @@ export class Nivel3Scene extends TileLevelScene {
       targetSwitch?.classList.remove('intro-highlight');
       await delay(300);
 
-      // 4. Cargar los movimientos restantes en el panel de la Función
+      // 4. Cargar los movimientos restantes en el panel de la Funcion
       const queueFunc1 = document.getElementById('queue-func1');
       queueFunc1?.classList.add('intro-highlight');
-      await showCard(`Agregamos los <b>${funcDirs.length}</b> movimientos que faltan en la <b>Función</b>.`, null);
+      await showCard(`Agregamos los <b>${funcDirs.length}</b> movimientos que faltan en la <b>Funcion</b>.`, null);
       for (const dir of funcDirs) await tapDir(dir);
       await delay(400);
       queueFunc1?.classList.remove('intro-highlight');
@@ -290,7 +290,7 @@ export class Nivel3Scene extends TileLevelScene {
       await delay(500);
 
       // 6. Ejecutar: el gatito recorre los 4 + 2 = 6 pasos hasta el final
-      await showCard(`4 movimientos + ${funcDirs.length} en la función = <b>${dirs.length} pasos</b>. ¡Le damos a <b>Ejecutar</b>! ▶`, null);
+      await showCard(`4 movimientos + ${funcDirs.length} en la funcion = <b>${dirs.length} pasos</b>. ¡Le damos a <b>Ejecutar</b>! ▶`, null);
 
       // Sacar el backdrop oscuro → el juego se ilumina
       backdrop.classList.add('out');
@@ -313,9 +313,9 @@ export class Nivel3Scene extends TileLevelScene {
       await delay(600);
       canvas?.classList.remove('intro-highlight');
 
-      // 7. Mensaje final + invitación a jugar
-      await showCard('¡Así se usa la función! 🎉<br><br>Cuando te faltan slots en el panel principal, metés movimientos extra en <b>F1</b> y los llamás con <b>ƒ</b>.', null);
-      await showCard('¡Ahora probalo vos! 🎮<br><br>No te preocupes si no llegás de una, podés intentarlo las veces que quieras.', null);
+      // 7. Mensaje final + invitacion a jugar
+      await showCard('¡Asi se usa la funcion! 🎉<br><br>Cuando te faltan slots en el panel principal, metes movimientos extra en <b>F1</b> y los llamas con <b>ƒ</b>.', null);
+      await showCard('¡Ahora probalo vos! 🎮<br><br>No te preocupes si no llegas de una, podes intentarlo las veces que quieras.', null);
 
       // 8. Reiniciar para el jugador: limpiar colas, volver al spawn y habilitar
       document.getElementById('clear')?.click();

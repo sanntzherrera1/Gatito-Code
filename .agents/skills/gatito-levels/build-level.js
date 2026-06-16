@@ -5,7 +5,7 @@
  * Toma un esquema semantico simple (terrenos, muros, un corredor `path`, objetos
  * y clima) y genera el archivo final del nivel para Phaser 3 con GIDs correctos
  * (autotile de 4 vecinos: N=1, E=2, S=4, W=8). A diferencia del compilador viejo,
- * este SÍ genera la capa `path` (mecanismo de jugabilidad) y usa los GIDs reales
+ * este Si genera la capa `path` (mecanismo de jugabilidad) y usa los GIDs reales
  * del motor.
  *
  * Modos:
@@ -39,7 +39,7 @@ const TERRAINS = {
   fences:       { 0:105,1:109,2:104,3:108,4:101,5:105,6:100,7:104,8:106,9:110,10:105,11:109,12:102,13:106,14:101,15:105 },
   // water: relleno uniforme (sin bordes).
   water:        Object.fromEntries(Array.from({ length: 16 }, (_, i) => [i, 400])),
-  // snow_tiles_1: firstgid 5100, layout 11×25 (autotile en primeras filas, mismo patrón 11×7).
+  // snow_tiles_1: firstgid 5100, layout 11×25 (autotile en primeras filas, mismo patron 11×7).
   snow_tiles_1: { 0:5112,1:5123,2:5111,3:5122,4:5101,5:5112,6:5100,7:5111,8:5113,9:5124,10:5112,11:5123,12:5102,13:5113,14:5101,15:5112 },
 };
 
@@ -180,7 +180,7 @@ function clampInBounds(tiles, cols, rows) {
 
 /**
  * Genera N corredores candidatos desde `spawn` con ~`steps` pasos.
- * Patrones: recto, en L, escalera (zig-zag) y motivo-repetido (ideal p/ Función).
+ * Patrones: recto, en L, escalera (zig-zag) y motivo-repetido (ideal p/ Funcion).
  * Si se pasa `basePath` (lista de {x,y}), genera variaciones sobre ese corredor.
  */
 function genCandidates(opts) {
@@ -257,7 +257,7 @@ function genCandidates(opts) {
     }
     make('escalera', t);
   }
-  // Motivo repetido (bloque de 2: derecha+abajo) — aprovecha la Función
+  // Motivo repetido (bloque de 2: derecha+abajo) — aprovecha la Funcion
   {
     const t = [{ x: spawn.tx, y: spawn.ty }];
     const dirY = spawn.ty > rows / 2 ? -1 : 1;
@@ -310,7 +310,7 @@ function buildLevel(spec) {
     if (t.x >= 0 && t.y >= 0 && t.x < cols && t.y < rows) pathFlat[t.y * cols + t.x] = pathGid;
 
   // ── overlay / top (capas de terreno autotileadas ENCIMA del floor) ──
-  // overlay = 2º piso sobre el floor; top = tiles sobre el overlay. Vacías si no se especifican.
+  // overlay = 2º piso sobre el floor; top = tiles sobre el overlay. Vacias si no se especifican.
   const terrainLayer = (rectsSpec) => {
     if (!Array.isArray(rectsSpec) || rectsSpec.length === 0) return new Array(cols * rows).fill(0);
     const grid = Array.from({ length: rows }, () => new Array(cols).fill(null));

@@ -29,7 +29,7 @@ while ((match = objectRegex.exec(section)) !== null) {
           issues.push(`${key}: tiene ${frameCount} frames, esperados ${expected} (cols:${colsMatch[1]} rows:${rowsMatch[1]})`);
         }
       } else if (frameCount === 1) {
-        // Si solo tiene 1 frame y no hay cols/rows, podría ser correcto o incorrecto
+        // Si solo tiene 1 frame y no hay cols/rows, podria ser correcto o incorrecto
         // No reportamos esto
       }
     }

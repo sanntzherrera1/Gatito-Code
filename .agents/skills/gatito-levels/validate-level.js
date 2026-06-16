@@ -2,9 +2,9 @@
 /**
  * Validador de Niveles Gatito-Code  (CommonJS, sin dependencias)
  *
- * Replica la lógica del motor (TileLevelLoader + PathAnimator + TileLevelScene)
+ * Replica la logica del motor (TileLevelLoader + PathAnimator + TileLevelScene)
  * para verificar que un nivel sea REALMENTE jugable:
- *   - spawn dentro de límites,
+ *   - spawn dentro de limites,
  *   - corredor `path` conectado desde el spawn y con una meta (extremo lejano),
  *   - cada pickup sobre el corredor,
  *   - clima en rango 0..1,
@@ -14,7 +14,7 @@
  * Uso:
  *   node validate-level.js <level.json> [--tools func,jump]
  *
- * Sale con código 0 si PASA, 1 si FALLA.
+ * Sale con codigo 0 si PASA, 1 si FALLA.
  */
 
 import fs from 'fs';
@@ -22,7 +22,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const MAX_MAIN = 5;   // slots del panel principal (ui/state.js)
-const MAX_FUNC = 3;   // pasos máximos de la Función (queueFunc1)
+const MAX_FUNC = 3;   // pasos maximos de la Funcion (queueFunc1)
 
 // Huella en tiles de los objetos multi-tile soportados (sync con OBJECTS.occupyW/occupyH).
 // Anclaje: (tx,ty) = fila inferior, columna centrada.
@@ -103,7 +103,7 @@ function pathGoal(pathFlat, cols, rows, spawn) {
 
 /**
  * ¿Se puede recorrer `dirs` con ≤5 slots? Cada slot = 1 paso, o el bloque `func1`
- * (mismo, de ≤3 pasos) si la Función está habilitada. Busca el mejor bloque F.
+ * (mismo, de ≤3 pasos) si la Funcion esta habilitada. Busca el mejor bloque F.
  */
 function feasibility(dirs, hasFunc) {
   const n = dirs.length;
@@ -111,9 +111,9 @@ function feasibility(dirs, hasFunc) {
   if (!hasFunc) {
     return n <= MAX_MAIN
       ? { ok: true, slots: n, note: `${n} movimientos directos` }
-      : { ok: false, slots: n, note: `${n} pasos > ${MAX_MAIN} slots y sin Función` };
+      : { ok: false, slots: n, note: `${n} pasos > ${MAX_MAIN} slots y sin Funcion` };
   }
-  // Con Función: probar cada bloque F (subcadena de largo 2..MAX_FUNC) y tokenizar.
+  // Con Funcion: probar cada bloque F (subcadena de largo 2..MAX_FUNC) y tokenizar.
   let best = null;
   const tryF = (F) => {
     const L = F.length;
@@ -136,7 +136,7 @@ function feasibility(dirs, hasFunc) {
       if (best == null || slots < best.slots) best = { slots, F };
     }
   }
-  const plain = n; // sin función = n slots
+  const plain = n; // sin funcion = n slots
   if (best == null || plain < best.slots) best = { slots: plain, F: null };
   const ok = best.slots <= MAX_MAIN;
   const note = best.F
@@ -172,10 +172,10 @@ function main() {
   const hasPath = pathFlat.some(v => v !== 0);
 
   // 1. Dimensiones / spawn
-  if (!(cols > 0 && rows > 0)) errors.push('cols/rows inválidos');
+  if (!(cols > 0 && rows > 0)) errors.push('cols/rows invalidos');
   if (spawn.tx < 0 || spawn.ty < 0 || spawn.tx >= cols || spawn.ty >= rows)
-    errors.push(`spawn fuera de límites: ${spawn.tx},${spawn.ty}`);
-  if (floor.every(v => v === 0)) warns.push('la capa floor está vacía (¿sin terreno?)');
+    errors.push(`spawn fuera de limites: ${spawn.tx},${spawn.ty}`);
+  if (floor.every(v => v === 0)) warns.push('la capa floor esta vacia (¿sin terreno?)');
 
   // 2. Clima 0..1
   for (const [k, v] of Object.entries(lvl.weather || {}))
@@ -184,14 +184,14 @@ function main() {
   // 3. Pickups
   if (pickups.length === 0) warns.push('el nivel no tiene pickups (se gana solo llegando a la meta)');
 
-  // 3b. Huella de objetos multi-tile: dentro de límites, sin pisar path/spawn/pickups ni solaparse.
+  // 3b. Huella de objetos multi-tile: dentro de limites, sin pisar path/spawn/pickups ni solaparse.
   const pkSet = new Set(pickups.map(p => `${p.tx},${p.ty}`));
   const boxes = objects.map(o => ({ o, b: occBox(o.tx, o.ty, o.key) }));
   for (const { o, b } of boxes) {
     if (b.x0 < 0 || b.y0 < 0 || b.x1 >= cols || b.y1 >= rows)
-      errors.push(`"${o.key}" (${o.tx},${o.ty}) se sale de límites con su huella ${b.w}x${b.h}`);
+      errors.push(`"${o.key}" (${o.tx},${o.ty}) se sale de limites con su huella ${b.w}x${b.h}`);
     if (o.type === 'pickup' || o.type === 'pickup_with_animation') continue;
-    // la huella de la decoración no debe tapar el corredor, el spawn ni un pickup
+    // la huella de la decoracion no debe tapar el corredor, el spawn ni un pickup
     let hitPath = false, hitSpawn = false, hitPk = false;
     for (let y = Math.max(0, b.y0); y <= b.y1 && y < rows; y++)
       for (let x = Math.max(0, b.x0); x <= b.x1 && x < cols; x++) {
@@ -203,9 +203,9 @@ function main() {
     if (hitSpawn) errors.push(`la huella de "${o.key}" (${o.tx},${o.ty}) pisa el spawn`);
     if (hitPk)    errors.push(`la huella de "${o.key}" (${o.tx},${o.ty}) pisa un pickup`);
     if (STILL_CUT[o.key])
-      warns.push(`"${o.key}" no es multi-tile (se corta) → usá "${STILL_CUT[o.key]}"`);
+      warns.push(`"${o.key}" no es multi-tile (se corta) → usa "${STILL_CUT[o.key]}"`);
     else if (o.key === 'grass_props' && o.frame >= 0 && o.frame <= 8)
-      warns.push(`grass_props frame ${o.frame} (fila de árboles) se ve cortado → usá tree_full/tree_apple`);
+      warns.push(`grass_props frame ${o.frame} (fila de arboles) se ve cortado → usa tree_full/tree_apple`);
   }
   // solape entre huellas de objetos
   for (let i = 0; i < boxes.length; i++)
@@ -236,18 +236,18 @@ function main() {
 
     // 5. Pickups sobre el corredor
     for (const p of pickups)
-      if (!isPath(p.tx, p.ty)) errors.push(`pickup en ${p.tx},${p.ty} NO está sobre el corredor`);
+      if (!isPath(p.tx, p.ty)) errors.push(`pickup en ${p.tx},${p.ty} NO esta sobre el corredor`);
 
     // 6. Factibilidad por presupuesto
     const feas = feasibility(dirs, hasFunc);
     info.push(`recorrido: ${dirs.length} pasos → [${dirs.join(',')}]`);
     info.push(`herramientas: ${tools.length ? tools.join(', ') : '(solo movimiento)'}`);
     if (!feas.ok)
-      errors.push(`NO factible con las herramientas dadas: ${feas.note} (máx ${MAX_MAIN} slots${hasFunc ? ` + ƒ≤${MAX_FUNC}` : ''})`);
+      errors.push(`NO factible con las herramientas dadas: ${feas.note} (max ${MAX_MAIN} slots${hasFunc ? ` + ƒ≤${MAX_FUNC}` : ''})`);
     else
       info.push(`factible: ${feas.note}`);
   } else {
-    warns.push('el nivel no tiene capa `path`: el jugador se mueve libre (mecánica sin corredor)');
+    warns.push('el nivel no tiene capa `path`: el jugador se mueve libre (mecanica sin corredor)');
     for (const p of pickups)
       if (walls[p.ty * cols + p.tx] !== 0) errors.push(`pickup en ${p.tx},${p.ty} cae sobre un muro`);
   }
@@ -258,7 +258,7 @@ function main() {
     ['overlay', lvl.layers.overlay], ['top', lvl.layers.top],
   ]) {
     const arr = expandLayer(layer || [], cols, rows);
-    if (arr.some(v => v < 0 || !Number.isInteger(v))) errors.push(`la capa ${name} tiene GIDs inválidos`);
+    if (arr.some(v => v < 0 || !Number.isInteger(v))) errors.push(`la capa ${name} tiene GIDs invalidos`);
   }
 
   // ── Reporte ──
@@ -267,7 +267,7 @@ function main() {
   for (const w of warns) console.log('  ⚠ ' + w);
   for (const e of errors) console.log('  ✗ ' + e);
   if (errors.length === 0) { console.log('\n✅ PASA — nivel jugable.\n'); process.exit(0); }
-  console.log(`\n❌ FALLA — ${errors.length} error(es). Corregí y volvé a validar.\n`);
+  console.log(`\n❌ FALLA — ${errors.length} error(es). Corregi y volve a validar.\n`);
   process.exit(1);
 }
 

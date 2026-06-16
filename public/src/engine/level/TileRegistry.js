@@ -13,7 +13,7 @@ export const TILESET_CATEGORIES = {
   more:      { label: 'More' },
 };
 
-// NOTA: GIDs 2600-3003 están libres (5 tilesets de agua eliminados).
+// NOTA: GIDs 2600-3003 estan libres (5 tilesets de agua eliminados).
 // No reutilizar este rango para evitar conflictos con niveles antiguos.
 export const TILESETS = [
   // ── Grass ──
@@ -53,7 +53,7 @@ export const TILESETS = [
 
   // ── Water ──
   { key: 'ts_water',              category: 'water', label: 'Classic',            name: 'water',              url: `${BASE}/Water.png`,                                                                              cols: 4,  rows: 1,  firstgid: 400   },
-  // ts_water es el único tileset de agua necesario (contiene los 4 frames de animacion).
+  // ts_water es el unico tileset de agua necesario (contiene los 4 frames de animacion).
   // Los tilesets individuales (water_ground, water_1-4) eran redundantes.
 
   // ── Fences ──
@@ -5428,9 +5428,9 @@ export function preloadAssets(scene) {
 /**
  * Registra un sub-frame por celda en cada textura de tileset.
  * Las texturas de tilesets se cargan con `load.image` (una sola imagen con `cols*rows` tiles
- * de TILE×TILE), así que la textura solo expone `__BASE` (la imagen completa). Este helper
+ * de TILE×TILE), asi que la textura solo expone `__BASE` (la imagen completa). Este helper
  * agrega frames nombrados `"0"`, `"1"`, ..., `"cols*rows-1"` con sus coordenadas dentro del
- * PNG, de forma análoga a como BootScene.create() procesa OBJECTS con `frames` propio.
+ * PNG, de forma analoga a como BootScene.create() procesa OBJECTS con `frames` propio.
  * Habilita que `scene.add.sprite(tilesetKey, localIndex)` muestre un tile puntual.
  * Asume tiles uniformes de TILE×TILE (todos los TILESETS actuales).
  */

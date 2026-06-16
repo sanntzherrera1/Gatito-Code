@@ -9,7 +9,7 @@ export class BosqueDePruebaScene extends TileLevelScene {
 
   init(data) {
     super.init(data);
-    this.welcomeMessage = 'Sobrevive al frío bosque.';
+    this.welcomeMessage = 'Sobrevive al frio bosque.';
     if (!data?.returnScreen) this.returnScreen = 'levels';
   }
 }

@@ -7,12 +7,12 @@ const TILE  = 16;
 
 const FULL = { x: CAM_W / 2, y: CAM_H / 2 };
 
-// Textos para cada punto de intro (por índice)
+// Textos para cada punto de intro (por indice)
 const MSGS = [
   '🐱 <b>¡Este es Gatito!</b>',
   '🌱 Le gusta cuidar sus plantas.',
   '🎣 Le gusta pescar.',
-  '🍎 Además le gusta cosechar sus frutas favoritas.',
+  '🍎 Ademas le gusta cosechar sus frutas favoritas.',
 ];
 
 // Mueve y hace zoom a (pos.x, pos.y) de forma suave usando la API nativa de Phaser
@@ -183,10 +183,10 @@ export async function runNivel0Intro(scene, missionText = null, signal = null) {
   await showCard(MSGS[0], signal);
   if (signal?.cancelled) return;
 
-  // Vista del jardín completo
+  // Vista del jardin completo
   await panTo(scene, FULL, 1, 950);
   if (signal?.cancelled) return;
-  await showCard('🌿 Este es su jardín.', signal);
+  await showCard('🌿 Este es su jardin.', signal);
   if (signal?.cancelled) return;
 
   // Puntos restantes (NPCs)
@@ -210,7 +210,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null) {
   // Panel de movimientos
   const dirsPanel = document.getElementById('dirs');
   dirsPanel?.classList.add('intro-highlight', 'intro-zoom');
-  await showCard('🎮 Tu misión es ayudarle mediante movimientos a conseguir sus preciadas frutas.<br><br>Elegí los movimientos adecuados… ¿me ayudás a que descanse después de su día de trabajo?', signal);
+  await showCard('🎮 Tu mision es ayudarle mediante movimientos a conseguir sus preciadas frutas.<br><br>Elegi los movimientos adecuados… ¿me ayudas a que descanse despues de su dia de trabajo?', signal);
   dirsPanel?.classList.remove('intro-highlight', 'intro-zoom');
   if (signal?.cancelled) return;
 
@@ -219,7 +219,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null) {
   if (signal?.cancelled) return;
   const queuePanel = document.getElementById('queue');
   queuePanel?.classList.add('intro-highlight', 'intro-zoom');
-  await showCard('▶ Acá se verán tus movimientos.', signal);
+  await showCard('▶ Aca se veran tus movimientos.', signal);
   queuePanel?.classList.remove('intro-highlight', 'intro-zoom');
 
   if (missionText) window.__setMission?.(missionText);

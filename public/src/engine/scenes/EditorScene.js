@@ -88,10 +88,6 @@ export class EditorScene extends Phaser.Scene {
     this.activeLayerRect = this.add.rectangle(0, 0, TILE, TILE, 0xffee88, 0.18)
       .setOrigin(0).setDepth(99).setVisible(false).setScrollFactor(0);
 
-    this.hudText = this.add.text(4, 4, '', {
-      fontFamily: 'monospace', fontSize: '8px', color: '#ffee88', backgroundColor: '#000a',
-    }).setDepth(102).setPadding(2, 1, 2, 1).setScrollFactor(0);
-
     // DOM palette -----------------------------------------------------------
     window.__setEditor?.({
       levelKey: this.levelKey,
@@ -101,8 +97,8 @@ export class EditorScene extends Phaser.Scene {
       objects:  OBJECTS,
       variantDefs: VARIANT_DEFS,
       categories: OBJECT_CATEGORIES,
-      onSelect:       (gid)     => { this.activeTerrain = null; this.selectedGid = gid; this.setSelectionFromPalette('tile', gid); this.setEditorTab('tileset'); this.setMode('tile'); this.updateHud(); window.__setEditor_updateSelected?.(gid); },
-      onTerrain:      (terrain) => { this.activeTerrain = terrain; this.setEditorTab('tileset'); this.setMode('tile'); this.updateHud(); window.__setEditor_updateTerrain?.(terrain?.name ?? null); },
+      onSelect:       (gid)     => { this.activeTerrain = null; this.selectedGid = gid; this.setSelectionFromPalette('tile', gid); this.setEditorTab('tileset'); this.setMode('tile'); this.notifyHover(); window.__setEditor_updateSelected?.(gid); },
+      onTerrain:      (terrain) => { this.activeTerrain = terrain; this.setEditorTab('tileset'); this.setMode('tile'); this.notifyHover(); window.__setEditor_updateTerrain?.(terrain?.name ?? null); },
       onLayer:        (layer)   => this.setLayer(layer),
       onSave:         () => this.save(),
       onPlay:         () => this.playTest(),
@@ -113,8 +109,8 @@ export class EditorScene extends Phaser.Scene {
       onRedo:         () => this.redo(),
       onRevert:       () => this.revertToDisk(),
       getLayer:       () => this.activeLayer,
-      onObjectSelect: (key, frame, type) => { this.selectedObject = { key, frame, type }; this.setSelectionFromPalette('object', null, key, frame, type); this.setEditorTab('objects'); this.setMode('object'); this.updateHud(); window.__setEditor_updateObjectSelected?.(key, frame, type); },
-      onObjectTypeChange: (type) => { this.selectedObject.type = type; if (this.selection?.type === 'object') this.selection.objType = type; this.updateHud(); },
+      onObjectSelect: (key, frame, type) => { this.selectedObject = { key, frame, type }; this.setSelectionFromPalette('object', null, key, frame, type); this.setEditorTab('objects'); this.setMode('object'); this.notifyHover(); window.__setEditor_updateObjectSelected?.(key, frame, type); },
+      onObjectTypeChange: (type) => { this.selectedObject.type = type; if (this.selection?.type === 'object') this.selection.objType = type; this.notifyHover(); },
       onSpawnMode:    () => this.setMode('spawn'),
       onIntroMode:    () => this.setMode(this.edMode === 'intro' ? 'tile' : 'intro'),
       getMode:        () => this.edMode,
@@ -148,7 +144,7 @@ export class EditorScene extends Phaser.Scene {
         }
       }
 
-      this.updateHud(tx, ty);
+      this.notifyHover(tx, ty);
     });
 
     this.input.on('pointerdown', (p) => {
@@ -203,7 +199,7 @@ export class EditorScene extends Phaser.Scene {
       } else if (this.dragState && this.dragState.source) {
         // Click corto sobre elemento: copiar a selection
         this._copyFromSource(this.dragState.source);
-        window.__setEditor_showToast?.('Elemento copiado. Esc para limpiar selección.', 'success');
+        window.__setEditor_showToast?.('Elemento copiado. Esc para limpiar seleccion.', 'success');
       }
       this.dragState = null;
     });
@@ -258,7 +254,7 @@ export class EditorScene extends Phaser.Scene {
     });
 
     this.setLayer(this.activeLayer);
-    this.updateHud();
+    this.notifyHover();
   }
 
   exitToMenu() {
@@ -380,7 +376,7 @@ export class EditorScene extends Phaser.Scene {
     this.overlayLayer.setAlpha(name === 'overlay' ? 1 : 0.6);
     this.topLayer.setAlpha(name === 'top' ? 1 : 0.6);
     window.__setEditor_updateLayer?.(name);
-    this.updateHud();
+    this.notifyHover();
   }
 
   // --- Undo / redo -------------------------------------------------------
@@ -515,7 +511,7 @@ export class EditorScene extends Phaser.Scene {
   setMode(mode) {
     this.edMode = mode;
     window.__setEditor_updateMode?.(mode);
-    this.updateHud();
+    this.notifyHover();
   }
 
   setWeather(cfg) {
@@ -614,13 +610,13 @@ export class EditorScene extends Phaser.Scene {
           return;
         }
         if (this.flat.walls[y * this.cols + x] !== 0) {
-          window.__setEditor_showToast?.('Hay una pared ahí', 'error');
+          window.__setEditor_showToast?.('Hay una pared ahi', 'error');
           return;
         }
       }
     }
     if (this._hasObjectCollision(startTx, startTy, endTx, endTy)) {
-      window.__setEditor_showToast?.('Ya hay un objeto ahí', 'error');
+      window.__setEditor_showToast?.('Ya hay un objeto ahi', 'error');
       return;
     }
 
@@ -682,35 +678,22 @@ export class EditorScene extends Phaser.Scene {
     }
   }
 
-  updateHud(tx, ty) {
-    const modeHint = this.edMode === 'spawn'
-      ? 'CLICK PARA SPAWN'
-      : this.edMode === 'intro'
-        ? `INTRO: ${this.introPoints.length} pts`
-        : this.selection
-          ? (this.selection.type === 'tile'
-              ? `pegar tile GID ${this.selection.gid}`
-              : `pegar ${this.selection.key} f${this.selection.frame}`)
-          : 'modo copiar';
-    const parts = [
-      `${this.levelKey}`,
-      `capa ${this.activeLayer}`,
-      modeHint,
-    ];
-    if (tx !== undefined && ty !== undefined) parts.push(`tile ${tx},${ty}`);
-    this.hudText.setText(parts.join('  ·  '));
+  notifyHover(tx, ty) {
+    window.__setEditor_updateHover?.(
+      (tx !== undefined && ty !== undefined) ? { tx, ty } : null
+    );
   }
 
-  // --- Sistema de selección unificada --------------------------------------
+  // --- Sistema de seleccion unificada --------------------------------------
 
   setEditorTab(tab) {
     this.activeEditorTab = tab;
-    this.updateHud();
+    this.notifyHover();
   }
 
   setSelection(sel) {
     this.selection = sel;
-    this.updateHud();
+    this.notifyHover();
     this._updateSelectionUI();
   }
 
@@ -718,7 +701,7 @@ export class EditorScene extends Phaser.Scene {
     this.selection = null;
     this._destroySelectionGhost();
     this._updateSelectionUI();
-    this.updateHud();
+    this.notifyHover();
   }
 
   setSelectionFromPalette(type, gid, key, frame, objType) {
@@ -751,21 +734,21 @@ export class EditorScene extends Phaser.Scene {
     }
   }
 
-  // --- Esc handling (doble Esc vuelve al menú) ---------------------------
+  // --- Esc handling (doble Esc vuelve al menu) ---------------------------
 
   _handleEsc() {
     if (this.selection || this.edMode !== 'tile') {
-      // Primer Esc: limpia selección/modo
+      // Primer Esc: limpia seleccion/modo
       this.clearSelection();
       if (this.edMode !== 'tile') this.setMode('tile');
       this.escTimer = setTimeout(() => { this.escTimer = null; }, 1500);
     } else if (this.escTimer) {
-      // Segundo Esc dentro de 1.5s: vuelve al menú
+      // Segundo Esc dentro de 1.5s: vuelve al menu
       clearTimeout(this.escTimer);
       this.escTimer = null;
       this.exitToMenu();
     } else {
-      // Sin selección y sin timer: iniciar timer para el doble Esc
+      // Sin seleccion y sin timer: iniciar timer para el doble Esc
       this.escTimer = setTimeout(() => { this.escTimer = null; }, 1500);
     }
   }
@@ -802,7 +785,7 @@ export class EditorScene extends Phaser.Scene {
     }
   }
 
-  // Con selección: muestra preview de colocación + fantasma del elemento
+  // Con seleccion: muestra preview de colocacion + fantasma del elemento
   _showPlacementPreview(tx, ty) {
     const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
     const sel = this.selection;
@@ -836,7 +819,7 @@ export class EditorScene extends Phaser.Scene {
     window.__setEditor_hideLayerPicker?.();
   }
 
-  // Sin selección: resalta el elemento de la capa activa bajo el cursor
+  // Sin seleccion: resalta el elemento de la capa activa bajo el cursor
   _showSourceHighlight(tx, ty) {
     const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
     const source = this._getSourceAtActiveLayer(tx, ty);
@@ -1084,7 +1067,7 @@ export class EditorScene extends Phaser.Scene {
           this.objects.splice(objIdx, 0, removed);
           this._renderObject(removed);
           this.cancelDrag();
-          window.__setEditor_showToast?.('No se puede mover ahí', 'error');
+          window.__setEditor_showToast?.('No se puede mover ahi', 'error');
           return;
         }
         this._removeObjectsInFootprint(startTx, startTy, endTx, endTy);

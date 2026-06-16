@@ -4,8 +4,8 @@ export class MainScene extends TileLevelScene {
   constructor() {
     super('Main');
     this.levelKey = 'main';
-    this.missionText = 'Recolectá todos los plantines usando comandos de movimiento.';
-    this.welcomeMessage = '¡Bienvenido al Nivel 2! 🌱\nAhora tenés que recolectar objetos en el camino.';
+    this.missionText = 'Recolecta todos los plantines usando comandos de movimiento.';
+    this.welcomeMessage = '¡Bienvenido al Nivel 2! 🌱\nAhora tenes que recolectar objetos en el camino.';
   }
 
   create() {

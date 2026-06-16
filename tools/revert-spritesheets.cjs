@@ -36,7 +36,7 @@ for (const key of spritesheetObjects) {
       originalDefs[key] = lines.join('\n');
     }
   } catch (e) {
-    console.warn(`⚠️ No se pudo obtener definición original para ${key}`);
+    console.warn(`⚠️ No se pudo obtener definicion original para ${key}`);
   }
 }
 

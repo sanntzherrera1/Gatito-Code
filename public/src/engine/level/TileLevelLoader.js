@@ -76,7 +76,7 @@ export function loadLevel(scene, levelKey) {
     }
   }
 
-  // Los objetos estructurados (con `occupyW`/`occupyH` explícito en el registry — árboles, casas,
+  // Los objetos estructurados (con `occupyW`/`occupyH` explicito en el registry — arboles, casas,
   // pozos, cofres…) bloquean su huella, salvo que declaren `solid: false`. Animales/NPC sin occupy
   // siguen siendo solo visuales. Nunca solidificamos tiles de `path`, ni el spawn ni los pickups.
   const pickupSet = new Set(

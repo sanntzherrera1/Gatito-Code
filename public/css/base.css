@@ -36,6 +36,7 @@ html, body {
   background: var(--bg-deep);
   color: var(--text-primary);
   font-family: ui-monospace, monospace;
+  letter-spacing: 0.5px;
 }
 
 body {

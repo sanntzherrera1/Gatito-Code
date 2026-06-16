@@ -60,7 +60,7 @@ export function animatePath(scene, { delay = 300, duration = 700, color = 0xffe6
  * Pensado para caminos lineales (cada tile tiene a lo sumo un vecino sin visitar),
  * que es como se diseñan en el editor de niveles.
  * @param {Phaser.Scene} scene - Debe tener pathFlat, cols, rows, level.spawn
- * @returns {string[]} Direcciones en orden de recorrido (vacío si no hay path)
+ * @returns {string[]} Direcciones en orden de recorrido (vacio si no hay path)
  */
 export function pathDirections(scene) {
   const path = scene.pathFlat;

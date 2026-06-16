@@ -39,12 +39,12 @@
   image-rendering: pixelated;
 }
 
-/* Neutral (idle) — frame fijo, sin animación. */
+/* Neutral (idle) — frame fijo, sin animacion. */
 .result-portrait.idle {
   background-position: 0 0;
 }
 
-/* Animación feliz: cicla 2 frames (col 0 y col 1 de la fila 0). */
+/* Animacion feliz: cicla 2 frames (col 0 y col 1 de la fila 0). */
 @keyframes result-happy {
   0%, 49%   { background-position: 0 0; }
   50%, 100% { background-position: -64px 0; }
@@ -53,7 +53,7 @@
   animation: result-happy 0.9s steps(1, end) infinite;
 }
 
-/* Animación triste: 2 frames con lágrima (fila 5 ≈ y=-320, ×2 escala). */
+/* Animacion triste: 2 frames con lagrima (fila 5 ≈ y=-320, ×2 escala). */
 @keyframes result-sad {
   0%, 49%   { background-position: 0 -320px; }
   50%, 100% { background-position: -64px -320px; }
@@ -82,7 +82,6 @@
   line-height: 1.25;
   color: var(--sprout-dark);
   text-shadow: 0 1px 0 rgba(255, 255, 255, .35);
-  letter-spacing: 0.5px;
   text-align: left;
 }
 .result-message.win  { color: #2e6032; }

@@ -13,7 +13,7 @@ let content = fs.readFileSync(TILE_REGISTRY_PATH, 'utf8');
 const objectsRegex = /export const OBJECTS = \[([\s\S]*?)\];\s*\nexport const OBJECT_CATEGORIES/;
 const objectsMatch = content.match(objectsRegex);
 if (!objectsMatch) {
-  console.error('No se encontró OBJECTS');
+  console.error('No se encontro OBJECTS');
   process.exit(1);
 }
 
@@ -131,12 +131,12 @@ for (const obj of objects) {
       const frames = JSON.parse(framesMatch[1]);
       const expectedFrames = obj.cols * obj.rows;
       
-      // Si detect-props devolvió 1 frame pero esperamos múltiples, usar grilla manual
+      // Si detect-props devolvio 1 frame pero esperamos multiples, usar grilla manual
       if (frames.length === 1 && expectedFrames > 1) {
-        console.log(`⚠️ ${obj.key}: detect-props fusionó en 1 frame, usando grilla manual (${expectedFrames} frames)`);
+        console.log(`⚠️ ${obj.key}: detect-props fusiono en 1 frame, usando grilla manual (${expectedFrames} frames)`);
         results[obj.key] = generateManualFrames(obj);
       } else if (frames.length !== expectedFrames) {
-        console.log(`⚠️ ${obj.key}: detect-props devolvió ${frames.length} frames, esperados ${expectedFrames}. Usando detect-props de todos modos.`);
+        console.log(`⚠️ ${obj.key}: detect-props devolvio ${frames.length} frames, esperados ${expectedFrames}. Usando detect-props de todos modos.`);
         results[obj.key] = addOccupyProps(frames, obj);
       } else {
         results[obj.key] = addOccupyProps(frames, obj);
@@ -198,7 +198,7 @@ for (const obj of objects) {
     newLines.push(line);
   }
   
-  // Insertar frames antes de la última línea (el cierre del objeto)
+  // Insertar frames antes de la ultima linea (el cierre del objeto)
   const framesStr = JSON.stringify(frames, null, 2);
   // Formatear para que coincida con el estilo del archivo
   const framesFormatted = framesStr
@@ -210,21 +210,21 @@ for (const obj of objects) {
     .replace(/"occupyH":/g, 'occupyH:')
     .replace(/"/g, '');
   
-  // Insertar frames con indentación correcta
+  // Insertar frames con indentacion correcta
   const indent = '    ';
   const framesLines = framesFormatted.split('\n').map((l, i) => {
     if (i === 0) return `${indent}frames: ${l}`;
     return `${indent}${l}`;
   });
   
-  // Insertar antes de la última línea (cierre)
+  // Insertar antes de la ultima linea (cierre)
   newLines.splice(newLines.length - 1, 0, ...framesLines);
   
   const newObj = newLines.join('\n');
   newObjectsSection = newObjectsSection.replace(obj.originalMatch, newObj);
 }
 
-// Reemplazar la sección en el contenido completo
+// Reemplazar la seccion en el contenido completo
 const newContent = content.replace(objectsSection, newObjectsSection);
 
 fs.writeFileSync(TILE_REGISTRY_PATH, newContent);

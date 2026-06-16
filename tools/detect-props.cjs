@@ -1,17 +1,17 @@
 // ============================================================================
 // detect-props.js — Detector de objetos en una hoja de sprites (componentes conexos)
 //
-// QUÉ HACE: dada una imagen PNG con varios objetos separados por espacios
+// QUe HACE: dada una imagen PNG con varios objetos separados por espacios
 // transparentes, encuentra cada objeto entero (no lo parte en celdas de 16) y
-// devuelve su rectángulo [x, y, ancho, alto] ajustado a la grilla. Eso es lo que
+// devuelve su rectangulo [x, y, ancho, alto] ajustado a la grilla. Eso es lo que
 // se pega en TileRegistry.js OBJECTS como propiedad `frames`.
 //
-// CÓMO: 1) decode() lee el PNG y arma una máscara de píxeles NO transparentes.
-//       2) cc() agrupa los píxeles pegados (8-vecinos) -> cada grupo = 1 objeto.
-//       3) calcula la "caja" (bounding box) de cada grupo y la snapea a múltiplos
+// CoMO: 1) decode() lee el PNG y arma una mascara de pixeles NO transparentes.
+//       2) cc() agrupa los pixeles pegados (8-vecinos) -> cada grupo = 1 objeto.
+//       3) calcula la "caja" (bounding box) de cada grupo y la snapea a multiplos
 //          de grid (16 por defecto). Fusiona cajas que se superponen.
 //
-// LIMITACIÓN: si dos objetos se tocan sin espacio transparente, los une en uno.
+// LIMITACIoN: si dos objetos se tocan sin espacio transparente, los une en uno.
 //
 // USO (desde la carpeta del proyecto):
 //   node tools/detect-props.js "public/assets/.../alguna_hoja.png"
@@ -25,7 +25,7 @@ const fs = require('fs');
 const zlib = require('zlib');
 
 /**
- * Decodifica un PNG y devuelve una máscara de alfa (1 = opaco, 0 = transparente).
+ * Decodifica un PNG y devuelve una mascara de alfa (1 = opaco, 0 = transparente).
  * Soporta color types: 6 (RGBA), 3 (indexed/palette), 2 (RGB), 0 (grayscale).
  */
 function decode(file) {
@@ -91,7 +91,7 @@ function decode(file) {
     }
   }
 
-  // Construir máscara de alfa
+  // Construir mascara de alfa
   const al = new Uint8Array(w * h);
   for (let i = 0; i < w * h; i++) {
     let a = 255;
@@ -109,7 +109,7 @@ function decode(file) {
 }
 
 /**
- * Detecta componentes conexos (8-vecinos) en la máscara de alfa,
+ * Detecta componentes conexos (8-vecinos) en la mascara de alfa,
  * calcula bounding boxes, los snapea a la grilla y fusiona solapados.
  */
 function cc(file, grid = 16) {

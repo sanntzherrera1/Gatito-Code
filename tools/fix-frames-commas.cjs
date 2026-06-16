@@ -3,7 +3,7 @@ const fs = require('fs');
 const filePath = 'public/src/engine/level/TileRegistry.js';
 let content = fs.readFileSync(filePath, 'utf8');
 
-// Función para corregir comas en un array de frames
+// Funcion para corregir comas en un array de frames
 function fixFramesCommas(text) {
   // Buscar bloques de frames: [ ... ]
   const framesRegex = /(frames:\s*\[)([\s\S]*?)(\])/g;
@@ -16,9 +16,9 @@ function fixFramesCommas(text) {
       const line = lines[i];
       const trimmed = line.trim();
       
-      // Si la línea termina con } y no tiene coma, y la siguiente línea empieza con { o es parte de un array
+      // Si la linea termina con } y no tiene coma, y la siguiente linea empieza con { o es parte de un array
       if (trimmed.endsWith('}') && !trimmed.endsWith('},')) {
-        // Verificar si la siguiente línea no vacía empieza con { o es el cierre ]
+        // Verificar si la siguiente linea no vacia empieza con { o es el cierre ]
         let nextLine = '';
         for (let j = i + 1; j < lines.length; j++) {
           const nextTrimmed = lines[j].trim();
@@ -28,7 +28,7 @@ function fixFramesCommas(text) {
           }
         }
         
-        // Si la siguiente línea empieza con {, agregar coma
+        // Si la siguiente linea empieza con {, agregar coma
         if (nextLine.startsWith('{')) {
           newLines.push(line.replace(/\}$/, '},'));
         } else {
@@ -61,7 +61,7 @@ if (framesCheck) {
     for (let i = 0; i < lines.length; i++) {
       const trimmed = lines[i].trim();
       if (trimmed.endsWith('}') && !trimmed.endsWith('},') && !trimmed.endsWith('}')) {
-        // Verificar siguiente línea
+        // Verificar siguiente linea
         for (let j = i + 1; j < lines.length; j++) {
           const nextTrimmed = lines[j].trim();
           if (nextTrimmed !== '' && nextTrimmed.startsWith('{')) {

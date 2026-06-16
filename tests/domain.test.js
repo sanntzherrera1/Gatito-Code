@@ -15,12 +15,12 @@ function makeSolid5x5(wallX = 2, wallY = 2) {
 
 // ============================================================
 //  SUITE 1: domain/Player.js
-//  Navegación y colisiones del jugador
+//  Navegacion y colisiones del jugador
 // ============================================================
 describe('domain/Player.js — Navegacion y colisiones del jugador', () => {
 
   it('El jugador puede moverse libremente por casillas vacias en las 4 direcciones cardinales', () => {
-    // Iniciamos en (3,3); la pared está en (2,2), así que tenemos espacio libre alrededor
+    // Iniciamos en (3,3); la pared esta en (2,2), asi que tenemos espacio libre alrededor
     const player = new Player(5, 5, makeSolid5x5(), 3, 3);
 
     // Arriba  -> (3,2)
@@ -29,7 +29,7 @@ describe('domain/Player.js — Navegacion y colisiones del jugador', () => {
     expect(r.tx).toBe(3);
     expect(r.ty).toBe(2);
 
-    // Izquierda -> (2,2) … es pared, así que probamos otra ruta libre:
+    // Izquierda -> (2,2) … es pared, asi que probamos otra ruta libre:
     // Nos movemos arriba de nuevo -> (3,1)
     r = player.tryMove('up');
     expect(r.success).toBe(true);
@@ -43,7 +43,7 @@ describe('domain/Player.js — Navegacion y colisiones del jugador', () => {
     expect(r.ty).toBe(1);
 
     // Abajo -> (2,2) es pared, probamos desde (2,1) hacia abajo no funciona,
-    // así que movemos izquierda -> (1,1) y luego abajo -> (1,2)
+    // asi que movemos izquierda -> (1,1) y luego abajo -> (1,2)
     r = player.tryMove('left');
     expect(r.success).toBe(true);
     expect(r.tx).toBe(1);
@@ -94,7 +94,7 @@ describe('domain/Player.js — Navegacion y colisiones del jugador', () => {
   });
 
   it('El jugador NO puede saltar si la casilla de aterrizaje esta fuera del mapa', () => {
-    // Jugador en (4,2), salto a la derecha iría a (6,2) → fuera del mapa 5×5
+    // Jugador en (4,2), salto a la derecha iria a (6,2) → fuera del mapa 5×5
     const player = new Player(5, 5, makeSolid5x5(), 4, 2);
     const before = { tx: player.tx, ty: player.ty };
 

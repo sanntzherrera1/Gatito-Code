@@ -1,5 +1,5 @@
-/* ─── Sprites UI (íconos pixel-art de 16×16) ─── */
-/* Spritesheet: 288×48 (3 filas × 18 columnas, 6 íconos únicos en 3 colores) */
+/* ─── Sprites UI (iconos pixel-art de 16×16) ─── */
+/* Spritesheet: 288×48 (3 filas × 18 columnas, 6 iconos unicos en 3 colores) */
 .ui-icon {
   display: inline-block;
   width: 14px;
@@ -16,9 +16,9 @@
 .ui-icon-joystick { background-position:   0px   0px; }   /* 0,0  Probar (gamepad) */
 .ui-icon-sun      { background-position: -48px   0px; }   /* 0,3  auto-tiling */
 .ui-icon-star     { background-position: -80px   0px; }   /* 0,5  Guardar */
-.ui-icon-house    { background-position: -32px -32px; }   /* 2,2  Menú */
+.ui-icon-house    { background-position: -32px -32px; }   /* 2,2  Menu */
 
-/* Variantes cream (fondo más oscuro) */
+/* Variantes cream (fondo mas oscuro) */
 .ui-icon-joystick.cream { background-position:  -96px   0px; }   /* 0,6 */
 .ui-icon-sun.cream      { background-position: -144px   0px; }   /* 0,9 */
 .ui-icon-star.cream     { background-position: -176px   0px; }   /* 0,11 */
@@ -28,9 +28,9 @@
 .ui-icon-joystick.dark { background-position: -240px   0px; }   /* 0,15 Probar */
 .ui-icon-sun.dark      { background-position: -240px   0px; }   /* 0,15 */
 .ui-icon-star.dark     { background-position: -224px   0px; }   /* 0,14 Guardar */
-.ui-icon-house.dark    { background-position: -272px -32px; }   /* 2,17 Menú */
+.ui-icon-house.dark    { background-position: -272px -32px; }   /* 2,17 Menu */
 
-/* Glyphs Unicode (para íconos que no tienen equivalente en el sprite) */
+/* Glyphs Unicode (para iconos que no tienen equivalente en el sprite) */
 .ed-btn-glyph {
   display: inline-flex;
   align-items: center;
@@ -91,7 +91,6 @@
 #editor-panel h3 {
   font-family: 'SproutPixel', monospace;
   font-size: 13px;
-  letter-spacing: 0.4px;
   text-transform: uppercase;
   color: var(--sprout-text-bright);
   text-shadow:
@@ -132,7 +131,6 @@
   text-shadow:
     0 1px 0 rgba(255,250,235,.7),
     0 -1px 0 rgba(90,58,26,.12);
-  letter-spacing: 0.4px;
   line-height: 1;
   white-space: nowrap;
   overflow: hidden;
@@ -143,7 +141,6 @@
   font-size: 10.5px;
   color: var(--sprout-text-soft);
   font-family: 'SproutPixel', monospace;
-  letter-spacing: 0.3px;
   display: inline-flex;
   align-items: center;
   gap: 5px;
@@ -276,7 +273,6 @@
   border-radius: 6px !important;
   color: var(--sprout-text-bright) !important;
   cursor: pointer;
-  letter-spacing: 0.3px;
   text-shadow: 0 1px 0 rgba(255,250,235,.6);
   transition: background .1s ease, transform .05s ease, box-shadow .15s ease;
   white-space: nowrap;
@@ -320,7 +316,6 @@
   gap: 8px;
   transition: background .1s ease, box-shadow .15s ease, transform .08s ease;
   font-family: 'SproutPixel', monospace !important;
-  letter-spacing: 0.3px;
   position: relative;
   text-shadow: 0 1px 0 rgba(255,250,235,.6);
 }
@@ -374,7 +369,6 @@
   cursor: pointer;
   font-family: 'SproutPixel', monospace !important;
   font-weight: 700;
-  letter-spacing: 0.3px;
   text-transform: uppercase;
   text-shadow: 0 1px 0 rgba(255,250,235,.6);
   display: flex !important;
@@ -421,7 +415,6 @@
   color: var(--sprout-text-bright) !important;
   text-align: center !important;
   cursor: pointer;
-  letter-spacing: 0.3px;
   transition: background .1s ease, transform .05s ease;
   display: flex !important;
   align-items: center;
@@ -480,7 +473,6 @@
   font-size: 11px !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: .5px !important;
   border-radius: 5px !important;
   background: transparent !important;
   border: none !important;
@@ -566,13 +558,12 @@
   font-family: 'SproutPixel', monospace;
   color: var(--sprout-text-soft);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
   font-weight: 700;
   padding: 0 2px;
   text-shadow: 0 1px 0 rgba(255,250,235,.5);
 }
 
-/* Header de sección con título + acción inline */
+/* Header de seccion con titulo + accion inline */
 .ed-section-title-row {
   display: flex;
   align-items: center;
@@ -598,7 +589,6 @@
   cursor: pointer;
   font-family: 'SproutPixel', monospace !important;
   font-weight: 700;
-  letter-spacing: 0.3px;
   transition: background .1s ease, color .1s ease, border-color .1s ease;
   display: inline-flex;
   align-items: center;
@@ -644,7 +634,6 @@
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  letter-spacing: 0.4px;
   text-transform: uppercase;
   font-weight: 700;
   text-shadow: 0 1px 0 rgba(255,250,235,.6);
@@ -657,7 +646,7 @@
   text-shadow: none;
 }
 
-/* Indicador de selección actual */
+/* Indicador de seleccion actual */
 #ed-sel-text {
   min-width: 0;
   max-width: 50%;
@@ -672,6 +661,18 @@
   opacity: 1;
 }
 #ed-sel-text:not(.empty) {
+  opacity: 1;
+}
+#ed-hover-text {
+  min-width: 0;
+  max-width: 30%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: .55;
+  margin-left: 4px;
+}
+#ed-hover-text:not(.empty) {
   opacity: 1;
 }
 
@@ -696,7 +697,6 @@
   font-size: 9px !important;
   font-family: 'SproutPixel', monospace !important;
   font-weight: 700 !important;
-  letter-spacing: .3px !important;
   border-radius: 999px !important;
   background: rgba(255,255,255,.28) !important;
   border: 1px solid rgba(90,58,26,.22) !important;
@@ -741,7 +741,6 @@
   border-radius: 4px !important;
   color: var(--sprout-text-bright) !important;
   cursor: pointer;
-  letter-spacing: 0.3px;
   transition: background .1s ease, border-color .1s ease;
   line-height: 1.3;
   text-transform: capitalize;
@@ -843,7 +842,6 @@
   color: var(--sprout-text-bright) !important;
   border-radius: 6px !important;
   cursor: pointer;
-  letter-spacing: 0.4px;
   text-transform: uppercase;
   text-shadow: 0 1px 0 rgba(255,250,235,.6);
   transition: background .1s ease, border-color .1s ease;
@@ -881,7 +879,6 @@
   font-weight: 700;
   color: var(--sprout-text-soft);
   text-transform: uppercase;
-  letter-spacing: .5px;
   padding: 0 6px 0 2px;
   white-space: nowrap;
   font-family: 'SproutPixel', monospace;
@@ -894,7 +891,6 @@
   font-family: 'SproutPixel', monospace !important;
   font-weight: 700 !important;
   text-transform: uppercase !important;
-  letter-spacing: .3px !important;
   border-radius: 999px !important;
   background: rgba(255,255,255,.22) !important;
   border: 1px solid transparent !important;
@@ -938,7 +934,6 @@
   min-width: 40px;
   text-transform: uppercase;
   font-family: 'SproutPixel', monospace;
-  letter-spacing: 0.3px;
   font-weight: 700;
   text-shadow: 0 1px 0 rgba(255,250,235,.5);
 }
@@ -959,7 +954,6 @@
   border-radius: 4px !important;
   cursor: pointer;
   font-weight: 700;
-  letter-spacing: 0.3px;
   transition: background .1s ease, border-color .1s ease;
   text-shadow: 0 1px 0 rgba(255,250,235,.5);
 }
@@ -1052,7 +1046,6 @@
   font-family: 'SproutPixel', monospace;
   color: var(--sprout-text-soft);
   text-transform: uppercase;
-  letter-spacing: .4px;
   font-weight: 700;
   text-shadow: 0 1px 0 rgba(255,250,235,.5);
 }
@@ -1187,7 +1180,6 @@
   color: var(--sprout-text-soft);
   text-align: center;
   font-family: 'SproutPixel', monospace;
-  letter-spacing: 0.3px;
   position: relative;
   z-index: 1;
   line-height: 1.4;
