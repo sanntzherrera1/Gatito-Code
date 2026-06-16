@@ -150,9 +150,13 @@
 
     <div id="editor-panel">
       <div class="ed-header">
-        <div>
+        <div class="ed-header-title">
           <h3 id="ed-title">Editor</h3>
-          <div class="ed-status" id="ed-status">—</div>
+          <div class="ed-status" id="ed-status">
+            <span class="ed-status-dot" id="ed-status-dot"></span>
+            <span id="ed-status-text">—</span>
+            <span class="empty" id="ed-sel-text">Sin selección</span>
+          </div>
         </div>
       </div>
 
@@ -171,40 +175,40 @@
           <div class="ed-section">
             <h3>Historial</h3>
             <div id="ed-toolbar" class="ed-toolbar">
-              <button id="ed-tool-undo" title="Deshacer (Ctrl+Z)">↶</button>
-              <button id="ed-tool-redo" title="Rehacer (Ctrl+Y)">↷</button>
+              <button id="ed-tool-undo" title="Deshacer (Ctrl+Z)"><span class="ed-btn-glyph">↶</span></button>
+              <button id="ed-tool-redo" title="Rehacer (Ctrl+Y)"><span class="ed-btn-glyph">↷</span></button>
             </div>
           </div>
 
           <div class="ed-section">
             <div class="ed-section-title-row">
               <h3>Capa</h3>
-              <button id="ed-clear" class="ed-section-title-btn" title="Limpiar capa actual">🧹</button>
+              <button id="ed-clear" class="ed-section-title-btn" title="Limpiar capa actual">✕ Limpiar</button>
             </div>
             <div class="ed-layers" id="ed-layers">
-              <button data-layer="floor">[1] Floor</button>
-              <button data-layer="walls" class="active">[2] Walls</button>
-              <button data-layer="path">[3] Path</button>
-              <button data-layer="overlay">[4] Overlay</button>
-              <button data-layer="top">[5] Top</button>
+              <button data-layer="floor"><span class="ed-layer-num">1</span><span>Floor</span></button>
+              <button data-layer="walls" class="active"><span class="ed-layer-num">2</span><span>Walls</span></button>
+              <button data-layer="path"><span class="ed-layer-num">3</span><span>Path</span></button>
+              <button data-layer="overlay"><span class="ed-layer-num">4</span><span>Overlay</span></button>
+              <button data-layer="top"><span class="ed-layer-num">5</span><span>Top</span></button>
             </div>
           </div>
 
           <div class="ed-section">
             <h3>Modos</h3>
             <div class="ed-modes">
-              <button id="ed-spawn">📍 Spawn (S)</button>
-              <button id="ed-intro-mode">🎬 Intro (I)</button>
+              <button id="ed-spawn"><span class="ed-btn-glyph">◉</span> Spawn S</button>
+              <button id="ed-intro-mode"><span class="ed-btn-glyph">▸</span> Intro I</button>
             </div>
           </div>
 
           <div class="ed-section">
             <h3>Acciones</h3>
             <div class="ed-actions">
-              <button class="save" id="ed-save">💾 Guardar (Ctrl+S)</button>
-              <button id="ed-play">▶ Probar (P)</button>
-              <button id="ed-revert">Revertir a disco</button>
-              <button class="menu" id="ed-menu">← Menú (Esc)</button>
+              <button class="save" id="ed-save"><span class="ui-icon ui-icon-star dark"></span> Guardar Ctrl+S</button>
+              <button id="ed-play"><span class="ui-icon ui-icon-joystick dark"></span> Probar P</button>
+              <button id="ed-revert"><span class="ed-btn-glyph">↶</span> Revertir</button>
+              <button class="menu" id="ed-menu"><span class="ui-icon ui-icon-house dark"></span> Menú Esc</button>
             </div>
           </div>
         </div>
@@ -230,27 +234,27 @@
                 <div class="ed-palette" id="ed-palette"></div>
                 <div class="ed-autotile-row" id="ed-autotile-row" style="display:none;">
                   <button id="ed-autotile-btn">
-                    <span class="ed-autotile-icon">🧩</span>
+                    <span class="ui-icon ui-icon-sun"></span>
                     <span>Auto-tiling</span>
                   </button>
                 </div>
               </div>
               <div id="ed-objects-panel">
                 <div class="ed-obj-header">
-                  <h3>Objects</h3>
-                  <button id="ed-clear-objects">🗑️ Vaciar</button>
-                  <div class="ed-obj-type" id="ed-obj-type">
-                    <span class="ed-obj-type-label">Tipo:</span>
-                    <button data-objtype="pickup_with_animation">Pickup anim</button>
-                    <button data-objtype="pickup">Pickup</button>
-                    <button data-objtype="deco">Deco</button>
-                    <button data-objtype="top">Top</button>
-                  </div>
+                  <h3>Objetos</h3>
+                  <button id="ed-clear-objects">Vaciar</button>
                 </div>
                 <div class="ed-obj-categories" id="ed-obj-categories"></div>
                 <div class="ed-tabs" id="ed-obj-tabs"></div>
                 <div class="ed-variant-switches" id="ed-variant-switches"></div>
                 <div class="ed-palette" id="ed-obj-palette"></div>
+                <div class="ed-obj-type" id="ed-obj-type">
+                  <span class="ed-obj-type-label">Tipo:</span>
+                  <button data-objtype="pickup_with_animation">Pickup anim</button>
+                  <button data-objtype="pickup">Pickup</button>
+                  <button data-objtype="deco">Deco</button>
+                  <button data-objtype="top">Top</button>
+                </div>
               </div>
             </div>
           </div>
@@ -258,9 +262,8 @@
             <div class="ed-section">
               <div class="ed-section-title-row">
                 <h3>Clima</h3>
-                <button id="ed-weather-clear" class="ed-section-title-btn" title="Limpiar clima">🧹</button>
+                <button id="ed-weather-clear" class="ed-section-title-btn" title="Limpiar clima">✕ Limpiar</button>
               </div>
-              <div class="ed-weather-presets" id="ed-weather-presets"></div>
               <div class="ed-wx-list" id="ed-weather-list"></div>
             </div>
           </div>
@@ -268,7 +271,7 @@
         </div>
 
       <div class="ed-footer">
-        Click izq. copiar/pegar · click der. borrar · arrastrar para mover · <kbd>Esc</kbd> limpiar/volver · <kbd>G</kbd> grilla
+        <kbd>Click</kbd> copiar <kbd>Der</kbd> borrar <kbd>Drag</kbd> mover <kbd>Esc</kbd> limpiar <kbd>G</kbd> grilla
       </div>
     </div>
 

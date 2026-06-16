@@ -10,10 +10,15 @@
   --accent-blue: #5a9aff;
   --text-primary: #eee;
   --text-dim: #8895a7;
-  --sprout-dark: #3d2008;
-  --sprout-mid: #5a3a1a;
+  --sprout-dark: #4a2810;
+  --sprout-mid: #6b3f1c;
+  --sprout-text: #6b3a14;
+  --sprout-text-bright: #4a2810;
+  --sprout-text-on-warm: #4a2810;
+  --sprout-text-soft: #6b3a14;
   --sprout-light: #d1ba9e;
   --sprout-border: #8c643c;
+  --sprout-cream: #f3deb6;
   --panel-radius: 10px;
   --transition-fast: .08s ease;
   --transition-med: .18s ease;

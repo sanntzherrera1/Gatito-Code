@@ -24,26 +24,6 @@ const WX_SVG = {
   storm:  `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><path d="M4 0 L6 0 L5 3 L7 3 L3 8 L4 5 L2 5 Z"/><rect x="1" y="2" width="1" height="1"/><rect x="7" y="5" width="1" height="1"/></g></svg>`,
 };
 
-const WX_PRESET_SVG = {
-  clear:    `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><circle cx="4" cy="4" r="2"/><rect x="3" y="0" width="2" height="1"/><rect x="3" y="7" width="2" height="1"/><rect x="0" y="3" width="1" height="2"/><rect x="7" y="3" width="1" height="2"/><rect x="1" y="1" width="1" height="1"/><rect x="6" y="1" width="1" height="1"/><rect x="1" y="6" width="1" height="1"/><rect x="6" y="6" width="1" height="1"/></g></svg>`,
-  drizzle:  WX_SVG.rain,
-  rain:     `<svg viewBox="0 0 8 8" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><g fill="currentColor"><rect x="0" y="0" width="8" height="2"/><rect x="1" y="3" width="1" height="2"/><rect x="3" y="3" width="1" height="3"/><rect x="5" y="3" width="1" height="2"/><rect x="2" y="7" width="1" height="1"/><rect x="4" y="6" width="1" height="2"/></g><path d="M0 0 H2 V1 H1 V2 H0 Z M5 0 H7 V1 H6 V2 H5 Z" fill="currentColor"/></svg>`,
-  storm:    WX_SVG.storm,
-  spring:   WX_SVG.pollen,
-  autumn:   WX_SVG.leaves,
-  night:    WX_SVG.night,
-};
-
-const WEATHER_PRESETS = [
-  { key: 'clear',   label: 'Despejado', svg: WX_PRESET_SVG.clear,   values: { rain: 0, snow: 0, pollen: 0, leaves: 0, night: 0, fog: 0, dust: 0, wind: 0, storm: 0 } },
-  { key: 'drizzle', label: 'Llovizna',  svg: WX_PRESET_SVG.drizzle, values: { rain: 0.3, snow: 0, pollen: 0, leaves: 0, night: 0, fog: 0.2, dust: 0, wind: 0, storm: 0 } },
-  { key: 'rain',    label: 'Lluvia',    svg: WX_PRESET_SVG.rain,    values: { rain: 0.6, snow: 0, pollen: 0, leaves: 0, night: 0, fog: 0, dust: 0, wind: 0.2, storm: 0 } },
-  { key: 'storm',   label: 'Tormenta',  svg: WX_PRESET_SVG.storm,   values: { rain: 0.7, snow: 0, pollen: 0, leaves: 0, night: 0.2, fog: 0, dust: 0, wind: 0.4, storm: 0.5 } },
-  { key: 'spring',  label: 'Primavera', svg: WX_PRESET_SVG.spring,  values: { rain: 0, snow: 0, pollen: 0.4, leaves: 0, night: 0, fog: 0, dust: 0, wind: 0.1, storm: 0 } },
-  { key: 'autumn',  label: 'Otoño',     svg: WX_PRESET_SVG.autumn,  values: { rain: 0, snow: 0, pollen: 0, leaves: 0.5, night: 0, fog: 0, dust: 0, wind: 0.3, storm: 0 } },
-  { key: 'night',   label: 'Noche',     svg: WX_PRESET_SVG.night,   values: { rain: 0, snow: 0, pollen: 0, leaves: 0, night: 0.5, fog: 0, dust: 0, wind: 0, storm: 0 } },
-];
-
 let edPanel, edTitle, edStatus, edTabs, edPalette, edLayersBar;
 let edMainTabsBar, edAssetsPanel, edWeatherPanel;
 let edTabsBar, edTilesetPanel, edObjectsPanel;
@@ -110,13 +90,15 @@ export function initEditor() {
 
   window.__setEditor = (cfg) => { if (!cfg) hideEditor(); else showEditor(cfg); };
   window.__setEditor_updateLayer = (name) => updateLayerHighlight(name);
-  window.__setEditor_updateSelected = (gid) => { selectedGid = gid; activeTerrainName = null; highlightSelected(); highlightTerrain(); };
-  window.__setEditor_updateTerrain = (name) => { activeTerrainName = name; highlightTerrain(); };
-  window.__setEditor_updateObjectSelected = (key, frame, type) => { selectedObject = { key, frame, type }; };
+  window.__setEditor_updateSelected = (gid) => { selectedGid = gid; activeTerrainName = null; selectedObject = { key: null, frame: 0, type: 'deco' }; highlightSelected(); highlightTerrain(); updateSelectionInfo(); };
+  window.__setEditor_updateTerrain = (name) => { activeTerrainName = name; selectedGid = 0; selectedObject = { key: null, frame: 0, type: 'deco' }; highlightTerrain(); updateSelectionInfo(); };
+  window.__setEditor_updateObjectSelected = (key, frame, type) => { selectedObject = { key, frame, type }; selectedGid = 0; activeTerrainName = null; updateSelectionInfo(); };
   window.__setEditor_syncObjectFromCanvas = (objDef, frame, objType) => {
     if (!edCfg || !objDef) return;
     activeEditorTab = 'objects';
     selectedObject = { key: objDef.key, frame, type: objType };
+    selectedGid = 0;
+    activeTerrainName = null;
     activeObjType = objType;
     activeObjCategory = objDef.category;
     activeObjTabIdx = findEntryIndexForObject(objDef);
@@ -126,6 +108,7 @@ export function initEditor() {
     renderObjCategories(edCfg);
     renderObjTabs(edCfg);
     highlightObjType();
+    updateSelectionInfo();
   };
   window.__setEditor_syncTileFromCanvas = (gid) => {
     if (!edCfg) return;
@@ -136,11 +119,13 @@ export function initEditor() {
     activeTilesetIdx = edCfg.tilesets.findIndex(t => t === tileset);
     selectedGid = gid;
     activeTerrainName = null;
+    selectedObject = { key: null, frame: 0, type: 'deco' };
     renderTabs();
     renderTilesetCategories(edCfg);
     renderTilesetTabs(edCfg);
     highlightSelected();
     highlightTerrain();
+    updateSelectionInfo();
   };
   window.__setEditor_updateMode = (mode) => {
     document.getElementById('ed-spawn').classList.toggle('active', mode === 'spawn');
@@ -203,13 +188,22 @@ function showToast(msg, type = 'info') {
 function markDirty(dirty) {
   isDirty = dirty;
   updateStatusText();
+  updateStatusDot();
 }
 
 function updateStatusText() {
   if (!edCfg) return;
+  const statusText = document.getElementById('ed-status-text');
+  if (!statusText) return;
   const layer = edCfg.getLayer?.() ?? '-';
   const dirtyTag = isDirty ? ' · sin guardar' : '';
-  edStatus.textContent = `capa: ${layer}${dirtyTag}`;
+  statusText.textContent = `capa: ${layer}${dirtyTag}`;
+}
+
+function updateStatusDot() {
+  const dot = document.getElementById('ed-status-dot');
+  if (!dot) return;
+  dot.classList.toggle('dirty', isDirty);
 }
 
 function updateSummary(data) {
@@ -344,6 +338,7 @@ function hideEditor() {
   hideTileHoverPreview();
   renderTabs();
   edCfg = null;
+  updateSelectionInfo();
 }
 
 function showEditor(cfg) {
@@ -351,6 +346,8 @@ function showEditor(cfg) {
   edPanel.style.display = 'flex';
   edTitle.textContent = `Editor — ${cfg.levelKey}`;
   updateStatusText();
+  updateStatusDot();
+  updateSelectionInfo();
 
   activeTerrainName = null;
   selectedGid = 0;
@@ -402,6 +399,7 @@ function renderTabs() {
   edObjectsPanel?.classList.toggle('active', activeEditorTab === 'objects');
   edAssetsPanel?.classList.toggle('active', activeMainTab === 'assets');
   edWeatherPanel?.classList.toggle('active', activeMainTab === 'weather');
+  edPanel?.setAttribute('data-main-tab', activeMainTab);
 }
 
 function switchEditorTab(tab) {
@@ -538,8 +536,10 @@ function renderTilesetTabs(cfg) {
 function setSelected(gid) {
   selectedGid = gid;
   activeTerrainName = null;
+  selectedObject = { key: null, frame: 0, type: 'deco' };
   highlightSelected();
   highlightTerrain();
+  updateSelectionInfo();
   edCfg?.onSelect(gid);
 }
 
@@ -548,6 +548,28 @@ function highlightSelected() {
     const g = el.dataset.gid ? +el.dataset.gid : 0;
     el.classList.toggle('selected', g === selectedGid);
   });
+  updateSelectionInfo();
+}
+
+function updateSelectionInfo() {
+  const text = document.getElementById('ed-sel-text');
+  if (!text) return;
+  if (!edCfg) return;
+  if (selectedGid) {
+    const tileset = edCfg.tilesets[activeTilesetIdx];
+    const name = tileset?.label || tileset?.name || 'tile';
+    text.innerHTML = `<b>${name}</b> · GID ${selectedGid}`;
+    text.classList.remove('empty');
+  } else if (activeTerrainName) {
+    text.innerHTML = `<b>terreno</b> ${activeTerrainName}`;
+    text.classList.remove('empty');
+  } else if (selectedObject?.key) {
+    text.innerHTML = `<b>${selectedObject.key}</b> · frame ${selectedObject.frame} · ${selectedObject.type}`;
+    text.classList.remove('empty');
+  } else {
+    text.textContent = 'Sin selección · elige tile u objeto';
+    text.classList.add('empty');
+  }
 }
 
 function updateLayerHighlight(name) {
@@ -657,6 +679,23 @@ function renderObjTabs(cfg) {
   renderObjPalette();
 }
 
+function _shortVariantLabel(text) {
+  if (!text) return '';
+  const map = {
+    'Version': 'ver',
+    'Direction': 'dir',
+    'Type': 'tipo',
+    'Light': 'luz',
+    'Door': 'puerta',
+    'Window': 'vent.',
+    'Roof': 'techo',
+    'Color': 'color',
+    'Size': 'tamaño',
+    'Style': 'estilo',
+  };
+  return map[text] || text;
+}
+
 function renderVariantSwitches() {
   const container = document.getElementById('ed-variant-switches');
   container.innerHTML = '';
@@ -671,7 +710,7 @@ function renderVariantSwitches() {
 
     const label = document.createElement('span');
     label.className = 'ed-variant-label';
-    label.textContent = dim.label;
+    label.textContent = _shortVariantLabel(dim.label);
     dimEl.appendChild(label);
 
     const optionsEl = document.createElement('div');
@@ -774,7 +813,10 @@ function renderObjPalette() {
   if (o.frames) {
     const imgW = Math.max(...o.frames.map(f => f.x + f.w));
     const imgH = Math.max(...o.frames.map(f => f.y + f.h));
-    objPalette.style.setProperty('--cols', Math.max(1, Math.floor(imgW / 16)));
+    const xs = [...new Set(o.frames.map(f => f.x))].filter(x => x > 0);
+    const gcd2 = (a, b) => b === 0 ? a : gcd2(b, a % b);
+    const tileW = xs.length ? xs.reduce(gcd2) : 16;
+    objPalette.style.setProperty('--cols', Math.max(1, Math.floor(imgW / tileW)));
 
     for (let i = 0; i < o.frames.length; i++) {
       const fingerprint = getFrameRectInImage(o, i);
@@ -1007,7 +1049,7 @@ function _buildWeatherCard(cfg, type, v) {
 
   const upBtn = document.createElement('button');
   upBtn.className = 'ed-wx-up';
-  upBtn.textContent = '\u25B2';
+  upBtn.textContent = '＋';
   upBtn.setAttribute('aria-label', 'Subir');
   upBtn.onclick = () => {
     const range = item.querySelector('input[type="range"]');
@@ -1023,7 +1065,7 @@ function _buildWeatherCard(cfg, type, v) {
 
   const downBtn = document.createElement('button');
   downBtn.className = 'ed-wx-down';
-  downBtn.textContent = '\u25BC';
+  downBtn.textContent = '－';
   downBtn.setAttribute('aria-label', 'Bajar');
   downBtn.onclick = () => {
     const range = item.querySelector('input[type="range"]');
@@ -1041,33 +1083,6 @@ function _buildWeatherCard(cfg, type, v) {
   return item;
 }
 
-function renderWeatherPresets(cfg) {
-  const presetsEl = document.getElementById('ed-weather-presets');
-  if (!presetsEl) return;
-  presetsEl.innerHTML = '';
-  for (const preset of WEATHER_PRESETS) {
-    const chip = document.createElement('button');
-    chip.className = 'ed-preset-chip';
-    chip.dataset.preset = preset.key;
-    chip.type = 'button';
-
-    const icon = document.createElement('div');
-    icon.className = 'ed-preset-chip-icon';
-    icon.innerHTML = preset.svg;
-    chip.appendChild(icon);
-
-    const label = document.createElement('div');
-    label.className = 'ed-preset-chip-label';
-    label.textContent = preset.label;
-    chip.appendChild(label);
-
-    chip.addEventListener('click', () => {
-      _commitAllWeather(cfg, preset.values);
-    });
-    presetsEl.appendChild(chip);
-  }
-}
-
 function renderWeatherControls(cfg) {
   const listEl = document.getElementById('ed-weather-list');
   if (!listEl) return;
@@ -1081,8 +1096,6 @@ function renderWeatherControls(cfg) {
     const card = _buildWeatherCard(cfg, type, v);
     listEl.appendChild(card);
   }
-
-  renderWeatherPresets(cfg);
 
   const clearBtn = document.getElementById('ed-weather-clear');
   if (clearBtn) {

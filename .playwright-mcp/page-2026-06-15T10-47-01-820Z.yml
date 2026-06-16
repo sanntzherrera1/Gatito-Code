@@ -1,6 +1,0 @@
-- generic [active] [ref=e1]:
-  - generic:
-    - generic: Gatito · Esc back to menu
-  - generic: 🗑️
-  - generic [ref=e2]: Click izq. copiar/pegar · click der. borrar · arrastrar para mover · Esc limpiar/volver · G grilla
-  - generic: "Browsersync: connected"
