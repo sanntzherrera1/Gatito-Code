@@ -216,8 +216,6 @@
 
 /* ─── Generic panel / editor buttons ─── */
 .panel button, #editor-panel button {
-  background: var(--bg-surface);
-  color: var(--accent);
   border: 1px solid var(--border-bright);
   border-radius: 8px;
   padding: 8px 10px;

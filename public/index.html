@@ -223,21 +223,21 @@
           <div id="ed-assets-panel" class="ed-main-panel">
             <div id="ed-tab-content">
               <div id="ed-tileset-panel" class="ed-asset-tree active">
-                <div class="ed-tree-root open" data-tree-node="tileset-root">
-                  <button class="ed-tree-header">
-                    <span>Tileset</span>
-                    <span class="ed-tree-arrow">▾</span>
+                <div class="ed-tree-root open active" data-tree-node="tileset-root" role="tree" aria-label="Tileset">
+                  <button class="ed-tree-header" type="button" aria-expanded="true" role="treeitem" aria-level="1">
+                    <span class="ed-tree-header-label"><span>Tileset</span></span>
+                    <span class="ed-tree-arrow" aria-hidden="true"></span>
                   </button>
-                  <div class="ed-tree-body" id="ed-tileset-tree"></div>
+                  <div class="ed-tree-body" id="ed-tileset-tree" role="group"></div>
                 </div>
               </div>
               <div id="ed-objects-panel" class="ed-asset-tree">
-                <div class="ed-tree-root" data-tree-node="objects-root">
-                  <button class="ed-tree-header">
-                    <span>Objetos</span>
-                    <span class="ed-tree-arrow">▾</span>
+                <div class="ed-tree-root" data-tree-node="objects-root" role="tree" aria-label="Objetos">
+                  <button class="ed-tree-header" type="button" aria-expanded="false" role="treeitem" aria-level="1">
+                    <span class="ed-tree-header-label"><span>Objetos</span></span>
+                    <span class="ed-tree-arrow" aria-hidden="true"></span>
                   </button>
-                  <div class="ed-tree-body" id="ed-objects-tree"></div>
+                  <div class="ed-tree-body" id="ed-objects-tree" role="group"></div>
                 </div>
               </div>
             </div>

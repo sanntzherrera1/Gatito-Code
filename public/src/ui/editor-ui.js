@@ -159,9 +159,11 @@ function initToolbar() {
 function renderTreeState() {
   document.querySelectorAll('.ed-tree-root, .ed-tree-category').forEach(node => {
     const nodeId = node.dataset.treeNode;
-    if (nodeId) {
-      node.classList.toggle('open', openTreeNodes.has(nodeId));
-    }
+    if (!nodeId) return;
+    const isOpen = openTreeNodes.has(nodeId);
+    node.classList.toggle('open', isOpen);
+    const btn = node.querySelector(':scope > .ed-tree-header, :scope > .ed-tree-category-header');
+    if (btn) btn.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
   });
   document.querySelectorAll('.ed-tree-root').forEach(root => {
     const nodeId = root.dataset.treeNode;
@@ -169,6 +171,21 @@ function renderTreeState() {
                      (nodeId === 'objects-root' && activeEditorTab === 'objects');
     root.classList.toggle('active', isActive);
   });
+  // Scroll into view del item activo para que sea visible al usuario
+  requestAnimationFrame(() => scrollActiveItemIntoView());
+}
+
+function scrollActiveItemIntoView() {
+  const active = document.querySelector('#ed-tab-content .ed-tree-item.active');
+  if (!active) return;
+  const container = document.getElementById('ed-tab-content');
+  if (!container) return;
+  const cRect = container.getBoundingClientRect();
+  const aRect = active.getBoundingClientRect();
+  const margin = 4;
+  if (aRect.top < cRect.top + margin || aRect.bottom > cRect.bottom - margin) {
+    active.scrollIntoView({ block: 'nearest', behavior: 'auto' });
+  }
 }
 
 function initTree() {
@@ -181,7 +198,9 @@ function initTree() {
       const root = header.closest('.ed-tree-root');
       const nodeId = root.dataset.treeNode;
       const isOpen = root.classList.contains('open');
-      root.classList.toggle('open', !isOpen);
+      const next = !isOpen;
+      root.classList.toggle('open', next);
+      header.setAttribute('aria-expanded', next ? 'true' : 'false');
       if (isOpen) openTreeNodes.delete(nodeId);
       else openTreeNodes.add(nodeId);
       return;
@@ -192,7 +211,9 @@ function initTree() {
       const category = catHeader.closest('.ed-tree-category');
       const nodeId = category.dataset.treeNode;
       const isOpen = category.classList.contains('open');
-      category.classList.toggle('open', !isOpen);
+      const next = !isOpen;
+      category.classList.toggle('open', next);
+      catHeader.setAttribute('aria-expanded', next ? 'true' : 'false');
       if (isOpen) openTreeNodes.delete(nodeId);
       else openTreeNodes.add(nodeId);
       return;
@@ -595,21 +616,46 @@ function renderTilesetTree(cfg) {
 
     const header = document.createElement('button');
     header.className = 'ed-tree-category-header';
-    header.innerHTML = `<span>${catInfo.label}</span><span class="ed-tree-arrow">▾</span>`;
+    header.type = 'button';
+    header.setAttribute('aria-expanded', openTreeNodes.has(`tileset-cat-${catKey}`) ? 'true' : 'false');
+    header.innerHTML = `<span class="ed-tree-header-label"><span>${catInfo.label}</span></span><span class="ed-tree-arrow" aria-hidden="true"></span>`;
     category.appendChild(header);
 
     const body = document.createElement('div');
     body.className = 'ed-tree-category-body';
 
+    let hasItems = false;
+    let count = 0;
     cfg.tilesets.forEach((t, i) => {
       if (t.category !== catKey) return;
+      hasItems = true;
+      count++;
       const item = document.createElement('button');
       item.className = 'ed-tree-item';
+      item.type = 'button';
       item.dataset.idx = i;
-      item.textContent = t.label;
+      item.setAttribute('role', 'treeitem');
+      item.setAttribute('aria-level', '3');
+      item.setAttribute('aria-selected', i === activeTilesetIdx ? 'true' : 'false');
+      item.innerHTML = `<span class="ed-tree-item-dot" aria-hidden="true"></span><span>${t.label}</span>`;
       item.classList.toggle('active', i === activeTilesetIdx);
       body.appendChild(item);
     });
+
+    if (hasItems) {
+      const countBadge = document.createElement('span');
+      countBadge.className = 'ed-tree-count';
+      countBadge.textContent = String(count);
+      countBadge.setAttribute('aria-label', `${count} tiles`);
+      header.querySelector('.ed-tree-header-label').appendChild(countBadge);
+    }
+
+    if (!hasItems) {
+      const empty = document.createElement('div');
+      empty.className = 'ed-tree-empty';
+      empty.textContent = 'Sin tiles en esta categoría';
+      body.appendChild(empty);
+    }
 
     category.appendChild(body);
     treeEl.appendChild(category);
@@ -630,7 +676,11 @@ function renderObjectsTree(cfg) {
 
     const header = document.createElement('button');
     header.className = 'ed-tree-category-header';
-    header.innerHTML = `<span>${catInfo.label}</span><span class="ed-tree-arrow">▾</span>`;
+    header.type = 'button';
+    header.setAttribute('aria-expanded', openTreeNodes.has(`objects-cat-${catKey}`) ? 'true' : 'false');
+    header.setAttribute('role', 'treeitem');
+    header.setAttribute('aria-level', '2');
+    header.innerHTML = `<span class="ed-tree-header-label"><span>${catInfo.label}</span></span><span class="ed-tree-arrow" aria-hidden="true"></span>`;
     category.appendChild(header);
 
     const body = document.createElement('div');
@@ -641,15 +691,40 @@ function renderObjectsTree(cfg) {
     const entries = getGroupEntries();
     activeObjCategory = prevCategory;
 
+    let hasItems = false;
+    let count = 0;
     entries.forEach((entry, i) => {
+      hasItems = true;
+      count++;
       const item = document.createElement('button');
       item.className = 'ed-tree-item';
+      item.type = 'button';
       item.dataset.entryIdx = i;
       item.dataset.category = catKey;
-      item.textContent = entry.type === 'group' ? entry.def.label : entry.object.label;
-      item.classList.toggle('active', i === activeObjTabIdx && catKey === activeObjCategory);
+      item.setAttribute('role', 'treeitem');
+      item.setAttribute('aria-level', '3');
+      const isActive = i === activeObjTabIdx && catKey === activeObjCategory;
+      item.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      const label = entry.type === 'group' ? entry.def.label : entry.object.label;
+      item.innerHTML = `<span class="ed-tree-item-dot" aria-hidden="true"></span><span>${label}</span>`;
+      item.classList.toggle('active', isActive);
       body.appendChild(item);
     });
+
+    if (hasItems) {
+      const countBadge = document.createElement('span');
+      countBadge.className = 'ed-tree-count';
+      countBadge.textContent = String(count);
+      countBadge.setAttribute('aria-label', `${count} objetos`);
+      header.querySelector('.ed-tree-header-label').appendChild(countBadge);
+    }
+
+    if (!hasItems) {
+      const empty = document.createElement('div');
+      empty.className = 'ed-tree-empty';
+      empty.textContent = 'Sin objetos en esta categoría';
+      body.appendChild(empty);
+    }
 
     category.appendChild(body);
     treeEl.appendChild(category);
