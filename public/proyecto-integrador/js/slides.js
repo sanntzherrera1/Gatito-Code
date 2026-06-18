@@ -194,7 +194,7 @@ export const SLIDES = [
         </div>
 
         <div class="elevator-pitch-visual">
-          ${gifPlaceholder("GIF: Loop completo de gameplay — el jugador arrastra bloques a la cola, presiona Ejecutar, y Tito recorre el mapa recolectando todos los objetos", "large")}
+          <img src="assets/gif-1-gameplay.gif" alt="Gameplay loop de Gatito Code" style="border-radius:8px; border:3px solid var(--border-bright); object-fit:contain; max-height:560px; max-width:100%; background:#12161d;">
         </div>
       </div>
       ${CORNERS}
@@ -296,37 +296,37 @@ export const SLIDES = [
       </div>
 
       <div class="solution-grid">
-        <div class="value-prop-item" id="vp-1" style="display:flex; flex-direction:row; align-items:center; gap:1rem;">
-          <div style="flex:0 0 55%;">
-            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.4rem;">
+        <div class="value-prop-item" id="vp-1" style="display:flex; flex-direction:row; align-items:center; gap:0.6rem; overflow:hidden;">
+          <div style="flex:0 0 40%; min-width:0;">
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem;">
               <div class="value-prop-icon">🎮</div>
-              <span class="value-prop-title" style="font-size:1rem;">Programa sin escribir</span>
+              <span class="value-prop-title" style="font-size:0.95rem;">Programa sin escribir</span>
             </div>
-            <span class="value-prop-desc" style="font-size:0.9rem;">El jugador arrastra bloques de instrucciones a una cola visual. Sin teclado, sin sintaxis, sin frustracion.</span>
+            <span class="value-prop-desc" style="font-size:0.82rem;">El jugador arrastra bloques de instrucciones a una cola visual. Sin teclado, sin sintaxis, sin frustracion.</span>
           </div>
-          ${gifPlaceholder("GIF: Mano arrastrando bloques (↑ ↓ ← →) a la cola de comandos", "small")}
+          <img src="assets/gif-2-comandos.gif" alt="Arrastrando bloques a la cola" style="flex:1; min-width:0; max-height:210px; object-fit:contain; border-radius:6px; border:2px solid var(--border-bright); background:#12161d;">
         </div>
 
-        <div class="value-prop-item" id="vp-2" style="display:flex; flex-direction:row; align-items:center; gap:1rem;">
-          <div style="flex:0 0 55%;">
-            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.4rem;">
+        <div class="value-prop-item" id="vp-2" style="display:flex; flex-direction:row; align-items:center; gap:0.6rem; overflow:hidden;">
+          <div style="flex:0 0 40%; min-width:0;">
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem;">
               <div class="value-prop-icon">⚡</div>
-              <span class="value-prop-title" style="font-size:1rem;">Feedback inmediato</span>
+              <span class="value-prop-title" style="font-size:0.95rem;">Feedback inmediato</span>
             </div>
-            <span class="value-prop-desc" style="font-size:0.9rem;">Al ejecutar, Tito sigue las instrucciones paso a paso. El nino ve en tiempo real que hace cada comando y donde falla la secuencia.</span>
+            <span class="value-prop-desc" style="font-size:0.82rem;">Al ejecutar, Tito sigue las instrucciones paso a paso. El nino ve en tiempo real que hace cada comando y donde falla la secuencia.</span>
           </div>
-          ${gifPlaceholder("GIF: Tito ejecutando la cola paso a paso, cada bloque se ilumina al ejecutarse", "small")}
+          <img src="assets/gif-3-ejecucion.gif" alt="Tito ejecutando comandos paso a paso" style="flex:1; min-width:0; max-height:210px; object-fit:contain; border-radius:6px; border:2px solid var(--border-bright); background:#12161d;">
         </div>
 
-        <div class="value-prop-item" id="vp-3" style="display:flex; flex-direction:row; align-items:center; gap:1rem;">
-          <div style="flex:0 0 55%;">
-            <div style="display:flex; align-items:center; gap:0.75rem; margin-bottom:0.4rem;">
+        <div class="value-prop-item" id="vp-3" style="display:flex; flex-direction:row; align-items:center; gap:0.6rem; overflow:hidden;">
+          <div style="flex:0 0 40%; min-width:0;">
+            <div style="display:flex; align-items:center; gap:0.5rem; margin-bottom:0.3rem;">
               <div class="value-prop-icon">🔄</div>
-              <span class="value-prop-title" style="font-size:1rem;">Aprende del error</span>
+              <span class="value-prop-title" style="font-size:0.95rem;">Aprende del error</span>
             </div>
-            <span class="value-prop-desc" style="font-size:0.9rem;">El log muestra que instruccion fallo y por que. Corregir y reintentar es parte del flujo natural del juego, no un castigo.</span>
+            <span class="value-prop-desc" style="font-size:0.82rem;">Si Tito no logra el objetivo, el juego lo deja claro. El jugador puede borrar comandos, ajustar la secuencia o reiniciar el nivel. Equivocarse y corregir es parte del juego.</span>
           </div>
-          ${gifPlaceholder("GIF: Tito choca con una pared, el bloque fallido se marca en rojo, el jugador corrige y reintenta", "small")}
+          <img src="assets/gif-4-feedback.gif" alt="Tito choca y el jugador corrige" style="flex:1; min-width:0; max-height:210px; object-fit:contain; border-radius:6px; border:2px solid var(--border-bright); background:#12161d;">
         </div>
       </div>
       ${CORNERS}
@@ -421,7 +421,7 @@ export const SLIDES = [
         <div class="feature-card" id="feat-1">
           <div class="feature-card-icon">📋</div>
           <div class="feature-card-title">Cola de Comandos</div>
-          ${gifPlaceholder("Arrastrando bloques ↑ ↓ ← → a los slots de la cola y presionando Ejecutar", "card")}
+          <img src="assets/gif-5-cola.gif" alt="Cola de comandos" style="width:100%; flex:1; min-height:0; object-fit:contain; border-radius:4px; background:#12161d;">
         </div>
 
         <div class="feature-card" id="feat-2">
@@ -439,13 +439,13 @@ export const SLIDES = [
         <div class="feature-card" id="feat-4">
           <div class="feature-card-icon">📈</div>
           <div class="feature-card-title">Curva Guiada</div>
-          ${gifPlaceholder("Comparacion lado a lado: nivel 0 (camino recto) vs nivel avanzado (laberinto con condicionales)", "card")}
+          <img src="assets/gif-8-progresion-niveles.gif" alt="Progresion de niveles" style="width:100%; flex:1; min-height:0; object-fit:contain; border-radius:4px; background:#12161d;">
         </div>
 
         <div class="feature-card" id="feat-5">
           <div class="feature-card-icon">💬</div>
           <div class="feature-card-title">Dialogos de Mision</div>
-          ${gifPlaceholder("Dialogo del tutorial apareciendo con el texto de mision antes de empezar el nivel", "card")}
+          <img src="assets/gif-9-dialogos.gif" alt="Dialogos de mision" style="width:100%; flex:1; min-height:0; object-fit:contain; border-radius:4px; background:#12161d;">
         </div>
 
         <div class="feature-card" id="feat-6">
