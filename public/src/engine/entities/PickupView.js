@@ -35,6 +35,7 @@ export class PickupView {
    * Play the collection animation and self-destruct.
    */
   collect() {
+    this.scene.sound.play('pickup_sound', { volume: 0.12 });
     this.scene.tweens.killTweensOf(this.sprite);
     const s = this.sprite;
 

@@ -421,37 +421,37 @@ export const SLIDES = [
         <div class="feature-card" id="feat-1">
           <div class="feature-card-icon">📋</div>
           <div class="feature-card-title">Cola de Comandos</div>
-          ${gifPlaceholder("GIF: Cola de 5 slots con bloques ↑↓←→ apilados", "card")}
+          ${gifPlaceholder("Arrastrando bloques ↑ ↓ ← → a los slots de la cola y presionando Ejecutar", "card")}
         </div>
 
         <div class="feature-card" id="feat-2">
           <div class="feature-card-icon">ƒ</div>
           <div class="feature-card-title">Funciones</div>
-          ${gifPlaceholder("GIF: Bloque Function 1 siendo llamado, expandiendose en sub-instrucciones", "card")}
+          ${gifPlaceholder("Armando una Funcion con 3 bloques, luego llamandola varias veces desde la cola principal", "card")}
         </div>
 
         <div class="feature-card" id="feat-3">
           <div class="feature-card-icon">🗺</div>
           <div class="feature-card-title">Editor de Niveles</div>
-          ${gifPlaceholder("GIF: Editor con tiles pintando el mapa, colocando objetos y cambiando clima", "card")}
+          ${gifPlaceholder("Pintando tiles en el mapa, colocando pickups y ajustando el clima desde el editor", "card")}
         </div>
 
         <div class="feature-card" id="feat-4">
           <div class="feature-card-icon">📈</div>
           <div class="feature-card-title">Curva Guiada</div>
-          ${gifPlaceholder("GIF: Progresion de nivel simple a nivel complejo con mas bloques disponibles", "card")}
+          ${gifPlaceholder("Comparacion lado a lado: nivel 0 (camino recto) vs nivel avanzado (laberinto con condicionales)", "card")}
         </div>
 
         <div class="feature-card" id="feat-5">
           <div class="feature-card-icon">💬</div>
           <div class="feature-card-title">Dialogos de Mision</div>
-          ${gifPlaceholder("GIF: Dialogo de personaje apareciendo con retrato y texto de mision", "card")}
+          ${gifPlaceholder("Dialogo del tutorial apareciendo con el texto de mision antes de empezar el nivel", "card")}
         </div>
 
         <div class="feature-card" id="feat-6">
           <div class="feature-card-icon">🌐</div>
           <div class="feature-card-title">Sin Instalacion</div>
-          ${gifPlaceholder("GIF: Browser abriendo el juego directo desde la URL, sin popups de instalacion", "card")}
+          ${gifPlaceholder("Abriendo el navegador, escribiendo la URL y el juego cargando directo sin instalacion", "card")}
         </div>
       </div>
       ${CORNERS}

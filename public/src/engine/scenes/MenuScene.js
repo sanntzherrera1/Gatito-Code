@@ -8,6 +8,15 @@ export class MenuScene extends Phaser.Scene {
     window.__setPanels?.(false);
     window.__setEditor?.(null);
 
+    if (!this.sound.get('bgm1')?.isPlaying) {
+      this.sound.stopAll();
+      this.menuMusic = this.sound.add('bgm1', { loop: true, volume: 0.12 });
+      this.menuMusic.play();
+    }
+    this.events.once('shutdown', () => {
+      this.sound.stopAll();
+    });
+
     const W = COLS * TILE, H = ROWS * TILE;
 
     this.add.rectangle(0, 0, W, H, 0x12161d).setOrigin(0);

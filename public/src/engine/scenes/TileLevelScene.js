@@ -53,6 +53,14 @@ export class TileLevelScene extends Phaser.Scene {
       createWeather(this, this.level.weather);
     }
 
+    // Background music — bgm2 for levels 0–5, bgm3 for the rest
+    const allLevels = getAllLevels();
+    const levelIdx = allLevels.findIndex(l => l.key === this.levelKey);
+    const bgmKey = (levelIdx >= 0 && levelIdx < 6) ? 'bgm2' : 'bgm3';
+    this.sound.stopAll();
+    this.bgm = this.sound.add(bgmKey, { loop: true, volume: 0.12 });
+    this.bgm.play();
+
     const bus = window.__GYM;
     if (bus) {
       bus.onRun = (moves) => this.runProgram(moves);
@@ -76,6 +84,7 @@ export class TileLevelScene extends Phaser.Scene {
     document.addEventListener('keydown', onDocEsc);
 
     this.events.once('shutdown', () => {
+      this.sound.stopAll();
       destroyWeather(this);
       window.__setPanels?.(false);
       window.__setMission?.(null);
@@ -212,6 +221,9 @@ export class TileLevelScene extends Phaser.Scene {
   decorate() { }
 
   resetLevel() {
+    this.sound.stopAll();
+    if (this.bgm) this.bgm.play();
+
     this.playerModel.reset();
     this.playerView.stopAnimations();
     this.playerView.setPosition(this.playerModel.tx, this.playerModel.ty);
@@ -338,9 +350,13 @@ export class TileLevelScene extends Phaser.Scene {
         if (isWin) {
           markLevelCompleted(this.levelKey);
           this.playerView.playCelebrate();
+          if (this.bgm) this.bgm.stop();
+          this.sound.play('win_sound', { volume: 0.15 });
           this.showResultOverlay(true);
         } else {
           this.playerView.playSad();
+          if (this.bgm) this.bgm.stop();
+          this.sound.play('lose_sound', { volume: 0.15 });
           this.showResultOverlay(false);
         }
       }

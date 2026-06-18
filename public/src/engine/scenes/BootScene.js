@@ -33,6 +33,14 @@ export class BootScene extends Phaser.Scene {
       'assets/SproutLands-UI/Sprite sheets/Icons/special icons/Small Happines-Sadness icons.png',
       { frameWidth: 16, frameHeight: 16 }
     );
+
+    // Audio
+    this.load.audio('bgm1', 'assets/audio/background-music-1.mp3');
+    this.load.audio('bgm2', 'assets/audio/background-music-2.wav');
+    this.load.audio('bgm3', 'assets/audio/background-music-3.mp3');
+    this.load.audio('win_sound', 'assets/audio/win-sound.wav');
+    this.load.audio('lose_sound', 'assets/audio/lose-sound.mp3');
+    this.load.audio('pickup_sound', 'assets/SproutLands-SorrySprites/Audio/boo_1.wav');
   }
 
   create() {
