@@ -25,15 +25,15 @@ export class MenuScene extends Phaser.Scene {
     }
 
     this.add.text(W / 2, 18, 'GATITO CODE', {
-      fontFamily: 'monospace', fontSize: '18px', color: '#ffee88',
+      fontFamily: "'Press Start 2P', monospace", fontSize: '18px', color: '#ffee88',
       stroke: '#000', strokeThickness: 3,
     }).setOrigin(0.5);
 
     const cat = this.add.sprite(16, H - 16, 'character_base', 0);
     cat.anims.play('walk_down');
 
-    this.add.text(W / 2, H - 6, 'Use mouse to select · Esc to back', {
-      fontFamily: 'monospace', fontSize: '6px', color: '#556',
+    this.add.text(W / 2, H - 6, 'Usa el mouse para elegir · Esc para volver', {
+      fontFamily: "'Press Start 2P', monospace", fontSize: '6px', color: '#556',
     }).setOrigin(0.5);
 
     this.dynamicGroup = this.add.group();
@@ -49,7 +49,7 @@ export class MenuScene extends Phaser.Scene {
 
   showScreen(screen) {
     if (this._scrollHandler) {
-      this.input.off('wheel', this._scrollHandler);
+      this.game.canvas.removeEventListener('wheel', this._scrollHandler);
       this._scrollHandler = null;
     }
     this.dynamicGroup.clear(true, true);
@@ -63,9 +63,9 @@ export class MenuScene extends Phaser.Scene {
     if (screen === 'main') {
       this.addLabel('Menu Principal');
       let y = 60;
-      this.makeButton(bx, y, 'Niveles', () => this.showScreen('levels')); y += STEP + 2;
-      this.makeButton(bx, y, 'Editor de Niveles', () => this.showScreen('editor')); y += STEP + 2;
-      this.makeButton(bx, y, 'Creditos', () => window.__showCredits?.());
+      this.makeButton(bx, y, 'Niveles', () => this.showScreen('levels')); y += STEP + 6;
+      this.makeButton(bx, y, 'Editor de Niveles', () => this.showScreen('editor')); y += STEP + 6;
+      this.makeButton(bx, y, 'Creditos', () => this.showScreen('credits'));
     } else if (screen === 'levels') {
       this.addLabel('selección de niveles');
       const allLevels = getAllLevels();
@@ -91,10 +91,10 @@ export class MenuScene extends Phaser.Scene {
       this.makeButton(bx, H - 30, '← Back', () => this.showScreen('main'));
     } else if (screen === 'editor') {
       this.addLabel('editor de niveles');
-      this.makeButton(bx, 46, '+ Nuevo nivel', () => this.promptNewLevel(), 'accent');
+      this.makeButton(bx, 52, '+ Nuevo nivel', () => this.promptNewLevel(), 'accent');
 
-      const sep = this.add.text(bx, 62, '— editar existente —', {
-        fontFamily: 'monospace', fontSize: '6px', color: '#446',
+      const sep = this.add.text(bx, 70, '— niveles existentes —', {
+        fontFamily: "'Press Start 2P', monospace", fontSize: '5px', color: '#446',
       }).setOrigin(0.5);
       this.dynamicGroup.add(sep);
 
@@ -106,17 +106,99 @@ export class MenuScene extends Phaser.Scene {
       const GRID_COLS = 4;
       const SPACING = 42;
       const START_X = (W - (GRID_COLS - 1) * SPACING) / 2;
-      const START_Y = 82;
+
+      const SCROLL_TOP = 78;
+      const SCROLL_BOTTOM = H - 28;
+      const SCROLL_H = SCROLL_BOTTOM - SCROLL_TOP;
+
+      const totalRows = Math.ceil(allToEdit.length / GRID_COLS);
+      const CONTENT_H = totalRows * SPACING + 10;
+
+      const scrollContainer = this.add.container(0, SCROLL_TOP);
+      this.dynamicGroup.add(scrollContainer);
 
       allToEdit.forEach((lv, i) => {
         const row = Math.floor(i / GRID_COLS);
         const col = i % GRID_COLS;
         const x = START_X + col * SPACING;
-        const y = START_Y + row * SPACING;
-        this._createEditorSquare(x, y, i, lv);
+        const y = row * SPACING + 16;
+        this._createEditorSquare(x, y, i, lv, scrollContainer);
       });
 
-      this.makeButton(bx, H - 30, '← Back', () => this.showScreen('main'));
+      const maskShape = this.make.graphics({ add: false });
+      maskShape.fillRect(0, SCROLL_TOP, W, SCROLL_H);
+      scrollContainer.setMask(new Phaser.Display.Masks.GeometryMask(this, maskShape));
+
+      const maxScroll = Math.max(0, CONTENT_H - SCROLL_H);
+      let scrollY = 0;
+
+      if (maxScroll > 0) {
+        this._scrollHandler = (e) => {
+          scrollY = Phaser.Math.Clamp(scrollY + (e.deltaY > 0 ? 15 : -15), 0, maxScroll);
+          scrollContainer.y = SCROLL_TOP - scrollY;
+        };
+        this.game.canvas.addEventListener('wheel', this._scrollHandler);
+      }
+
+      this.makeButton(bx, H - 18, '← Volver', () => this.showScreen('main'));
+    } else if (screen === 'credits') {
+      this.addLabel('Creditos');
+
+      const PX = "'Press Start 2P', monospace";
+      const team = [
+        { name: 'Luis Herrera',    role: 'Disenador Principal' },
+        { name: 'Brian Herrera',   role: 'Desarrollador Principal' },
+        { name: 'Lisett Castillo', role: 'Scrum Master' },
+        { name: 'Iara Baya',       role: 'Desarrolladora' },
+        { name: 'Jose Martinez',   role: 'Desarrollador' },
+      ];
+
+      const subtitle = this.add.text(bx, 46, 'Equipo de Desarrollo', {
+        fontFamily: PX, fontSize: '6px', color: '#ffee88',
+      }).setOrigin(0.5);
+      this.dynamicGroup.add(subtitle);
+
+      const divider = this.add.graphics();
+      divider.lineStyle(1, 0x2e3a55, 1);
+      divider.lineBetween(bx - 90, 53, bx + 90, 53);
+      this.dynamicGroup.add(divider);
+
+      const SCROLL_TOP = 56;
+      const SCROLL_BOTTOM = H - 26;
+      const SCROLL_H = SCROLL_BOTTOM - SCROLL_TOP;
+      const ENTRY_H = 30;
+      const CONTENT_H = team.length * ENTRY_H;
+
+      const scrollContainer = this.add.container(0, SCROLL_TOP);
+      this.dynamicGroup.add(scrollContainer);
+
+      team.forEach(({ name, role }, i) => {
+        const y = i * ENTRY_H + 6;
+        const nameT = this.add.text(bx, y, name, {
+          fontFamily: PX, fontSize: '7px', color: '#eeeeee',
+        }).setOrigin(0.5);
+        const roleT = this.add.text(bx, y + 11, role, {
+          fontFamily: PX, fontSize: '6px', color: '#7bc8f0',
+        }).setOrigin(0.5);
+        scrollContainer.add([nameT, roleT]);
+      });
+
+      const maskShape = this.make.graphics({ add: false });
+      maskShape.fillRect(0, SCROLL_TOP, W, SCROLL_H);
+      scrollContainer.setMask(new Phaser.Display.Masks.GeometryMask(this, maskShape));
+
+      const maxScroll = Math.max(0, CONTENT_H - SCROLL_H);
+      let scrollY = 0;
+
+      if (maxScroll > 0) {
+        this._scrollHandler = (e) => {
+          scrollY = Phaser.Math.Clamp(scrollY + (e.deltaY > 0 ? 10 : -10), 0, maxScroll);
+          scrollContainer.y = SCROLL_TOP - scrollY;
+        };
+        this.game.canvas.addEventListener('wheel', this._scrollHandler);
+      }
+
+      this.makeButton(bx, H - 18, '← Volver', () => this.showScreen('main'));
     }
   }
 
@@ -128,11 +210,11 @@ export class MenuScene extends Phaser.Scene {
       .setStrokeStyle(2, isCompleted ? 0x66ff99 : 0x222233);
 
     const txtNum = this.add.text(0, 0, num.toString(), {
-      fontFamily: 'monospace', fontSize: '14px', color: '#ffffff', fontWeight: 'bold'
+      fontFamily: "'Press Start 2P', monospace", fontSize: '14px', color: '#ffffff', fontWeight: 'bold'
     }).setOrigin(0.5);
 
     const txtName = this.add.text(0, size / 2 + 6, level.name, {
-      fontFamily: 'monospace', fontSize: '6px', color: isUnlocked ? '#8ef' : '#666',
+      fontFamily: "'Press Start 2P', monospace", fontSize: '6px', color: isUnlocked ? '#8ef' : '#666',
     }).setOrigin(0.5);
 
     container.add([bg, txtNum, txtName]);
@@ -153,29 +235,34 @@ export class MenuScene extends Phaser.Scene {
 
     if (isCompleted) {
       const check = this.add.text(size / 2 - 4, -size / 2 + 4, '✓', {
-        fontFamily: 'monospace', fontSize: '8px', color: '#66ff99', fontWeight: 'bold'
+        fontFamily: "'Press Start 2P', monospace", fontSize: '8px', color: '#66ff99', fontWeight: 'bold'
       }).setOrigin(0.5);
       container.add(check);
     }
   }
 
-  _createEditorSquare(x, y, num, level) {
+  _createEditorSquare(x, y, num, level, parentContainer) {
     const container = this.add.container(x, y);
-    const size = 30;
+    const size = 26;
 
     const bg = this.add.rectangle(0, 0, size, size, 0x2d2010)
       .setStrokeStyle(2, 0x886622);
 
     const txtLabel = this.add.text(0, 0, num.toString(), {
-      fontFamily: 'monospace', fontSize: '14px', color: '#ffcc66', fontWeight: 'bold',
+      fontFamily: "'Press Start 2P', monospace", fontSize: '10px', color: '#ffcc66',
     }).setOrigin(0.5);
 
-    const txtEdit = this.add.text(0, size / 2 + 6, level.name, {
-      fontFamily: 'monospace', fontSize: '6px', color: '#aa8844',
+    const txtEdit = this.add.text(0, size / 2 + 5, level.name, {
+      fontFamily: "'Press Start 2P', monospace", fontSize: '5px', color: '#aa8844',
     }).setOrigin(0.5);
 
     container.add([bg, txtLabel, txtEdit]);
-    this.dynamicGroup.add(container);
+
+    if (parentContainer) {
+      parentContainer.add(container);
+    } else {
+      this.dynamicGroup.add(container);
+    }
 
     bg.setInteractive({ useHandCursor: true });
     bg.on('pointerover', () => { bg.setFillStyle(0x4a3318); bg.setScale(1.1); });
@@ -201,7 +288,7 @@ export class MenuScene extends Phaser.Scene {
 
   addLabel(text) {
     const tx = this.add.text(COLS * TILE / 2, 34, text, {
-      fontFamily: 'monospace', fontSize: '7px', color: '#8ef',
+      fontFamily: "'Press Start 2P', monospace", fontSize: '7px', color: '#8ef',
     }).setOrigin(0.5);
     this.dynamicGroup.add(tx);
   }
@@ -211,9 +298,9 @@ export class MenuScene extends Phaser.Scene {
     const strokeBase = type === 'accent' ? 0x2e6032 : 0x2e3a55;
     const textColor = type === 'accent' ? '#8fdf8f' : '#8ef';
 
-    const bg = this.add.rectangle(x, y, 120, 16, fillBase).setStrokeStyle(1, strokeBase);
+    const bg = this.add.rectangle(x, y, 160, 18, fillBase).setStrokeStyle(2, strokeBase);
     const tx = this.add.text(x, y, label, {
-      fontFamily: 'monospace', fontSize: '9px', color: textColor,
+      fontFamily: "'Press Start 2P', monospace", fontSize: '7px', color: textColor,
     }).setOrigin(0.5);
     bg.setInteractive({ useHandCursor: true });
     const idx = this.buttons.length;
