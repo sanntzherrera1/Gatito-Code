@@ -14,7 +14,22 @@
     <link rel="stylesheet" href="css/name-dialog.css">
     <link rel="stylesheet" href="css/result.css">
   </head>
-  <body>
+  <body class="app-loading">
+    <div id="boot-splash" aria-live="polite">
+      <div class="boot-card">
+        <div class="boot-badge" aria-hidden="true"></div>
+        <div class="boot-kicker">Cargando aventura</div>
+        <h1 class="boot-title">Gatito Code</h1>
+        <p class="boot-copy">Preparando niveles, objetos y musica del menu.</p>
+        <div class="boot-progress-shell">
+          <div class="boot-progress-bar" id="boot-progress-bar"></div>
+        </div>
+        <div class="boot-progress-meta">
+          <span id="boot-progress-label">0%</span>
+          <span id="boot-progress-status">Despertando gatito...</span>
+        </div>
+      </div>
+    </div>
     <div id="hud"><div><b>Gatito</b> · <kbd>Esc</kbd> back to menu</div></div>
 
     <div id="panels">

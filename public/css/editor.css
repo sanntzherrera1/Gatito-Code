@@ -3,8 +3,6 @@
   /* max-height: 95vh; */
   overflow-y: auto;
   overflow-x: hidden;
-  display: flex;
-  flex-direction: column;
 }
 
 #editor-panel hr.ed-section-hr {

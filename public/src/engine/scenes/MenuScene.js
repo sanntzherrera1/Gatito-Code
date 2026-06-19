@@ -5,6 +5,8 @@ export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
 
   create() {
+    document.body.classList.remove('app-loading');
+    document.getElementById('boot-splash')?.remove();
     window.__setPanels?.(false);
     window.__setEditor?.(null);
 

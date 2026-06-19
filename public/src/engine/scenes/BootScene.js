@@ -7,6 +7,13 @@ export class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
 
   preload() {
+    this._setBootStatus('Cargando mundo base...');
+    this.load.on('progress', (value) => {
+      this._setBootProgress(value, value < 1 ? 'Cargando recursos...' : 'Afinando menu...');
+    });
+    this.load.on('complete', () => {
+      this._setBootProgress(1, 'Listo');
+    });
     // Character — Premium 384x1152 → 8x24 grid of 48x48 frames.
     // First 8 rows: idle_down, idle_up, idle_right, idle_left,
     //               walk_down, walk_up, walk_right, walk_left.
@@ -113,6 +120,7 @@ export class BootScene extends Phaser.Scene {
 
   _loadUIAssets() {
     const manifest = this.cache.json.get('ui_manifest');
+    this._setBootStatus('Armando interfaz...');
 
     for (const t of manifest.textures) {
       if (this.textures.exists(t.key)) continue;
@@ -130,14 +138,30 @@ export class BootScene extends Phaser.Scene {
           repeat: anim.repeat ?? 0,
         });
       }
+      this._setBootProgress(1, 'Abriendo menu...');
       this.scene.start('Menu');
     });
 
     // If nothing new to load, complete fires synchronously only if we start the loader.
     if (this.load.totalToLoad === 0) {
+      this._setBootProgress(1, 'Abriendo menu...');
       this.scene.start('Menu');
     } else {
       this.load.start();
     }
+  }
+
+  _setBootProgress(value, status) {
+    const progress = Math.max(0, Math.min(1, value ?? 0));
+    const bar = document.getElementById('boot-progress-bar');
+    const label = document.getElementById('boot-progress-label');
+    if (bar) bar.style.width = `${Math.round(progress * 100)}%`;
+    if (label) label.textContent = `${Math.round(progress * 100)}%`;
+    if (status) this._setBootStatus(status);
+  }
+
+  _setBootStatus(status) {
+    const node = document.getElementById('boot-progress-status');
+    if (node) node.textContent = status;
   }
 }
