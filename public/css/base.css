@@ -220,9 +220,10 @@ body.app-loading #boot-splash {
   flex: 3 1 0;
   min-width: 320px;
   max-width: 100%;
+  max-height: 98vh;
   order: 2;
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
   min-height: 0;
 }
@@ -244,7 +245,7 @@ body.app-loading #boot-splash {
 #hud {
   position: fixed;
   top: 8px; left: 8px;
-  font-size: 12px;
+  font-size: 14px;
   background: rgba(9,12,16,.8);
   backdrop-filter: blur(6px);
   padding: 6px 12px;

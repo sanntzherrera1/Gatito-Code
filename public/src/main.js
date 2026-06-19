@@ -14,7 +14,7 @@ import { TILE, COLS, ROWS, MAX_ZOOM } from './config/game.js';
 
 export { TILE, COLS, ROWS, MAX_ZOOM };
 
-new Phaser.Game({
+const game = new Phaser.Game({
   type: Phaser.AUTO,
   parent: 'game-frame',
   width: COLS * TILE,
@@ -25,8 +25,17 @@ new Phaser.Game({
   backgroundColor: '#12161d',
   scale: {
     mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.CENTER_BOTH,
+    autoCenter: Phaser.Scale.NO_CENTER,
   },
   physics: { default: 'arcade', arcade: { debug: false, gravity: { x: 0, y: 0 } } },
   scene: [BootScene, MenuScene, Nivel0Scene, GymScene, MainScene, Nivel3Scene, BosqueFloralScene, EditorScene, CustomScene],
 });
+
+/* ── Forzar recalculo del canvas ante cambios de layout (resize / media queries) ── */
+let _resizeTimer = 0;
+window.addEventListener('resize', () => {
+  clearTimeout(_resizeTimer);
+  _resizeTimer = setTimeout(() => game.scale.refresh(), 120);
+});
+// Refresh inicial retardado: cubre F5 donde el layout CSS aún no se estabilizó
+setTimeout(() => game.scale.refresh(), 300);

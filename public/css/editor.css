@@ -37,7 +37,7 @@
   justify-content: center;
   width: 14px;
   height: 14px;
-  font-size: 13px;
+  font-size: 16px;
   font-family: 'SproutPixel', monospace;
   font-weight: 700;
   color: var(--sprout-text-bright);
@@ -48,10 +48,10 @@
 
 /* ─── Editor panel (estilo Sprout Lands) ─── */
 #editor-panel {
-  flex: 2 1 0;
+  flex: 1 1 0;
   min-width: 280px;
   max-width: 460px;
-  max-height: 96vh;
+  max-height: 98vh;
   overflow: hidden;
   display: none;
   flex-direction: column;
@@ -1447,6 +1447,8 @@
   flex: 1;
   min-width: 0;
   overflow: auto;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(90, 58, 26, .35) transparent;
 }
 .ed-variant-btn {
   padding: 2px 7px !important;
@@ -1677,36 +1679,6 @@
   height: 1px;
 }
 
-/* Footer */
-.ed-footer {
-  margin-top: 6px;
-  padding-top: 7px;
-  border-top: 2px solid rgba(90,58,26,.15);
-  font-size: 9.5px;
-  color: var(--sprout-text-soft);
-  text-align: center;
-  font-family: 'SproutPixel', monospace;
-  position: relative;
-  z-index: 1;
-  line-height: 1.4;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  font-weight: 700;
-  text-shadow: 0 1px 0 rgba(255,250,235,.5);
-}
-.ed-footer kbd {
-  background: rgba(255,255,255,.42);
-  border: 1px solid rgba(90,58,26,.25);
-  border-radius: 3px;
-  padding: 0 4px;
-  font-size: 8.5px;
-  font-family: 'SproutPixel', monospace;
-  color: var(--sprout-text-bright);
-  font-weight: 700;
-  text-shadow: 0 1px 0 rgba(255,250,235,.7);
-}
-
 /* Toast */
 .ed-toast {
   position: fixed;
@@ -1934,6 +1906,7 @@ hr.ed-section-hr {
   body {
     padding-left: 10px;
     padding-right: 10px;
+    gap: 16px;
   }
 
   .ed-col-toggle {
@@ -1978,34 +1951,102 @@ hr.ed-section-hr {
   }
   /* Reducir ancho del panel para ganar espacio de canvas */
   #editor-panel {
-    min-width: 200px;
+    min-width: 250px;
     max-width: 280px;
+    flex-grow: 0;
   }
 }
 
 /* Responsive */
 @media (max-width: 1280px) {
   #editor-panel {
-    min-width: 260px;
-    max-height: 92vh;
+    min-width: 230px;
   }
   .ed-col-tools {
     width: clamp(120px, 14vw, 160px);
   }
+  .ed-wx-icon-wrap {
+    display: none;
+  }
 }
 @media (max-width: 1100px) {
+  body {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 4px;
+    gap: 12px;
+  }
+  #game-frame {
+    width: 100%;
+    justify-content: center;
+  }
   #editor-panel {
-    min-width: 240px;
-    max-height: 92vh;
+    min-width: 90vw;
+    /* height: auto; */
+    height: 30vh;
+    flex: none;
+    /* max-width: none; */
+    overflow: visible;
+    padding: 6px;
+    margin: auto;
   }
   .ed-summary {
     font-size: 9px;
   }
+  .ed-col-toggle {
+    position: absolute;
+    right: 20px;
+    top: 12px;
+  }
+  .ed-col-tools {
+    flex-direction: row;
+    align-items: stretch;
+    justify-content: center;
+  }
+
+  .ed-layers {
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  .ed-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  #ed-assets-panel {
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  #ed-tab-content {
+    flex: 1;
+    flex-direction: row;
+    gap: 2px;
+    padding: 0;
+  }
+
+  .panel button, #editor-panel button {
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+
+  .ed-wx-list{
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+  }
+
+  #ed-palette-container{
+    flex: 1;
+    padding-top: 0;
+    overflow: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(90, 58, 26, .3) transparent;
+  }
 }
-@media (max-width: 980px) {
+/* @media (max-width: 980px) {
   #editor-panel {
-    min-width: 220px;
-    max-height: 92vh;
+    min-width: 190px;
+    padding: 6px;
   }
   .ed-col-tools {
     width: clamp(100px, 25%, 140px);
@@ -2022,7 +2063,7 @@ hr.ed-section-hr {
   .ed-modes {
     grid-template-columns: 1fr 1fr 1fr;
   }
-}
+} */
 
 /* Responsive para el árbol de assets */
 @media (max-width: 768px) {
