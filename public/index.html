@@ -24,6 +24,7 @@
           <div class="target-switch" id="target-switch" title="Switch target: Program or Funcion 1">
             <button class="target-opt active" data-target="main">Program</button>
             <button class="target-opt" data-target="func1">F1</button>
+            <button class="target-opt" data-target="for">FOR</button>
           </div>
         </div>
         <button data-dir="up"><span class="dir-icon">▲</span><span class="dir-label">move up</span></button>
@@ -31,6 +32,7 @@
         <button data-dir="left"><span class="dir-icon">◀</span><span class="dir-label">move left</span></button>
         <button data-dir="right"><span class="dir-icon">▶</span><span class="dir-label">move right</span></button>
         <button data-dir="func1"><span class="dir-icon" style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;">ƒ</span><span class="dir-label" style="color:#1a4a7a">FUNCTION 1</span></button>
+        <button data-dir="for"><span class="dir-icon for-icon">FOR</span><span class="dir-label for-label">REPETIR</span></button>
         <button data-dir="jump" id="jump-btn"><span class="dir-icon" style="color:#1a4a7a">⏺</span><span class="dir-label">jump</span></button>
         <div id="jump-dpad" class="jump-dpad">
           <button data-jdir="up" class="jump-dir-btn" aria-label="Jump up"><span class="dir-icon">▲</span></button>
@@ -63,20 +65,47 @@
         <button id="clear-func1" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR F1</span></button>
       </div>
 
-      <div class="sprout-panel" id="queue-if-rule">
-        <h3>SI</h3>
-        <label class="if-select-label" for="if-condition-select">Si pasa</label>
-        <select id="if-condition-select" class="if-select">
-          <option value="">sin condicion</option>
-          <option value="rock-ahead">roca adelante</option>
-          <option value="blocked-ahead">obstaculo adelante</option>
-        </select>
-        <label class="if-select-label" for="if-action-select">Hacer esto</label>
-        <select id="if-action-select" class="if-select">
-          <option value="">sin accion</option>
-          <option value="jump">saltar</option>
-          <option value="navigate">rodear</option>
-        </select>
+      <div class="sprout-panel panel-plegable" id="queue-for">
+        <button class="panel-toggle" type="button" data-toggle-panel="queue-for" aria-expanded="true" aria-controls="queue-for-content">
+          <span>FOR</span>
+          <span class="panel-toggle-icon">▾</span>
+        </button>
+        <div class="panel-cuerpo" id="queue-for-content">
+          <label class="if-select-label" for="for-count-select">Repetir</label>
+          <select id="for-count-select" class="if-select">
+            <option value="2">2 veces</option>
+            <option value="3">3 veces</option>
+            <option value="4">4 veces</option>
+            <option value="5">5 veces</option>
+          </select>
+          <div class="slots f1-slots" id="slots-for" style="margin-bottom: 12px; gap: 8px;">
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+          </div>
+          <button id="clear-for" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR FOR</span></button>
+        </div>
+      </div>
+
+      <div class="sprout-panel panel-plegable" id="queue-if-rule">
+        <button class="panel-toggle" type="button" data-toggle-panel="queue-if-rule" aria-expanded="true" aria-controls="queue-if-content">
+          <span>SI</span>
+          <span class="panel-toggle-icon">▾</span>
+        </button>
+        <div class="panel-cuerpo" id="queue-if-content">
+          <label class="if-select-label" for="if-condition-select">Si pasa</label>
+          <select id="if-condition-select" class="if-select">
+            <option value="">sin condicion</option>
+            <option value="rock-ahead">roca adelante</option>
+            <option value="blocked-ahead">obstaculo adelante</option>
+          </select>
+          <label class="if-select-label" for="if-action-select">Hacer esto</label>
+          <select id="if-action-select" class="if-select">
+            <option value="">sin accion</option>
+            <option value="jump">saltar</option>
+            <option value="navigate">rodear</option>
+          </select>
+        </div>
       </div>
     </div>
 

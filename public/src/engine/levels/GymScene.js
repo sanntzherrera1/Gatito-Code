@@ -13,6 +13,7 @@ export class GymScene extends TileLevelScene {
   create() {
     super.create();
     window.__setIfPanel?.(false);
+    window.__setForPanel?.(false);
     const els = [
       document.querySelector('[data-dir="func1"]'),
       document.getElementById('queue-func1'),
@@ -23,6 +24,7 @@ export class GymScene extends TileLevelScene {
     }
     this.events.once('shutdown', () => {
       window.__setIfPanel?.(true);
+      window.__setForPanel?.(false);
       for (const el of els) {
         if (el) el.style.display = '';
       }

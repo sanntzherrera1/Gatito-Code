@@ -292,6 +292,60 @@ describe('engine/program/ProgramExecutor.js - reglas SI', () => {
   });
 });
 
+describe('engine/program/ProgramExecutor.js - FOR', () => {
+  function makeContext(rockAhead = false) {
+    const calls = [];
+    return {
+      calls,
+      context: {
+        step: async (dir) => calls.push(`step:${dir}`),
+        jumpInPlace: async () => calls.push('jump'),
+        jumpDir: async (dir) => calls.push(`jump:${dir}`),
+        hayRocaAdelante: () => rockAhead,
+      },
+    };
+  }
+
+  it('repite el bloque FOR la cantidad configurada', async () => {
+    const { calls, context } = makeContext();
+
+    await executeProgram(['for'], context, {
+      queueFor: ['right', 'down'],
+      forCount: 3,
+    });
+
+    expect(calls).toEqual([
+      'step:right', 'step:down',
+      'step:right', 'step:down',
+      'step:right', 'step:down',
+    ]);
+  });
+
+  it('puede repetir saltos dentro del bloque FOR', async () => {
+    const { calls, context } = makeContext();
+
+    await executeProgram(['for'], context, {
+      queueFor: ['jump_right'],
+      forCount: 2,
+    });
+
+    expect(calls).toEqual(['jump:right', 'jump:right']);
+  });
+
+  it('aplica la regla SI dentro de cada repeticion del FOR', async () => {
+    const { calls, context } = makeContext(true);
+
+    await executeProgram(['for'], context, {
+      queueFor: ['right'],
+      forCount: 2,
+      ifCondition: 'rock-ahead',
+      ifAction: 'jump',
+    });
+
+    expect(calls).toEqual(['jump:right', 'jump:right']);
+  });
+});
+
 // ============================================================
 //  SUITE 2: domain/Level.js
 //  Geometria de la grilla del mapa

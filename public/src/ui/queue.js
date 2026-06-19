@@ -3,24 +3,30 @@ import { showJumpPickerForEl, initJumpPicker } from './jump-picker.js';
 
 let slotsEl;
 let slotsFunc1El;
+let slotsForEl;
 let ifConditionSelect;
 let ifActionSelect;
+let forCountSelect;
 let dirsPanel;
 let runBtn;
 let clearBtn;
 let clearFunc1Btn;
+let clearForBtn;
 let trashZoneEl;
 let activeTarget = 'main';
 
 export function initQueue() {
   slotsEl = document.getElementById('slots');
   slotsFunc1El = document.getElementById('slots-func1');
+  slotsForEl = document.getElementById('slots-for');
   ifConditionSelect = document.getElementById('if-condition-select');
   ifActionSelect = document.getElementById('if-action-select');
+  forCountSelect = document.getElementById('for-count-select');
   dirsPanel = document.getElementById('dirs');
   runBtn = document.getElementById('run');
   clearBtn = document.getElementById('clear');
   clearFunc1Btn = document.getElementById('clear-func1');
+  clearForBtn = document.getElementById('clear-for');
   trashZoneEl = document.getElementById('slot-trash-zone');
 
   trashZoneEl.addEventListener('dragover', e => {
@@ -49,14 +55,18 @@ export function initQueue() {
   initTargetSwitch();
   initJumpPicker(renderAllSlots);
   initIfPanel();
+  initForPanel();
+  initPanelesPlegables();
 
   dirsPanel.querySelectorAll('button[data-dir]:not([data-dir="jump"])').forEach(btn => {
     btn.addEventListener('click', () => {
       if (GYM.running) return;
-      const queue = activeTarget === 'func1' ? GYM.queueFunc1 : GYM.queue;
+      const queue = obtenerQueuePorTarget(activeTarget);
       const max = obtenerMaximoQueue(queue);
+      const dir = btn.dataset.dir;
+      if (!queue || !esComandoPermitidoEnQueue(dir, activeTarget)) return;
       if (queue.length >= max) return;
-      queue.push(btn.dataset.dir);
+      queue.push(dir);
       renderAllSlots();
     });
   });
@@ -66,9 +76,9 @@ export function initQueue() {
     jumpBtn.addEventListener('click', e => {
       if (GYM.running) return;
       e.stopPropagation();
-      const queue = activeTarget === 'func1' ? GYM.queueFunc1 : GYM.queue;
+      const queue = obtenerQueuePorTarget(activeTarget);
       const max = obtenerMaximoQueue(queue);
-      if (queue.length >= max) return;
+      if (!queue || queue.length >= max) return;
       showJumpPickerForEl(jumpBtn, activeTarget, queue, max);
     });
   }
@@ -83,6 +93,7 @@ export function initQueue() {
 
   setupDropZone(slotsEl, GYM.queue, 'main');
   setupDropZone(slotsFunc1El, GYM.queueFunc1, 'func1');
+  setupDropZone(slotsForEl, GYM.queueFor, 'for');
 
   clearBtn.addEventListener('click', () => {
     if (GYM.running) return;
@@ -93,6 +104,12 @@ export function initQueue() {
   clearFunc1Btn.addEventListener('click', () => {
     if (GYM.running) return;
     GYM.queueFunc1.length = 0;
+    renderAllSlots();
+  });
+
+  clearForBtn?.addEventListener('click', () => {
+    if (GYM.running) return;
+    GYM.queueFor.length = 0;
     renderAllSlots();
   });
 
@@ -114,6 +131,8 @@ export function initQueue() {
     if (GYM.running) return;
     GYM.queue.length = 0;
     GYM.queueFunc1.length = 0;
+    GYM.queueFor.length = 0;
+    GYM.forCount = 2;
     GYM.ifCondition = '';
     GYM.ifAction = '';
     renderAllSlots();
@@ -140,18 +159,37 @@ export function initQueue() {
     }
   };
 
+  window.__setForPanel = visible => {
+    const panel = document.getElementById('queue-for');
+    const opt = document.querySelector('.target-opt[data-target="for"]');
+    const forBtn = dirsPanel?.querySelector('button[data-dir="for"]');
+    if (panel) panel.style.display = visible ? 'flex' : 'none';
+    if (opt) opt.style.display = visible ? 'flex' : 'none';
+    if (forBtn) forBtn.style.display = visible ? 'flex' : 'none';
+    if (!visible) {
+      GYM.queueFor.length = 0;
+      GYM.forCount = 2;
+      if (activeTarget === 'for') activarTarget('main');
+      renderForSeleccionado();
+      renderAllSlots();
+    }
+  };
+
   renderAllSlots();
 }
 
 function initTargetSwitch() {
   const switchEl = document.getElementById('target-switch');
   switchEl.querySelectorAll('.target-opt').forEach(opt => {
-    opt.addEventListener('click', () => {
-      activeTarget = opt.dataset.target;
-      switchEl.querySelectorAll('.target-opt').forEach(o =>
-        o.classList.toggle('active', o === opt));
-    });
+    opt.addEventListener('click', () => activarTarget(opt.dataset.target));
   });
+}
+
+function activarTarget(target) {
+  activeTarget = target;
+  const switchEl = document.getElementById('target-switch');
+  switchEl.querySelectorAll('.target-opt').forEach(o =>
+    o.classList.toggle('active', o.dataset.target === target));
 }
 
 function renderQueue(queue, container) {
@@ -159,8 +197,14 @@ function renderQueue(queue, container) {
   [...container.children].forEach((el, i) => {
     const value = queue[i];
     const varText = value ? `<span class="var-label">${i === 0 ? 'i' : 'i+' + i}</span>` : '';
-    const iconStyle = value === 'func1' ? 'style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;"' : '';
-    const labelStyle = value === 'func1' ? 'style="color:#1a4a7a"' : '';
+    const isFunc = value === 'func1';
+    const isFor = value === 'for';
+    const iconStyle = isFunc
+      ? 'style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;"'
+      : isFor
+        ? 'style="color:#7a4a12; font-size:10px; font-weight:900;"'
+        : '';
+    const labelStyle = isFunc ? 'style="color:#1a4a7a"' : isFor ? 'style="color:#7a4a12"' : '';
     el.innerHTML = value ? `<span class="dir-icon" ${iconStyle}>${ARROW[value]}</span><span class="dir-label" ${labelStyle}>${LABEL[value]}</span>${varText}` : '';
     el.classList.toggle('filled', !!value);
     el.draggable = !!value;
@@ -170,7 +214,9 @@ function renderQueue(queue, container) {
 export function renderAllSlots() {
   renderQueue(GYM.queue, slotsEl);
   renderQueue(GYM.queueFunc1, slotsFunc1El);
+  renderQueue(GYM.queueFor, slotsForEl);
   renderIfSeleccionado();
+  renderForSeleccionado();
 }
 
 function initIfPanel() {
@@ -189,17 +235,41 @@ function renderIfSeleccionado() {
   if (ifActionSelect) ifActionSelect.value = GYM.ifAction || '';
 }
 
+function initForPanel() {
+  forCountSelect?.addEventListener('change', () => {
+    if (GYM.running) return;
+    GYM.forCount = Number.parseInt(forCountSelect.value, 10) || 2;
+  });
+}
+
+function renderForSeleccionado() {
+  if (forCountSelect) forCountSelect.value = String(GYM.forCount || 2);
+}
+
+function initPanelesPlegables() {
+  document.querySelectorAll('[data-toggle-panel]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const panel = document.getElementById(btn.dataset.togglePanel);
+      if (!panel) return;
+      const plegado = panel.classList.toggle('plegado');
+      btn.setAttribute('aria-expanded', String(!plegado));
+    });
+  });
+}
+
 function setRunning(on) {
   GYM.running = on;
   runBtn.classList.toggle('running', on);
-  runBtn.querySelector('.queue-label').textContent = on ? 'ejecutando…' : 'ejecutar';
-  runBtn.querySelector('.queue-icon').textContent = on ? '⏵' : '✓';
+  runBtn.querySelector('.queue-label').textContent = on ? 'ejecutando...' : 'ejecutar';
+  runBtn.querySelector('.queue-icon').textContent = on ? '\u23f5' : '\u2713';
   dirsPanel.querySelectorAll('button:not(.target-opt)').forEach(b => b.disabled = on);
   if (ifConditionSelect) ifConditionSelect.disabled = on;
   if (ifActionSelect) ifActionSelect.disabled = on;
+  if (forCountSelect) forCountSelect.disabled = on;
   runBtn.disabled = on;
   clearBtn.disabled = on;
   clearFunc1Btn.disabled = on;
+  if (clearForBtn) clearForBtn.disabled = on;
 }
 
 function setupDropZone(container, queue, queueId) {
@@ -233,7 +303,7 @@ function setupDropZone(container, queue, queueId) {
         dir = dataStr;
       }
 
-      if (!dir || !esComandoPermitidoEnQueue(dir)) return;
+      if (!dir || !esComandoPermitidoEnQueue(dir, queueId)) return;
 
       const maxAllowed = obtenerMaximoQueue(queue);
 
@@ -284,16 +354,26 @@ function setupDropZone(container, queue, queueId) {
   });
 }
 
+function obtenerQueuePorTarget(target) {
+  if (target === 'func1') return GYM.queueFunc1;
+  if (target === 'for') return GYM.queueFor;
+  return GYM.queue;
+}
+
 function obtenerQueuePorId(queueId) {
   if (queueId === 'func1') return GYM.queueFunc1;
+  if (queueId === 'for') return GYM.queueFor;
   if (queueId === 'main') return GYM.queue;
   return null;
 }
 
 function obtenerMaximoQueue(queue) {
-  return queue === GYM.queueFunc1 ? 3 : MAX;
+  if (queue === GYM.queueFunc1 || queue === GYM.queueFor) return 3;
+  return MAX;
 }
 
-function esComandoPermitidoEnQueue(dir) {
-  return dir !== 'if-rock-jump' && dir !== 'if-navigate';
+function esComandoPermitidoEnQueue(dir, queueId) {
+  if (dir === 'if-rock-jump' || dir === 'if-navigate') return false;
+  if (dir === 'for' && queueId === 'for') return false;
+  return true;
 }

@@ -96,7 +96,7 @@ export const TILESETS = [
   { key: 'ts_blue_grass_layers_4',  name: 'blue_grass_layers_4',  category: 'more', label: 'Blue 4',   name: 'blue_grass_layers_4',  url: 'assets/SproutLands-SorrySprites/Early Access/Plant update 2/Ground tilesets/blue_tint_Grass_Tile_Layers4.png', cols: 11, rows: 25, firstgid: 7800  },
 ];
 
-export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3', 'bosque_floral', 'if', 'si_1', 'si_2', 'si_3'];
+export const LEVELS = ['nivel0', 'gym', 'main', 'nivel3', 'bosque_floral', 'if', 'si_1', 'si_2', 'si_3', 'for'];
 
 export function gidPerteneceATileset(gid, nombreTileset) {
   const definicion = TILESETS.find(t => t.name === nombreTileset);

@@ -8,22 +8,26 @@ import { DIRS } from '../../config/game.js';
 /**
  * Ejecuta un programa.
  *
- * @param {Array<string>} moves - Comandos: 'up', 'down', 'left', 'right', 'jump', 'jump_<dir>', 'func1'
+ * @param {Array<string>} moves - Comandos: 'up', 'down', 'left', 'right', 'jump', 'jump_<dir>', 'func1', 'for'
  * @param {Object} context - Contexto con acciones del nivel.
  * @param {Object} state - Estado global opcional.
  */
 export async function executeProgram(moves, context, state = {}) {
   const bus = state || globalThis.window?.__GYM || {};
 
-  await ejecutarComandos(moves, context, bus);
+  await ejecutarComandos(moves, context, bus, 0);
 
   context.onComplete?.();
 }
 
-async function ejecutarComandos(moves, context, bus) {
+async function ejecutarComandos(moves, context, bus, profundidad = 0) {
+  if (profundidad > 8) return;
+
   for (const comando of moves) {
     if (comando === 'func1' && bus?.queueFunc1) {
-      await ejecutarComandos(bus.queueFunc1.slice(), context, bus);
+      await ejecutarComandos(bus.queueFunc1.slice(), context, bus, profundidad + 1);
+    } else if (comando === 'for' && bus?.queueFor) {
+      await ejecutarFor(context, bus, profundidad + 1);
     } else if (comando === 'if-rock-jump') {
       const direccion = context.obtenerDireccion?.() || 'down';
       await ejecutarMovimiento(direccion, context, {
@@ -44,6 +48,21 @@ async function ejecutarComandos(moves, context, bus) {
       await ejecutarMovimiento(comando, context, bus);
     }
   }
+}
+
+async function ejecutarFor(context, bus, profundidad) {
+  const repeticiones = normalizarRepeticiones(bus?.forCount);
+  const comandos = bus.queueFor.slice();
+
+  for (let i = 0; i < repeticiones; i += 1) {
+    await ejecutarComandos(comandos, context, bus, profundidad);
+  }
+}
+
+function normalizarRepeticiones(valor) {
+  const numero = Number.parseInt(valor, 10);
+  if (!Number.isFinite(numero)) return 2;
+  return Math.min(Math.max(numero, 1), 9);
 }
 
 async function ejecutarMovimiento(direccion, context, bus) {

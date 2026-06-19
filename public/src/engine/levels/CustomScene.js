@@ -17,7 +17,14 @@ const LEVEL_COPY = {
     welcome: 'Este nivel mezcla saltos automaticos con giros. Si solo avanzas, no alcanza.',
     mission: 'Mision: Usa SI ROCA SALTAR y cambia de direccion para juntar los dos objetos.',
   },
+  for: {
+    welcome: 'Nuevo concepto: FOR. Repite un bloque varias veces sin llenar todo el programa principal. IF sigue disponible como herramienta ya desbloqueada.',
+    mission: 'Mision: Usa FOR para repetir una secuencia corta y llegar al objetivo. Tambien podes combinarlo con SI cuando haga falta.',
+  },
 };
+
+const IF_LEVELS = ['if', 'si_1', 'si_2', 'si_3'];
+const FOR_LEVELS = ['for'];
 
 export class CustomScene extends TileLevelScene {
   constructor() {
@@ -32,6 +39,13 @@ export class CustomScene extends TileLevelScene {
     if (this.levelKey === 'if') {
       this.onWelcomeClose = () => {
         window.__setIfPanel?.(true);
+        window.__setForPanel?.(false);
+        this.showIdlePanel();
+      };
+    } else if (this.levelKey === 'for') {
+      this.onWelcomeClose = () => {
+        window.__setForPanel?.(true);
+        window.__setIfPanel?.(true);
         this.showIdlePanel();
       };
     } else {
@@ -45,15 +59,34 @@ export class CustomScene extends TileLevelScene {
 
     this.events.once('shutdown', () => {
       window.__setIfPanel?.(true);
+      window.__setForPanel?.(false);
     });
 
     if (this.levelKey === 'if') {
       window.__setIfPanel?.(false);
+      window.__setForPanel?.(false);
       return;
     }
 
-    if (['si_1', 'si_2', 'si_3'].includes(this.levelKey)) {
-      window.__setIfPanel?.(true);
+    if (this.levelKey === 'for') {
+      window.__setForPanel?.(false);
+      window.__setIfPanel?.(false);
+      return;
     }
+
+    if (IF_LEVELS.includes(this.levelKey)) {
+      window.__setIfPanel?.(true);
+      window.__setForPanel?.(false);
+      return;
+    }
+
+    if (FOR_LEVELS.includes(this.levelKey)) {
+      window.__setForPanel?.(true);
+      window.__setIfPanel?.(true);
+      return;
+    }
+
+    window.__setIfPanel?.(false);
+    window.__setForPanel?.(false);
   }
 }

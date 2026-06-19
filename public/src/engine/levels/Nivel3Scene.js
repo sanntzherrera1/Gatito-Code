@@ -15,6 +15,7 @@ export class Nivel3Scene extends TileLevelScene {
     // Bloquear toda interacción durante el tutorial (welcome → path → demo)
     this._lockPanels(true);
     window.__setIfPanel?.(false);
+    window.__setForPanel?.(false);
     const els = [
       document.querySelector('[data-dir="func1"]'),
       document.getElementById('queue-func1'),
@@ -31,6 +32,7 @@ export class Nivel3Scene extends TileLevelScene {
 
     this.events.once('shutdown', () => {
       window.__setIfPanel?.(true);
+      window.__setForPanel?.(false);
       document.getElementById('intro-card')?.remove();
       document.getElementById('panel-backdrop')?.remove();
       for (const p of ['panels', 'right-panels']) {

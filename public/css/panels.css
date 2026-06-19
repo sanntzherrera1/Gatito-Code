@@ -123,6 +123,7 @@
   background: rgba(255,255,255,.2) !important;
 }
 #queue-func1 h3 { color: #4b688a; text-shadow: none; border-bottom-color: rgba(75,104,138,.2); }
+#queue-for h3 { color: #7a4a12; text-shadow: none; border-bottom-color: rgba(122,74,18,.22); }
 #queue > h3 {
   margin: 0 0 10px 0;
   padding-bottom: 6px;
@@ -265,6 +266,19 @@
   flex-direction: column;
   overflow: hidden;
 }
+#queue-for,
+.target-opt[data-target="for"],
+.sprout-panel button[data-dir="for"] {
+  display: none;
+}
+.for-icon {
+  color: #7a4a12;
+  font-size: 10px;
+  font-weight: 900;
+}
+.for-label {
+  color: #7a4a12;
+}
 #queue-if-rock-left {
   display: none;
 }
@@ -343,6 +357,15 @@
   font-size: 16px;
   text-align: left;
 }
+#queue-for h3 {
+  display: block;
+  margin: 0 0 10px 0;
+  height: auto;
+  color: #7a4a12;
+  text-shadow: none;
+  font-size: 16px;
+  text-align: left;
+}
 #queue-if-rule h3 {
   display: block;
   margin: 0 0 10px 0;
@@ -351,6 +374,61 @@
   text-shadow: none;
   font-size: 16px;
   text-align: left;
+}
+.panel-toggle {
+  width: 100%;
+  min-height: 28px;
+  justify-content: space-between !important;
+  gap: 8px !important;
+  padding: 0 0 8px !important;
+  margin: 0 0 8px !important;
+  border-bottom: 2px solid rgba(90,58,26,.15) !important;
+  color: var(--sprout-mid) !important;
+  font-family: 'SproutPixel', monospace !important;
+  font-size: 16px !important;
+  text-transform: uppercase;
+  line-height: 1;
+}
+#queue-for .panel-toggle {
+  color: #7a4a12 !important;
+  border-bottom-color: rgba(122,74,18,.22) !important;
+}
+#queue-if-rule .panel-toggle {
+  color: #5a7f3a !important;
+  border-bottom-color: rgba(90,127,58,.22) !important;
+}
+.panel-toggle-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  color: rgba(90,58,26,.76);
+  transition: transform .16s ease;
+}
+.panel-cuerpo {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  max-height: 260px;
+  opacity: 1;
+  transition: max-height .18s ease, opacity .14s ease;
+}
+.panel-plegable.plegado {
+  gap: 0;
+}
+.panel-plegable.plegado .panel-cuerpo {
+  max-height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+.panel-plegable.plegado .panel-toggle {
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom-color: transparent !important;
+}
+.panel-plegable.plegado .panel-toggle-icon {
+  transform: rotate(-90deg);
 }
 .if-select-label {
   font-size: 11px;
