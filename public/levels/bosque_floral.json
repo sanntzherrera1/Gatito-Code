@@ -206,7 +206,7 @@
       13,
       58,
       13,
-      29,
+      13,
       13,
       13,
       13,
@@ -326,27 +326,9 @@
       0,
       0,
       0,
-      0,
-      234,
-      207,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      237,
-      234,
-      207,
+      733,
+      734,
+      707,
       0,
       0,
       0,
@@ -362,11 +344,9 @@
       0,
       0,
       0,
-      237,
-      234,
-      207,
-      0,
-      204,
+      737,
+      734,
+      707,
       0,
       0,
       0,
@@ -380,9 +360,29 @@
       0,
       0,
       0,
-      237,
-      234,
-      240,
+      0,
+      0,
+      737,
+      734,
+      707,
+      0,
+      704,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      737,
+      734,
+      740,
       0,
       0,
       0,
@@ -459,6 +459,19 @@
       0,
       0,
       0,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      100,
       0,
       0,
       0,
@@ -474,6 +487,8 @@
       0,
       0,
       0,
+      104,
+      104,
       0,
       0,
       0,
@@ -488,6 +503,8 @@
       0,
       0,
       0,
+      104,
+      104,
       0,
       0,
       0,
@@ -519,6 +536,7 @@
       0,
       0,
       0,
+      100,
       0,
       0,
       0,
@@ -534,6 +552,7 @@
       0,
       0,
       0,
+      104,
       0,
       0,
       0,
@@ -549,6 +568,7 @@
       0,
       0,
       0,
+      104,
       0,
       0,
       0,
@@ -564,6 +584,7 @@
       0,
       0,
       0,
+      104,
       0,
       0,
       0,
@@ -611,43 +632,22 @@
       0,
       0,
       0,
+      113,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
+      114,
       0,
+      114,
+      114,
       0,
       0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0
+      114,
+      115
     ],
     "overlay": [
       800,
@@ -714,7 +714,6 @@
       0,
       0,
       0,
-      234,
       0,
       0,
       0,
@@ -740,12 +739,13 @@
       0,
       0,
       0,
-      204,
-      234,
-      234,
-      234,
-      234,
-      234,
+      0,
+      704,
+      734,
+      734,
+      734,
+      734,
+      734,
       65,
       0,
       0,
@@ -755,8 +755,8 @@
       0,
       0,
       0,
-      234,
-      240,
+      734,
+      740,
       0,
       0,
       0,
@@ -1044,542 +1044,311 @@
   },
   "objects": [
     {
-      "tx": 7,
-      "ty": 6,
       "key": "tree_full",
       "frame": 0,
-      "type": "deco"
-    },
-    {
-      "tx": 6,
-      "ty": 5,
-      "key": "tree_full",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
-      "tx": 7,
-      "ty": 5,
-      "key": "tree_full",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
-      "tx": 7,
-      "ty": 4,
-      "key": "tree_full",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
       "tx": 6,
       "ty": 4,
-      "key": "tree_full",
-      "frame": 0,
       "type": "deco"
     },
     {
-      "tx": 1,
-      "ty": 11,
       "key": "tree_full",
       "frame": 0,
-      "type": "deco"
-    },
-    {
       "tx": 0,
       "ty": 10,
-      "key": "tree_full",
-      "frame": 0,
       "type": "deco"
     },
     {
-      "tx": 8,
-      "ty": 5,
       "key": "tree_pear",
       "frame": 0,
-      "type": "deco"
-    },
-    {
       "tx": 8,
       "ty": 4,
-      "key": "tree_pear",
-      "frame": 0,
       "type": "deco"
     },
     {
-      "tx": 9,
-      "ty": 4,
       "key": "tree_pear",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
+      "frame": 23,
       "tx": 14,
       "ty": 4,
-      "key": "tree_pear",
-      "frame": 48,
       "type": "deco"
     },
     {
+      "key": "tree_pear",
+      "frame": 22,
       "tx": 12,
       "ty": 3,
-      "key": "tree_pear",
-      "frame": 47,
       "type": "deco"
     },
     {
+      "key": "signs",
+      "frame": 22,
       "tx": 11,
       "ty": 4,
-      "key": "signs",
-      "frame": 17,
       "type": "deco"
     },
     {
+      "key": "trees",
+      "frame": 23,
       "tx": 9,
       "ty": 1,
-      "key": "trees",
-      "frame": 62,
       "type": "deco"
     },
     {
-      "tx": 10,
-      "ty": 1,
-      "key": "trees",
-      "frame": 63,
-      "type": "deco"
-    },
-    {
-      "tx": 14,
-      "ty": 11,
       "key": "birch_biom",
-      "frame": 25,
-      "type": "deco"
-    },
-    {
-      "tx": 15,
-      "ty": 11,
-      "key": "birch_biom",
-      "frame": 26,
-      "type": "deco"
-    },
-    {
+      "frame": 10,
       "tx": 14,
       "ty": 10,
-      "key": "birch_biom",
-      "frame": 15,
       "type": "deco"
     },
     {
-      "tx": 15,
-      "ty": 10,
-      "key": "birch_biom",
-      "frame": 16,
-      "type": "deco"
-    },
-    {
-      "tx": 13,
-      "ty": 10,
       "key": "pine_biom",
-      "frame": 29,
-      "type": "deco"
-    },
-    {
-      "tx": 13,
-      "ty": 9,
-      "key": "pine_biom",
-      "frame": 19,
-      "type": "deco"
-    },
-    {
-      "tx": 13,
-      "ty": 8,
-      "key": "pine_biom",
-      "frame": 9,
-      "type": "deco"
-    },
-    {
-      "tx": 12,
-      "ty": 10,
-      "key": "pine_biom",
-      "frame": 28,
-      "type": "deco"
-    },
-    {
-      "tx": 11,
-      "ty": 10,
-      "key": "pine_biom",
-      "frame": 27,
-      "type": "deco"
-    },
-    {
-      "tx": 12,
-      "ty": 9,
-      "key": "pine_biom",
-      "frame": 18,
-      "type": "deco"
-    },
-    {
-      "tx": 11,
-      "ty": 9,
-      "key": "pine_biom",
-      "frame": 17,
-      "type": "deco"
-    },
-    {
-      "tx": 12,
-      "ty": 8,
-      "key": "pine_biom",
-      "frame": 8,
-      "type": "deco"
-    },
-    {
+      "frame": 4,
       "tx": 11,
       "ty": 8,
-      "key": "pine_biom",
-      "frame": 7,
       "type": "deco"
     },
     {
-      "tx": 13,
-      "ty": 11,
       "key": "tree_full",
       "frame": 0,
+      "tx": 13,
+      "ty": 11,
       "type": "deco"
     },
     {
+      "key": "birch_biom",
+      "frame": 14,
       "tx": 15,
       "ty": 9,
-      "key": "birch_biom",
-      "frame": 23,
       "type": "deco"
     },
     {
+      "key": "pine_biom",
+      "frame": 13,
       "tx": 10,
       "ty": 9,
+      "type": "deco"
+    },
+    {
       "key": "pine_biom",
-      "frame": 23,
-      "type": "deco"
-    },
-    {
-      "tx": 8,
-      "ty": 10,
-      "key": "pine_biom",
-      "frame": 32,
-      "type": "deco"
-    },
-    {
-      "tx": 5,
-      "ty": 10,
-      "key": "trees",
-      "frame": 70,
-      "type": "deco"
-    },
-    {
-      "tx": 6,
-      "ty": 10,
-      "key": "trees",
-      "frame": 71,
-      "type": "deco"
-    },
-    {
-      "tx": 4,
-      "ty": 10,
-      "key": "trees",
-      "frame": 69,
-      "type": "deco"
-    },
-    {
-      "tx": 5,
-      "ty": 9,
-      "key": "trees",
-      "frame": 58,
-      "type": "deco"
-    },
-    {
-      "tx": 6,
-      "ty": 9,
-      "key": "trees",
-      "frame": 59,
-      "type": "deco"
-    },
-    {
-      "tx": 4,
-      "ty": 9,
-      "key": "trees",
-      "frame": 57,
-      "type": "deco"
-    },
-    {
-      "tx": 5,
-      "ty": 8,
-      "key": "trees",
-      "frame": 46,
-      "type": "deco"
-    },
-    {
-      "tx": 6,
-      "ty": 8,
-      "key": "trees",
-      "frame": 47,
-      "type": "deco"
-    },
-    {
-      "tx": 4,
-      "ty": 8,
-      "key": "trees",
-      "frame": 45,
-      "type": "deco"
-    },
-    {
-      "tx": 2,
-      "ty": 10,
-      "key": "trees",
-      "frame": 79,
-      "type": "deco"
-    },
-    {
-      "tx": 3,
-      "ty": 10,
-      "key": "trees",
-      "frame": 80,
-      "type": "deco"
-    },
-    {
-      "tx": 9,
-      "ty": 11,
-      "key": "mushrooms",
-      "frame": 17,
-      "type": "deco"
-    },
-    {
-      "tx": 6,
-      "ty": 11,
-      "key": "mushrooms",
       "frame": 16,
-      "type": "deco"
-    },
-    {
-      "tx": 1,
-      "ty": 8,
-      "key": "mushrooms",
-      "frame": 12,
-      "type": "deco"
-    },
-    {
-      "tx": 2,
-      "ty": 8,
-      "key": "mushrooms",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
-      "tx": 5,
-      "ty": 5,
-      "key": "pine_biom",
-      "frame": 3,
-      "type": "deco"
-    },
-    {
-      "tx": 3,
-      "ty": 6,
-      "key": "pine_biom",
-      "frame": 1,
-      "type": "deco"
-    },
-    {
-      "tx": 9,
-      "ty": 9,
-      "key": "pine_biom",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
-      "tx": 9,
-      "ty": 10,
-      "key": "pine_biom",
-      "frame": 0,
-      "type": "deco"
-    },
-    {
       "tx": 8,
-      "ty": 6,
+      "ty": 10,
+      "type": "deco"
+    },
+    {
       "key": "trees",
       "frame": 29,
+      "tx": 2,
+      "ty": 10,
+      "type": "deco"
+    },
+    {
+      "key": "mushrooms",
+      "frame": 14,
+      "tx": 9,
+      "ty": 11,
+      "type": "deco"
+    },
+    {
+      "key": "mushrooms",
+      "frame": 9,
+      "tx": 1,
+      "ty": 8,
+      "type": "deco"
+    },
+    {
+      "key": "mushrooms",
+      "frame": 0,
+      "tx": 2,
+      "ty": 8,
+      "type": "deco"
+    },
+    {
+      "key": "pine_biom",
+      "frame": 3,
+      "tx": 5,
+      "ty": 5,
+      "type": "deco"
+    },
+    {
+      "key": "pine_biom",
+      "frame": 1,
+      "tx": 3,
+      "ty": 6,
+      "type": "deco"
+    },
+    {
+      "key": "pine_biom",
+      "frame": 0,
+      "tx": 9,
+      "ty": 9,
+      "type": "deco"
+    },
+    {
+      "key": "pine_biom",
+      "frame": 0,
+      "tx": 9,
+      "ty": 10,
+      "type": "deco"
+    },
+    {
+      "key": "trees",
+      "frame": 11,
+      "tx": 8,
+      "ty": 6,
       "type": "pickup_with_animation"
     },
     {
+      "key": "mushrooms",
+      "frame": 13,
       "tx": 5,
       "ty": 2,
-      "key": "mushrooms",
-      "frame": 16,
       "type": "deco"
     },
     {
+      "key": "mushrooms",
+      "frame": 9,
       "tx": 4,
       "ty": 2,
-      "key": "mushrooms",
-      "frame": 12,
       "type": "deco"
     },
     {
-      "tx": 5,
-      "ty": 11,
-      "key": "mushrooms",
-      "frame": 12,
-      "type": "deco"
-    },
-    {
+      "key": "water_objs",
+      "frame": 15,
       "tx": 12,
       "ty": 7,
-      "key": "water_objs",
-      "frame": 16,
       "type": "deco"
     },
     {
-      "tx": 0,
-      "ty": 7,
       "key": "trees",
-      "frame": 40,
-      "type": "deco"
-    },
-    {
-      "tx": 1,
-      "ty": 7,
-      "key": "trees",
-      "frame": 52,
-      "type": "deco"
-    },
-    {
+      "frame": 21,
       "tx": 0,
       "ty": 8,
-      "key": "trees",
-      "frame": 52,
       "type": "deco"
     },
     {
-      "tx": 5,
-      "ty": 4,
       "key": "birch_biom",
       "frame": 3,
+      "tx": 5,
+      "ty": 4,
       "type": "deco"
     },
     {
-      "tx": 4,
-      "ty": 3,
       "key": "birch_biom",
       "frame": 1,
+      "tx": 4,
+      "ty": 3,
       "type": "deco"
     },
     {
+      "key": "birch_biom",
+      "frame": 7,
       "tx": 2,
       "ty": 3,
-      "key": "birch_biom",
-      "frame": 12,
       "type": "deco"
     },
     {
-      "tx": 0,
-      "ty": 3,
-      "key": "birch_biom",
-      "frame": 31,
-      "type": "deco"
-    },
-    {
-      "tx": 0,
-      "ty": 2,
-      "key": "pine_biom",
-      "frame": 22,
-      "type": "deco"
-    },
-    {
-      "tx": 3,
-      "ty": 2,
       "key": "pine_biom",
       "frame": 0,
+      "tx": 3,
+      "ty": 2,
       "type": "deco"
     },
     {
+      "key": "pine_biom",
+      "frame": 12,
       "tx": 3,
       "ty": 3,
-      "key": "pine_biom",
-      "frame": 22,
       "type": "deco"
     },
     {
+      "key": "pine_biom",
+      "frame": 17,
       "tx": 3,
       "ty": 4,
-      "key": "pine_biom",
-      "frame": 33,
       "type": "deco"
     },
     {
-      "tx": 4,
-      "ty": 4,
       "key": "pine_biom",
-      "frame": 34,
-      "type": "deco"
-    },
-    {
+      "frame": 18,
       "tx": 14,
       "ty": 1,
-      "key": "pine_biom",
-      "frame": 35,
       "type": "deco"
     },
     {
-      "tx": 15,
-      "ty": 8,
       "key": "tree_full",
       "frame": 0,
-      "type": "deco"
-    },
-    {
       "tx": 15,
       "ty": 7,
-      "key": "tree_full",
-      "frame": 0,
       "type": "deco"
     },
     {
+      "key": "mushrooms",
+      "frame": 9,
       "tx": 10,
       "ty": 11,
-      "key": "mushrooms",
-      "frame": 12,
       "type": "deco"
     },
     {
+      "key": "mushrooms",
+      "frame": 17,
       "tx": 12,
       "ty": 11,
-      "key": "mushrooms",
-      "frame": 25,
       "type": "deco"
     },
     {
-      "tx": 14,
-      "ty": 8,
       "key": "pine_biom",
-      "frame": 24,
-      "type": "deco"
-    },
-    {
+      "frame": 8,
       "tx": 14,
       "ty": 7,
-      "key": "pine_biom",
-      "frame": 14,
       "type": "deco"
     },
     {
-      "tx": 14,
-      "ty": 9,
       "key": "pine_biom",
       "frame": 2,
+      "tx": 14,
+      "ty": 9,
       "type": "deco"
     },
     {
+      "key": "water_objs",
+      "frame": 11,
       "tx": 13,
       "ty": 7,
-      "key": "water_objs",
-      "frame": 12,
+      "type": "deco"
+    },
+    {
+      "key": "grass_props",
+      "frame": 3,
+      "tx": 1,
+      "ty": 7,
+      "type": "deco"
+    },
+    {
+      "key": "grass_props",
+      "frame": 3,
+      "tx": 2,
+      "ty": 7,
+      "type": "deco"
+    },
+    {
+      "key": "grass_props",
+      "frame": 2,
+      "tx": 3,
+      "ty": 8,
+      "type": "deco"
+    },
+    {
+      "key": "grass_props",
+      "frame": 20,
+      "tx": 4,
+      "ty": 9,
+      "type": "deco"
+    },
+    {
+      "key": "grass_props",
+      "frame": 20,
+      "tx": 2,
+      "ty": 9,
       "type": "deco"
     }
   ],

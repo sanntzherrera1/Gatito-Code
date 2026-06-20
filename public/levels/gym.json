@@ -5,6 +5,9 @@
   "tile": 16,
   "tilesets": [
     "grass",
+    "grass_red",
+    "grass_blue",
+    "grass_yellow",
     "grass_v2",
     "grass_hills",
     "grass_hill_slopes",
@@ -17,6 +20,9 @@
     "dgrass_layers2",
     "dgrass_tiles",
     "bush",
+    "bush_red",
+    "bush_blue",
+    "bush_yellow",
     "ground_hill_slopes",
     "hills",
     "dirt",
@@ -749,6 +755,23 @@
       0,
       0,
       0,
+      704,
+      735,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      704,
+      734,
+      740,
       0,
       0,
       0,
@@ -762,24 +785,7 @@
       0,
       0,
       0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
+      725,
       0,
       0,
       0,
@@ -1038,192 +1044,178 @@
   },
   "objects": [
     {
+      "key": "signs",
+      "frame": 16,
       "tx": 14,
       "ty": 5,
-      "key": "signs",
-      "frame": 4,
       "type": "deco"
     },
     {
-      "tx": 12,
-      "ty": 9,
       "key": "chicken_blue",
       "frame": 3,
+      "tx": 12,
+      "ty": 9,
       "type": "deco"
     },
     {
-      "tx": 11,
-      "ty": 10,
       "key": "chicken_brown",
       "frame": 13,
+      "tx": 11,
+      "ty": 10,
       "type": "deco"
     },
     {
-      "tx": 12,
-      "ty": 10,
       "key": "chicken_baby_brown",
       "frame": 3,
+      "tx": 12,
+      "ty": 10,
       "type": "deco"
     },
     {
-      "tx": 4,
-      "ty": 9,
       "key": "cow",
       "frame": 211,
+      "tx": 4,
+      "ty": 9,
       "type": "deco"
     },
     {
-      "tx": 2,
-      "ty": 8,
       "key": "cow_baby_light",
       "frame": 246,
+      "tx": 2,
+      "ty": 8,
       "type": "deco"
     },
     {
-      "tx": 2,
-      "ty": 7,
       "key": "cow_baby_light",
       "frame": 230,
+      "tx": 2,
+      "ty": 7,
       "type": "deco"
     },
     {
-      "tx": 13,
-      "ty": 9,
-      "key": "tree_full",
-      "frame": 73,
-      "type": "deco"
-    },
-    {
+      "key": "water_objs",
+      "frame": 6,
       "tx": 6,
       "ty": 2,
-      "key": "water_objs",
-      "frame": 7,
       "type": "deco"
     },
     {
+      "key": "dungeon_rocks_obj",
+      "frame": 3,
       "tx": 11,
       "ty": 2,
-      "key": "dungeon_rocks_obj",
-      "frame": 4,
       "type": "deco"
     },
     {
+      "key": "dungeon_rocks_obj",
+      "frame": 3,
       "tx": 14,
       "ty": 7,
-      "key": "dungeon_rocks_obj",
-      "frame": 4,
       "type": "deco"
     },
     {
+      "key": "dungeon_rocks_obj",
+      "frame": 3,
       "tx": 13,
       "ty": 7,
-      "key": "dungeon_rocks_obj",
-      "frame": 4,
       "type": "deco"
     },
     {
-      "tx": 10,
-      "ty": 3,
       "key": "farming",
-      "frame": 9,
-      "type": "deco"
-    },
-    {
+      "frame": 2,
       "tx": 10,
       "ty": 2,
-      "key": "farming",
-      "frame": 4,
       "type": "deco"
     },
     {
+      "key": "mushrooms",
+      "frame": 4,
       "tx": 9,
       "ty": 8,
-      "key": "mushrooms",
-      "frame": 4,
       "type": "deco"
     },
     {
+      "key": "mushrooms",
+      "frame": 19,
       "tx": 14,
       "ty": 10,
-      "key": "mushrooms",
-      "frame": 27,
       "type": "deco"
     },
     {
+      "key": "mushrooms",
+      "frame": 19,
       "tx": 1,
       "ty": 10,
-      "key": "mushrooms",
-      "frame": 27,
       "type": "deco"
     },
     {
+      "key": "mushrooms",
+      "frame": 19,
       "tx": 13,
       "ty": 4,
-      "key": "mushrooms",
-      "frame": 27,
       "type": "deco"
     },
     {
+      "key": "mushrooms",
+      "frame": 19,
       "tx": 14,
       "ty": 4,
-      "key": "mushrooms",
-      "frame": 27,
       "type": "deco"
     },
     {
+      "key": "grass_props",
+      "frame": 18,
       "tx": 7,
       "ty": 4,
-      "key": "grass_props",
-      "frame": 25,
       "type": "deco"
     },
     {
+      "key": "grass_props",
+      "frame": 8,
       "tx": 5,
       "ty": 5,
-      "key": "grass_props",
-      "frame": 15,
       "type": "deco"
     },
     {
+      "key": "grass_props",
+      "frame": 8,
       "tx": 4,
       "ty": 5,
-      "key": "grass_props",
-      "frame": 15,
       "type": "deco"
     },
     {
-      "tx": 3,
-      "ty": 3,
       "key": "boats",
       "frame": 0,
+      "tx": 3,
+      "ty": 3,
       "type": "deco"
     },
     {
-      "tx": 8,
-      "ty": 2,
       "key": "well",
       "frame": 0,
+      "tx": 8,
+      "ty": 2,
       "type": "deco"
     },
     {
+      "key": "tree_full",
+      "frame": 1,
       "tx": 12,
       "ty": 3,
-      "key": "tree_full",
-      "frame": 12,
       "type": "deco"
     },
     {
-      "tx": 14,
-      "ty": 3,
       "key": "tree_full",
-      "frame": 12,
-      "type": "deco"
-    },
-    {
+      "frame": 1,
       "tx": 13,
       "ty": 2,
-      "key": "tree_full",
-      "frame": 12,
+      "type": "deco"
+    },
+    {
+      "key": "small_house",
+      "frame": 0,
+      "tx": 9,
+      "ty": 5,
       "type": "deco"
     }
   ],

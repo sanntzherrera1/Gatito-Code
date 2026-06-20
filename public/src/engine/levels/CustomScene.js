@@ -5,13 +5,13 @@ const LEVEL_COPY = {
     welcome: 'Nuevo concepto: IF. SI sucede una condicion, Gatito hace otra cosa. En este nivel, si hay una roca adelante, la salta.',
     mission: 'Mision: Activa SI ROCA SALTAR y usa mover a la derecha para cruzar la linea de piedras.',
   },
-  si_1: {
-    welcome: 'Ahora que ya conoces IF, usalo junto con movimientos normales para cruzar y despues girar.',
-    mission: 'Mision: Usa SI junto con movimientos normales para cruzar las rocas y recolectar todo.',
-  },
   si_2: {
     welcome: 'Este tramo repite la misma idea dos veces. Usa FUNCION 1 como bloque reutilizable junto con SI ROCA SALTAR.',
     mission: 'Mision: Repite una mini-rutina con F1 para juntar todo usando SI ROCA SALTAR.',
+  },
+  si_1: {
+    welcome: 'Ahora que ya conoces IF, usalo junto con movimientos normales para cruzar y despues girar.',
+    mission: 'Mision: Usa SI junto con movimientos normales para cruzar las rocas y recolectar todo.',
   },
   si_3: {
     welcome: 'Este nivel mezcla saltos automaticos con giros. Si solo avanzas, no alcanza.',
@@ -23,7 +23,7 @@ const LEVEL_COPY = {
   },
 };
 
-const IF_LEVELS = ['if', 'si_1', 'si_2', 'si_3'];
+const IF_LEVELS = ['if', 'si_2', 'si_1', 'si_3'];
 const FOR_LEVELS = ['for'];
 
 export class CustomScene extends TileLevelScene {
