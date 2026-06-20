@@ -1163,13 +1163,6 @@
       "type": "deco"
     },
     {
-      "key": "fishing_side",
-      "frame": 294,
-      "tx": 12,
-      "ty": 9,
-      "type": "deco"
-    },
-    {
       "key": "small_house",
       "frame": 1,
       "tx": 2,
@@ -1301,6 +1294,13 @@
       "key": "medium_fish",
       "frame": 8,
       "type": "top"
+    },
+    {
+      "tx": 12,
+      "ty": 9,
+      "key": "fishing_side",
+      "frame": 18,
+      "type": "deco"
     }
   ],
   "weather": {
