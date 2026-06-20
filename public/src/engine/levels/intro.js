@@ -167,9 +167,13 @@ export function showCard(html, signal) {
 }
 
 // ── Secuencia principal ────────────────────────────────────────────────────────
-export async function runNivel0Intro(scene, missionText = null, signal = null) {
+export async function runNivel0Intro(scene, missionText = null, signal = null, opts = {}) {
   const pts = scene.introPoints || [];
   if (!pts.length) return;
+
+  const msgs = opts.msgs || MSGS;
+  const showGarden = opts.showGarden !== false;
+  const showPanelTutorial = opts.showPanelTutorial !== false;
 
   injectStyles();
   window.__setPanels?.(false);
@@ -180,21 +184,23 @@ export async function runNivel0Intro(scene, missionText = null, signal = null) {
   const p0 = { x: pts[0].tx * TILE + 8, y: pts[0].ty * TILE + 8 };
   await panTo(scene, p0, 2.5, 1000);
   if (signal?.cancelled) return;
-  await showCard(MSGS[0], signal);
+  await showCard(msgs[0], signal);
   if (signal?.cancelled) return;
 
-  // Vista del jardin completo
-  await panTo(scene, FULL, 1, 950);
-  if (signal?.cancelled) return;
-  await showCard('🌿 Este es su jardin.', signal);
-  if (signal?.cancelled) return;
+  if (showGarden) {
+    // Vista del jardin completo
+    await panTo(scene, FULL, 1, 950);
+    if (signal?.cancelled) return;
+    await showCard('🌿 Este es su jardin.', signal);
+    if (signal?.cancelled) return;
+  }
 
-  // Puntos restantes (NPCs)
+  // Puntos restantes
   for (let i = 1; i < pts.length; i++) {
     const pos = { x: pts[i].tx * TILE + 8, y: pts[i].ty * TILE + 8 };
     await panTo(scene, pos, 2.5, 900);
     if (signal?.cancelled) return;
-    await showCard(MSGS[i] ?? `Punto ${i + 1}`, signal);
+    await showCard(msgs[i] ?? `Punto ${i + 1}`, signal);
     if (signal?.cancelled) return;
   }
 
@@ -207,20 +213,22 @@ export async function runNivel0Intro(scene, missionText = null, signal = null) {
   await wait(scene, 350);
   if (signal?.cancelled) return;
 
-  // Panel de movimientos
-  const dirsPanel = document.getElementById('dirs');
-  dirsPanel?.classList.add('intro-highlight', 'intro-zoom');
-  await showCard('🎮 Tu mision es ayudarle mediante movimientos a conseguir sus preciadas frutas.<br><br>Elegi los movimientos adecuados… ¿me ayudas a que descanse despues de su dia de trabajo?', signal);
-  dirsPanel?.classList.remove('intro-highlight', 'intro-zoom');
-  if (signal?.cancelled) return;
+  if (showPanelTutorial) {
+    // Panel de movimientos
+    const dirsPanel = document.getElementById('dirs');
+    dirsPanel?.classList.add('intro-highlight', 'intro-zoom');
+    await showCard('🎮 Tu mision es ayudarle mediante movimientos a conseguir sus preciadas frutas.<br><br>Elegi los movimientos adecuados… ¿me ayudas a que descanse despues de su dia de trabajo?', signal);
+    dirsPanel?.classList.remove('intro-highlight', 'intro-zoom');
+    if (signal?.cancelled) return;
 
-  // Panel de programa
-  await wait(scene, 200);
-  if (signal?.cancelled) return;
-  const queuePanel = document.getElementById('queue');
-  queuePanel?.classList.add('intro-highlight', 'intro-zoom');
-  await showCard('▶ Aca se veran tus movimientos.', signal);
-  queuePanel?.classList.remove('intro-highlight', 'intro-zoom');
+    // Panel de programa
+    await wait(scene, 200);
+    if (signal?.cancelled) return;
+    const queuePanel = document.getElementById('queue');
+    queuePanel?.classList.add('intro-highlight', 'intro-zoom');
+    await showCard('▶ Aca se veran tus movimientos.', signal);
+    queuePanel?.classList.remove('intro-highlight', 'intro-zoom');
+  }
 
   if (missionText) window.__setMission?.(missionText);
 }

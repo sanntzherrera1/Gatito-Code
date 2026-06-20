@@ -1,6 +1,6 @@
 import { DIRS, TILE, STEP_MS } from '../../config/game.js';
 import { loadLevel } from '../../engine/level/TileLevelLoader.js';
-import { esGidDeRoca } from '../../engine/level/TileRegistry.js';
+import { esGidDeRoca, OBJECTS } from '../../engine/level/TileRegistry.js';
 import { createWeather, destroyWeather } from '../../engine/level/WeatherSystem.js';
 import { Player } from '../../domain/Player.js';
 import { executeProgram } from '../../engine/program/ProgramExecutor.js';
@@ -253,10 +253,11 @@ export class TileLevelScene extends Phaser.Scene {
       if (obj.type === 'pickup' || obj.type === 'pickup_with_animation') {
         const animated = obj.type === 'pickup_with_animation';
         this.addPickup(obj.tx, obj.ty, obj.frame, obj.key, true, animated);
-      } else if (obj.type === 'top') {
-        new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame, 45);
       } else {
-        new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame);
+        const objDef = OBJECTS.find(o => o.key === obj.key);
+        const isBridge = objDef?.group === 'bridge';
+        const depthOverride = isBridge ? 30 : (obj.type === 'top' ? 45 : null);
+        new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame, depthOverride);
       }
     }
   }

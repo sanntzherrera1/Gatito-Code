@@ -19,14 +19,14 @@ export function deriveAnimKey(textureKey, frame) {
  * la reproduce automaticamente; de lo contrario muestra el frame estatico.
  */
 export class WorldObjectView {
-  constructor(scene, tx, ty, textureKey, frame = 0) {
+  constructor(scene, tx, ty, textureKey, frame = 0, depthOverride = null) {
     const objDef = OBJECTS.find(o => o.key === textureKey);
     const safeFrame = getValidFrame(objDef, frame);
     const { occupyW: occW } = getFrameDimensions(objDef, safeFrame);
     const startTx = tx - Math.floor((occW - 1) / 2);
     const cx = startTx * TILE + (occW * TILE) / 2;
     const cy = ty * TILE + TILE;
-    const depth = ty * COLS + tx + 2000;
+    const depth = depthOverride ?? (ty * COLS + tx + 2000);
     this.sprite = scene.add.sprite(cx, cy, textureKey, safeFrame)
       .setOrigin(0.5, 1)
       .setDepth(depth);
