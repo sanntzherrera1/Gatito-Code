@@ -1,9 +1,10 @@
-/* ─── Panels & Editor base ─── */
+/* ─── Panels & Editor base (mobile-first) ─── */
 #panels, #right-panels, #editor-panel {
   display: none;
   flex-direction: column;
   gap: 12px;
-  min-width: 220px;
+  min-width: 0;
+  width: 100%;
   user-select: none;
 }
 .panel {
@@ -37,7 +38,7 @@
 .sprout-panel {
   border: none;
   border-radius: 6px;
-  width: 200px;
+  width: 100%;
   padding: 14px 16px;
   box-sizing: border-box;
   display: flex;
@@ -134,7 +135,8 @@
   background: none !important;
   border: none !important;
   border-radius: 0 !important;
-  padding: 4px 2px !important;
+  padding: 10px 8px !important;
+  min-height: 44px;
   display: flex;
   align-items: center;
   gap: 8px;
@@ -218,7 +220,8 @@
 .panel button, #editor-panel button {
   border: 1px solid var(--border-bright);
   border-radius: 8px;
-  padding: 8px 10px;
+  padding: 10px 10px;
+  min-height: 36px;
   font: 600 12px ui-monospace, monospace;
   text-align: left;
   cursor: pointer;
@@ -243,7 +246,7 @@
 .slots.f1-slots { margin-bottom: 8px; gap: 6px; }
 
 .slot {
-  height: 32px; width: 100%; border-radius: 4px;
+  min-height: 44px; width: 100%; border-radius: 4px;
   display: flex; align-items: center; justify-content: center;
   font-size: 16px; box-sizing: border-box;
   position: relative;
@@ -547,7 +550,7 @@
   display: none;
   flex-direction: column;
   gap: 6px;
-  width: 200px;
+  width: 100%;
   box-sizing: border-box;
 }
 #mission h3 {
@@ -565,3 +568,30 @@
   line-height: 1.6;
 }
 
+/* ─── Desktop (≥1100px): tamaños originales ─── */
+@media (min-width: 1100px) {
+  #panels, #right-panels, #editor-panel {
+    min-width: 220px;
+    width: auto;
+  }
+  .sprout-panel {
+    width: 200px;
+  }
+  .sprout-panel button {
+    padding: 4px 2px !important;
+    min-height: auto;
+  }
+  .panel button, #editor-panel button {
+    padding: 8px 10px;
+    min-height: auto;
+  }
+  .slot {
+    min-height: 32px;
+  }
+  .sprout-panel .slot {
+    height: 34px !important;
+  }
+  #mission {
+    width: 200px;
+  }
+}

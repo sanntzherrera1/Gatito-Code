@@ -25,6 +25,10 @@
   --transition-slow: .3s ease;
 }
 
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 @font-face {
   font-family: 'SproutPixel';
   src: url('../assets/SproutLands-UI/fonts/pixelFont-7-8x14-sproutLands.ttf') format('truetype');
@@ -39,13 +43,15 @@ html, body {
   letter-spacing: 0.5px;
 }
 
+/* ─── Mobile-first: columna vertical, compacto ─── */
 body {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   min-height: 100vh;
-  gap: 24px;
-  padding: 16px 24px;
+  gap: 8px;
+  padding: 4px;
   box-sizing: border-box;
   overflow-x: auto;
   background:
@@ -217,11 +223,9 @@ body.app-loading #boot-splash {
 
 /* ─── Game frame (responsive canvas container) ─── */
 #game-frame {
-  flex: 3 1 0;
-  min-width: 320px;
+  width: 100%;
+  min-width: 0;
   max-width: 100%;
-  max-height: 98vh;
-  order: 2;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -238,10 +242,6 @@ body.app-loading #boot-splash {
     0 0 80px -20px rgba(90,160,255,.08);
 }
 
-#panels      { order: 1; }
-#right-panels{ order: 3; }
-#editor-panel{ order: 3; }
-
 #hud {
   position: fixed;
   top: 8px; left: 8px;
@@ -256,3 +256,32 @@ body.app-loading #boot-splash {
   box-shadow: 0 2px 12px rgba(0,0,0,.4);
 }
 #hud b { color: var(--accent-warm); }
+
+/* ─── Tablet (≥768px): más respiración ─── */
+@media (min-width: 768px) {
+  body {
+    padding: 2px;
+    gap: 12px;
+  }
+}
+
+/* ─── Desktop (≥1100px): layout horizontal de 3 zonas ─── */
+@media (min-width: 1100px) {
+  body {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    padding: 16px 24px;
+  }
+  #game-frame {
+    flex: 3 1 0;
+    min-width: 320px;
+    max-height: 98vh;
+    order: 2;
+    width: auto;
+  }
+  #panels      { order: 1; }
+  #right-panels{ order: 3; }
+  #editor-panel{ order: 3; }
+}

@@ -42,7 +42,7 @@ let activeGroup = null;
 let activeVariant = {};
 let activeEditorTab = 'tileset';
 let activeMainTab = 'assets';
-let openTreeNodes = new Set(['tileset-root']);
+let openTreeNodes = new Set(['tileset-root', 'objects-root']);
 let selectedObject = { key: null, frame: 0, type: 'deco' };
 let isDirty = false;
 
@@ -130,7 +130,6 @@ export function initEditor() {
     activeTerrainName = null;
     selectedObject = { key: null, frame: 0, type: 'deco' };
     openTreeNodes.add('tileset-root');
-    openTreeNodes.delete('objects-root');
     openTreeNodes.add(`tileset-cat-${tileset.category}`);
     renderTabs();
     renderTreeState();
@@ -149,6 +148,36 @@ export function initEditor() {
   window.__setEditor_showLayerPicker = (tx, ty, layers) => renderLayerPicker(tx, ty, layers);
   window.__setEditor_hideLayerPicker = () => hideLayerPicker();
   window.__setEditor_markDirty = (dirty) => markDirty(dirty);
+
+  // Sincronizar el ancho del editor con el canvas de Phaser en tablet
+  window.addEventListener('resize', syncEditorWidth);
+  const resizeObserver = new ResizeObserver(() => syncEditorWidth());
+  const observer = new MutationObserver(() => {
+    const canvas = document.querySelector('#game-frame canvas');
+    if (canvas) {
+      resizeObserver.observe(canvas);
+      syncEditorWidth();
+    }
+  });
+  const gameFrame = document.getElementById('game-frame');
+  if (gameFrame) {
+    observer.observe(gameFrame, { childList: true });
+    const canvas = gameFrame.querySelector('canvas');
+    if (canvas) resizeObserver.observe(canvas);
+  }
+}
+
+function syncEditorWidth() {
+  const edPanel = document.getElementById('editor-panel');
+  const canvas = document.querySelector('#game-frame canvas');
+  if (!edPanel || !canvas || edPanel.style.display === 'none') return;
+
+  if (window.innerWidth < 1100) {
+    const rect = canvas.getBoundingClientRect();
+    edPanel.style.maxWidth = rect.width + 'px';
+  } else {
+    edPanel.style.maxWidth = '';
+  }
 }
 
 function initToolbar() {
@@ -451,7 +480,7 @@ function hideEditor() {
   activeEditorTab = 'tileset';
   activeMainTab = 'assets';
   selectedObject = { key: null, frame: 0, type: 'deco' };
-  openTreeNodes = new Set(['tileset-root']);
+  openTreeNodes = new Set(['tileset-root', 'objects-root']);
   isDirty = false;
   hideLayerPicker();
   hideTileHoverPreview();
@@ -527,8 +556,6 @@ function switchEditorTab(tab) {
 
   const rootId = tab === 'tileset' ? 'tileset-root' : 'objects-root';
   openTreeNodes.add(rootId);
-  const otherRootId = tab === 'tileset' ? 'objects-root' : 'tileset-root';
-  openTreeNodes.delete(otherRootId);
 
   renderTabs();
   renderTreeState();
@@ -1287,13 +1314,6 @@ function renderWeatherControls(cfg) {
     const v = weather[type] ?? 0;
     const card = _buildWeatherCard(cfg, type, v);
     listEl.appendChild(card);
-  }
-
-  const clearBtn = document.getElementById('ed-weather-clear');
-  if (clearBtn) {
-    clearBtn.onclick = () => {
-      _commitAllWeather(cfg, getDefaultWeather());
-    };
   }
 }
 
