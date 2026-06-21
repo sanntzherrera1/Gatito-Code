@@ -49,6 +49,11 @@ export class TileLevelScene extends Phaser.Scene {
     this.loadObjects(this.level.objects);
     this.decorate();
 
+    // Total de pickups del nivel (tras cargar objetos y decorar). Define la
+    // condicion de victoria: con pickups se gana al juntarlos todos; sin pickups
+    // (ej. nivel0 "llegar a casa") se gana al llegar a la meta del path.
+    this.totalPickups = this.pickups.size;
+
     if (this.level.weather && Object.values(this.level.weather).some(v => v > 0)) {
       createWeather(this, this.level.weather);
     }
@@ -88,6 +93,11 @@ export class TileLevelScene extends Phaser.Scene {
       destroyWeather(this);
       window.__setPanels?.(false);
       window.__setMission?.(null);
+      // El #result-panel es independiente de #panels: hay que ocultarlo a mano al
+      // dejar el nivel, si no el mensaje de "¡ganaste!" persiste en el siguiente.
+      window.__hideResult?.();
+      window.__lockInput?.(false);   // el bloqueo de win/lose no debe cruzar de nivel
+      window.__clearProgram?.();     // no arrastrar movimientos (incl. funcion/for) al siguiente nivel
       document.removeEventListener('keydown', onDocEsc);
       if (window.__GYM) { window.__GYM.onRun = null; window.__GYM.onRestart = null; }
       this._exiting = false;
@@ -160,10 +170,10 @@ export class TileLevelScene extends Phaser.Scene {
 
   _addRepeatPathButton() {
     const btn = document.createElement('button');
-    btn.textContent = 'repetir camino';
+    btn.textContent = 'mostrar camino';
     btn.id = 'repeat-path-btn';
     Object.assign(btn.style, {
-      position: 'absolute', bottom: '10px', right: '16px',
+      position: 'absolute', bottom: '28px', right: '16px',
       background: '#ffe600', border: '2px solid #c8a800',
       color: '#3d2008', fontFamily: "'SproutPixel', monospace", fontSize: '11px',
       fontWeight: 'bold', padding: '4px 12px', borderRadius: '5px', cursor: 'pointer',
@@ -340,12 +350,16 @@ export class TileLevelScene extends Phaser.Scene {
       hayRocaAdelante: (dir) => this.hayRocaAdelante(dir),
       estaBloqueado: (dir) => this.estaBloqueado(dir),
       onComplete: () => {
+        // Con pickups: ganar al recolectarlos todos (no hace falta pisar un tile final).
+        // Sin pickups: ganar al llegar a la meta del path (niveles tipo "llegar a X").
         const atGoal = !goal || (this.playerModel.tx === goal.tx && this.playerModel.ty === goal.ty);
-        const isWin = atGoal && this.pickups.size === 0;
-        // Auto-demo del tutorial: el jugador todavia no jugo, asi que no marcamos
-        // el nivel como completado ni mostramos el overlay de resultado.
+        const isWin = this.totalPickups > 0 ? this.pickups.size === 0 : atGoal;
+        // Auto-demo del tutorial: el jugador todavia no jugo. La demo siempre
+        // muestra la solucion correcta, asi que el gatito festeja, pero NO marcamos
+        // el nivel como completado ni mostramos el overlay de resultado (el panel
+        // de abajo queda normal hasta que juega el jugador).
         if (this._demoRunning) {
-          this.playerView[isWin ? 'playCelebrate' : 'playSad']();
+          this.playerView.playCelebrate();
           return;
         }
         if (isWin) {

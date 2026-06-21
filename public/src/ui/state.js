@@ -21,6 +21,7 @@ export const GYM = window.__GYM = {
   ifCondition: '',
   ifAction: '',
   running: false,
+  locked: false,   // tras ganar/perder: bloquea agregar movimientos y ejecutar hasta reintentar
   onRun: null,
   onRestart: null,
 };

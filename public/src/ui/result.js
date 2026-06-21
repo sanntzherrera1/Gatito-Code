@@ -32,6 +32,10 @@ export function initResult() {
       if (onMenu)    addAction('Menu',       () => onMenu?.());
     }
 
+    // Tras ganar/perder se bloquea mover/agregar movimientos hasta reintentar.
+    // En idle (juego activo) el input vuelve a estar disponible.
+    window.__lockInput?.(state === 'win' || state === 'lose');
+
     requestAnimationFrame(() => panel.classList.add('visible'));
   };
 

@@ -1,6 +1,5 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
 import { showCard, injectStyles, ico } from './intro.js';
-import { pathDirections } from '../level/PathAnimator.js';
 
 export class Nivel3Scene extends TileLevelScene {
   constructor() {
@@ -178,7 +177,9 @@ export class Nivel3Scene extends TileLevelScene {
       el.style.transition = 'opacity 0.7s ease, filter 0.7s ease';
       el.style.opacity = '';
       el.style.filter = '';
-      el.style.pointerEvents = 'auto';
+      // Revelar es SOLO visual: la Funcion / F1 / switch siguen NO tocables hasta
+      // que termina la demo (la demo igual los acciona por codigo con .click()).
+      el.style.pointerEvents = 'none';
     }
 
     // Paso 5: al terminar el glow (ya desvanecido) limpiar y arrancar la demo
@@ -214,12 +215,13 @@ export class Nivel3Scene extends TileLevelScene {
     (async () => {
       await delay(800);
 
-      // Direcciones reales del camino (capa `path` asignada en el editor del nivel).
-      // El panel principal admite 5 slots: ponemos 4 movimientos + ƒ, y el resto en F1.
-      const dirs = pathDirections(this);
-      if (!dirs.length) { this._lockPanels(false); return; }   // sin path no hay demo
-      const mainDirs = dirs.slice(0, 4);
-      const funcDirs = dirs.slice(4);
+      // Secuencia fija del tutorial. El camino de nivel3 no es lineal (sube al
+      // pickup de arriba y vuelve), asi que no se puede derivar automaticamente:
+      // la solucion correcta es R R U D + ƒ, con la Funcion ƒ = R R R.
+      // El panel principal admite 5 slots: 4 movimientos + ƒ, y el resto en F1.
+      const mainDirs = ['right', 'right', 'up', 'down'];
+      const funcDirs = ['right', 'right', 'right'];
+      const dirs = [...mainDirs, ...funcDirs];
 
       // Arrancar con las colas limpias
       document.getElementById('clear')?.click();
@@ -243,7 +245,7 @@ export class Nivel3Scene extends TileLevelScene {
 
       // 1. Plantear el problema y cargar los primeros 4 movimientos en el panel principal
       queueEl?.classList.add('intro-highlight');
-      await showCard(`El panel principal solo permite <b>5</b> movimientos… pero este camino necesita <b>6</b>. ${ico('pregunta')}`, null);
+      await showCard(`El panel principal solo permite <b>5</b> movimientos… pero este camino necesita <b>${dirs.length}</b>. ${ico('pregunta')}`, null);
       queueEl?.classList.remove('intro-highlight');
       await delay(200);
       for (const dir of mainDirs) await tapDir(dir);
@@ -322,6 +324,12 @@ export class Nivel3Scene extends TileLevelScene {
       document.getElementById('clear-func1')?.click();
       this.resetLevel();
       this._lockPanels(false);
+      // Recien ahora el jugador puede tocar: soltar el pointerEvents inline que
+      // mantuvo bloqueados la Funcion, el panel F1 (incl. borrar F1) y el switch.
+      for (const sel of ['[data-dir="func1"]', '#queue-func1', '#target-switch']) {
+        const el = document.querySelector(sel);
+        if (el) el.style.pointerEvents = '';
+      }
     })();
   }
 }

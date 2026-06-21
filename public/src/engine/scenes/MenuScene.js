@@ -15,8 +15,15 @@ export class MenuScene extends Phaser.Scene {
       this.menuMusic = this.sound.add('bgm1', { loop: true, volume: 0.12 });
       this.menuMusic.play();
     }
+    // Cursor "pointing" sobre botones de Phaser (dibujados en canvas): al pasar
+    // por cualquier objeto interactivo de la escena, marcamos body.cursor-point
+    // y el CSS cambia la patita. Ver css/base.css.
+    this.input.on('gameobjectover', () => document.body.classList.add('cursor-point'));
+    this.input.on('gameobjectout',  () => document.body.classList.remove('cursor-point'));
+
     this.events.once('shutdown', () => {
       this.sound.stopAll();
+      document.body.classList.remove('cursor-point');
     });
 
     const W = COLS * TILE, H = ROWS * TILE;
@@ -50,6 +57,9 @@ export class MenuScene extends Phaser.Scene {
   }
 
   showScreen(screen) {
+    // Al reconstruir la pantalla se destruyen los botones; si el puntero estaba
+    // sobre uno, el 'gameobjectout' no dispara → limpiamos la marca a mano.
+    document.body.classList.remove('cursor-point');
     if (this._scrollHandler) {
       this.game.canvas.removeEventListener('wheel', this._scrollHandler);
       this._scrollHandler = null;
