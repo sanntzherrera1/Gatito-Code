@@ -12,6 +12,10 @@ export function initJumpPicker(renderAllSlots) {
   jumpDpad = document.getElementById('jump-dpad');
   jumpBtn = document.getElementById('jump-btn');
 
+  // El boton/picker de salto puede no estar en el DOM (retirado del panel
+  // mientras se reimplementa via IF/saltar). Sin elementos no hay nada que inicializar.
+  if (!jumpDpad || !jumpBtn) return;
+
   jumpDpad.querySelectorAll('button[data-jdir]').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();

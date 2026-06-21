@@ -7,12 +7,35 @@ const TILE  = 16;
 
 const FULL = { x: CAM_W / 2, y: CAM_H / 2 };
 
+// ── Iconos pixel-art del juego ───────────────────────────────────────────────
+// Reemplazan a los emojis del sistema para que los carteles combinen con la
+// estetica SproutLands. Cada entrada es [columna, fila] dentro del spritesheet
+// `Emoji_Spritesheet_Free.png` (grilla de 32px, 5 columnas x 19 filas).
+export const ICONS = {
+  gato:     [3, 2],   // gatito naranja sonriente
+  gatoFeliz:[3, 5],   // gatito con ojos de corazon (entusiasmado)
+  sprout:   [0, 12],  // brote / plantin
+  manzana:  [0, 13],  // manzana
+  jardin:   [2, 12],  // trebol de 4 hojas (jardin / naturaleza)
+  control:  [0, 11],  // joystick / mando
+  estrella: [4, 8],   // estrella (celebracion)
+  pregunta: [3, 7],   // signo de pregunta (duda)
+  pulgar:   [0, 9],   // pulgar arriba
+  check:    [0, 7],   // tilde verde
+};
+
+// Devuelve el HTML de un icono pixel-art inline para usar dentro de los carteles.
+export function ico(name) {
+  const [c, r] = ICONS[name] || [0, 0];
+  return `<i class="gico" style="--c:${c};--r:${r}"></i>`;
+}
+
 // Textos para cada punto de intro (por indice)
 const MSGS = [
-  '🐱 <b>¡Este es Gatito!</b>',
-  '🌱 Le gusta cuidar sus plantas.',
+  `${ico('gato')} <b>¡Este es Gatito!</b>`,
+  `${ico('sprout')} Le gusta cuidar sus plantas.`,
   '🎣 Le gusta pescar.',
-  '🍎 Ademas le gusta cosechar sus frutas favoritas.',
+  `${ico('manzana')} Ademas le gusta cosechar sus frutas favoritas.`,
 ];
 
 // Mueve y hace zoom a (pos.x, pos.y) de forma suave usando la API nativa de Phaser
@@ -41,44 +64,69 @@ export function injectStyles() {
   const s = document.createElement('style');
   s.id = 'intro-css';
   s.textContent = `
+    /* Cartel cozy: mismo lenguaje visual que los dialogos del juego
+       (parchment de madera + borde marron + fuente SproutPixel). */
     #intro-card {
       position: fixed;
       left: 50%;
       bottom: 20%;
       transform: translateX(-50%);
-      background: rgba(10, 20, 12, 0.94);
-      border: 2px solid #66ee99;
-      border-radius: 12px;
-      padding: 18px 30px 16px;
-      font-family: monospace;
-      color: #e8f5e9;
-      font-size: 14px;
+      background: linear-gradient(170deg, #dfc99e 0%, #c8a87a 40%, #b89564 100%);
+      border-radius: 8px;
+      padding: 20px 26px 18px;
+      font-family: 'SproutPixel', monospace;
+      color: #3d2008;
+      font-size: 15px;
       text-align: center;
       z-index: 9000;
       min-width: 250px;
       max-width: 420px;
-      line-height: 1.6;
+      line-height: 1.55;
       pointer-events: all;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.7);
+      filter: drop-shadow(0 6px 30px rgba(0,0,0,0.55));
       animation: icard-in .28s cubic-bezier(.22,1,.36,1) both;
+    }
+    /* Marco interior tallado, igual que #level-dialog-box */
+    #intro-card::before {
+      content: '';
+      position: absolute;
+      inset: 3px;
+      border: 2px solid rgba(90,58,26,0.18);
+      border-radius: 5px;
+      pointer-events: none;
     }
     #intro-card p {
       margin: 0 0 16px;
       font-size: 15px;
+      text-shadow: 0 1px 0 rgba(255,255,255,0.35);
     }
+    #intro-card b { color: #2e6032; }
     #intro-card button {
-      background: #163d1c;
-      border: 1px solid #66ee99;
-      color: #adf0bb;
-      font-family: monospace;
-      font-size: 11px;
+      background-color: rgba(255,255,255,0.3);
+      border: 1px solid rgba(90,58,26,0.4);
+      color: #3d2008;
+      font-family: 'SproutPixel', monospace;
+      font-size: 13px;
       padding: 6px 22px;
-      border-radius: 6px;
+      border-radius: 5px;
       cursor: pointer;
-      letter-spacing: .03em;
-      transition: background .15s;
+      letter-spacing: .02em;
+      transition: background-color .15s ease, transform .1s ease, filter .15s ease;
     }
-    #intro-card button:hover { background: #1e5426; }
+    #intro-card button:hover { background-color: rgba(255,235,180,0.65); filter: brightness(1.08); }
+    #intro-card button:active { transform: translateY(1px) scale(.97); }
+    /* Icono pixel-art inline (Emoji_Spritesheet_Free, grilla 32px 5x19).
+       --c y --r seleccionan el frame (columna, fila). */
+    .gico {
+      display: inline-block;
+      width: 22px; height: 22px;
+      vertical-align: middle;
+      margin: 0 2px;
+      background: url('assets/SproutLands-UI/emojis-free/Emoji_Spritesheet_Free.png') no-repeat;
+      background-size: 110px 418px;
+      background-position: calc(var(--c, 0) * -22px) calc(var(--r, 0) * -22px);
+      image-rendering: pixelated;
+    }
     #intro-card.icard-out { animation: icard-out .22s ease-in forwards; }
     .intro-highlight {
       box-shadow: 0 0 0 4px #ffe600, 0 0 28px #ffe600cc, 0 0 52px #ffe60055 !important;
@@ -191,7 +239,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
     // Vista del jardin completo
     await panTo(scene, FULL, 1, 950);
     if (signal?.cancelled) return;
-    await showCard('🌿 Este es su jardin.', signal);
+    await showCard(`${ico('jardin')} Este es su jardin.`, signal);
     if (signal?.cancelled) return;
   }
 
@@ -217,7 +265,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
     // Panel de movimientos
     const dirsPanel = document.getElementById('dirs');
     dirsPanel?.classList.add('intro-highlight', 'intro-zoom');
-    await showCard('🎮 Tu mision es ayudarle mediante movimientos a conseguir sus preciadas frutas.<br><br>Elegi los movimientos adecuados… ¿me ayudas a que descanse despues de su dia de trabajo?', signal);
+    await showCard(`${ico('control')} Tu mision es ayudarle mediante movimientos a conseguir sus preciadas frutas.<br><br>Elegi los movimientos adecuados… ¿me ayudas a que descanse despues de su dia de trabajo?`, signal);
     dirsPanel?.classList.remove('intro-highlight', 'intro-zoom');
     if (signal?.cancelled) return;
 
@@ -226,7 +274,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
     if (signal?.cancelled) return;
     const queuePanel = document.getElementById('queue');
     queuePanel?.classList.add('intro-highlight', 'intro-zoom');
-    await showCard('▶ Aca se veran tus movimientos.', signal);
+    await showCard(`${ico('control')} Aca se veran tus movimientos.`, signal);
     queuePanel?.classList.remove('intro-highlight', 'intro-zoom');
   }
 

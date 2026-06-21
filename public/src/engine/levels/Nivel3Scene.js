@@ -1,5 +1,5 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
-import { showCard, injectStyles } from './intro.js';
+import { showCard, injectStyles, ico } from './intro.js';
 import { pathDirections } from '../level/PathAnimator.js';
 
 export class Nivel3Scene extends TileLevelScene {
@@ -117,7 +117,7 @@ export class Nivel3Scene extends TileLevelScene {
     }
     // Paso 2a: mensaje mientras se resalta el boton de la Funcion
     await showCard(
-      'Ahora desbloqueaste la Funcion 🎉<br><br>Con este panel vas a poder tener movimientos extras…',
+      `Ahora desbloqueaste la Funcion ${ico('estrella')}<br><br>Con este panel vas a poder tener movimientos extras…`,
       null
     );
     if (func1Btn) func1Btn.classList.remove('intro-highlight');   // apaga el pulso, queda revelado
@@ -243,7 +243,7 @@ export class Nivel3Scene extends TileLevelScene {
 
       // 1. Plantear el problema y cargar los primeros 4 movimientos en el panel principal
       queueEl?.classList.add('intro-highlight');
-      await showCard('El panel principal solo permite <b>5</b> movimientos… pero este camino necesita <b>6</b>. 🤔', null);
+      await showCard(`El panel principal solo permite <b>5</b> movimientos… pero este camino necesita <b>6</b>. ${ico('pregunta')}`, null);
       queueEl?.classList.remove('intro-highlight');
       await delay(200);
       for (const dir of mainDirs) await tapDir(dir);
@@ -290,7 +290,7 @@ export class Nivel3Scene extends TileLevelScene {
       await delay(500);
 
       // 6. Ejecutar: el gatito recorre los 4 + 2 = 6 pasos hasta el final
-      await showCard(`4 movimientos + ${funcDirs.length} en la funcion = <b>${dirs.length} pasos</b>. ¡Le damos a <b>Ejecutar</b>! ▶`, null);
+      await showCard(`4 movimientos + ${funcDirs.length} en la funcion = <b>${dirs.length} pasos</b>. ¡Le damos a <b>Ejecutar</b>! ${ico('check')}`, null);
 
       // Sacar el backdrop oscuro → el juego se ilumina
       backdrop.classList.add('out');
@@ -314,8 +314,8 @@ export class Nivel3Scene extends TileLevelScene {
       canvas?.classList.remove('intro-highlight');
 
       // 7. Mensaje final + invitacion a jugar
-      await showCard('¡Asi se usa la funcion! 🎉<br><br>Cuando te faltan slots en el panel principal, metes movimientos extra en <b>F1</b> y los llamas con <b>ƒ</b>.', null);
-      await showCard('¡Ahora probalo vos! 🎮<br><br>No te preocupes si no llegas de una, podes intentarlo las veces que quieras.', null);
+      await showCard(`¡Asi se usa la funcion! ${ico('estrella')}<br><br>Cuando te faltan slots en el panel principal, metes movimientos extra en <b>F1</b> y los llamas con <b>ƒ</b>.`, null);
+      await showCard(`¡Ahora probalo vos! ${ico('control')}<br><br>No te preocupes si no llegas de una, podes intentarlo las veces que quieras.`, null);
 
       // 8. Reiniciar para el jugador: limpiar colas, volver al spawn y habilitar
       document.getElementById('clear')?.click();
