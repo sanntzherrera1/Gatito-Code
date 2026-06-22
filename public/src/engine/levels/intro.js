@@ -39,7 +39,7 @@ const MSGS = [
 ];
 
 // Mueve y hace zoom a (pos.x, pos.y) de forma suave usando la API nativa de Phaser
-function panTo(scene, pos, zoom, duration = 900) {
+export function panTo(scene, pos, zoom, duration = 900) {
   const cam = scene.cameras.main;
   return new Promise(resolve => {
     let done = 0;
@@ -56,6 +56,17 @@ function panTo(scene, pos, zoom, duration = 900) {
 // Espera N milisegundos
 function wait(scene, ms) {
   return new Promise(resolve => scene.time.delayedCall(ms, resolve));
+}
+
+// Bloquea/libera la interaccion con los paneles del juego (botones de
+// movimiento, programa, run). Durante el intro siguen visibles para poder
+// resaltarlos, pero no deben recibir clics hasta que el tutorial termine.
+const PANEL_IDS = ['panels', 'right-panels'];
+export function lockPanels() {
+  for (const id of PANEL_IDS) document.getElementById(id)?.classList.add('intro-no-interact');
+}
+export function unlockPanels() {
+  for (const id of PANEL_IDS) document.getElementById(id)?.classList.remove('intro-no-interact');
 }
 
 // Inyecta los estilos del cartel una sola vez
@@ -180,6 +191,9 @@ export function injectStyles() {
       100% { transform: scale(2.6); }
     }
     .btn-press-big { animation: btn-press-big 0.3s ease-out; }
+    /* Mientras corre el intro, los paneles se ven (para resaltarlos) pero no
+       se pueden tocar. Se libera al terminar el tutorial. */
+    .intro-no-interact { pointer-events: none !important; }
     /* Desbloqueo suave: el glow entra, respira despacio y se desvanece sin golpes */
     .unlock-layer { position: relative !important; z-index: 9001 !important; }
     .unlock-glow { animation: unlock-glow 3.2s ease-in-out forwards !important; }
@@ -224,6 +238,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
   const showPanelTutorial = opts.showPanelTutorial !== false;
 
   injectStyles();
+  lockPanels();
   window.__setPanels?.(false);
   await wait(scene, 200);
   if (signal?.cancelled) return;
@@ -279,4 +294,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
   }
 
   if (missionText) window.__setMission?.(missionText);
+
+  // Tutorial terminado: ahora si se pueden tocar los botones.
+  unlockPanels();
 }
