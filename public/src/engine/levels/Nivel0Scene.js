@@ -20,8 +20,6 @@ export class Nivel0Scene extends TileLevelScene {
     super.create();
     window.__setIfPanel?.(false);
     window.__setForPanel?.(false);
-    this.debugText?.setVisible(false);
-    this.fpsVisible = false;
     this._hideFunc1();
 
     const signal = { cancelled: false, _cbs: [], _onCancel(cb) { this._cbs.push(cb); } };
