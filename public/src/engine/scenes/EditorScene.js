@@ -65,7 +65,7 @@ export class EditorScene extends Phaser.Scene {
     this.edMode = 'tile';             // 'tile' | 'object' | 'spawn' | 'intro'
     this.objects = (level.objects ?? []).slice();
     this.objectSprites = new Map();   // "tx,ty" → Phaser sprite
-    this.selectedObject = { key: 'plants', frame: 0, type: 'deco' };
+    this.selectedObject = { key: 'plants', frame: 0, type: 'deco', solid: false };
     this._renderAllObjects();
 
     this.introPoints = (level.raw.introPoints || []).map(p => ({ ...p }));
@@ -109,8 +109,9 @@ export class EditorScene extends Phaser.Scene {
       onRedo:         () => this.redo(),
       onRevert:       () => this.revertToDisk(),
       getLayer:       () => this.activeLayer,
-      onObjectSelect: (key, frame, type) => { this.selectedObject = { key, frame, type }; this.setSelectionFromPalette('object', null, key, frame, type); this.setEditorTab('objects'); this.setMode('object'); this.notifyHover(); window.__setEditor_updateObjectSelected?.(key, frame, type); },
+      onObjectSelect: (key, frame, type, solid = false) => { this.selectedObject = { key, frame, type, solid }; this.setSelectionFromPalette('object', null, key, frame, type, solid); this.setEditorTab('objects'); this.setMode('object'); this.notifyHover(); window.__setEditor_updateObjectSelected?.(key, frame, type, solid); },
       onObjectTypeChange: (type) => { this.selectedObject.type = type; if (this.selection?.type === 'object') this.selection.objType = type; this.notifyHover(); },
+      onObjectSolidChange: (solid) => { this.selectedObject.solid = solid; if (this.selection?.type === 'object') this.selection.objSolid = solid; this.notifyHover(); },
       onSpawnMode:    () => this.setMode('spawn'),
       onIntroMode:    () => this.setMode(this.edMode === 'intro' ? 'tile' : 'intro'),
       getMode:        () => this.edMode,
@@ -595,10 +596,11 @@ export class EditorScene extends Phaser.Scene {
     this.objectSprites.set(`${obj.tx},${obj.ty}`, s);
   }
 
-  _placeObject(tx, ty, key = null, frame = null, objType = null) {
+  _placeObject(tx, ty, key = null, frame = null, objType = null, objSolid = null) {
     const k = key ?? this.selectedObject.key;
     const f = frame ?? this.selectedObject.frame;
     const t = objType ?? this.selectedObject.type;
+    const solid = objSolid ?? this.selectedObject.solid ?? false;
     const objDef = OBJECTS.find(o => o.key === k);
     const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, f);
     const { startTx, startTy, endTx, endTy } = this._getOccupancy(tx, ty, occW, occH);
@@ -622,6 +624,7 @@ export class EditorScene extends Phaser.Scene {
 
     this._removeObjectsInFootprint(startTx, startTy, endTx, endTy);
     const obj = { tx, ty, key: k, frame: f, type: t };
+    if (solid) obj.solid = true;
     this.objects.push(obj);
     this._renderObject(obj);
     this.saveDeferred();
@@ -704,11 +707,11 @@ export class EditorScene extends Phaser.Scene {
     this.notifyHover();
   }
 
-  setSelectionFromPalette(type, gid, key, frame, objType) {
+  setSelectionFromPalette(type, gid, key, frame, objType, objSolid = false) {
     if (type === 'tile') {
       this.setSelection({ type: 'tile', gid, layer: this.activeLayer });
     } else {
-      this.setSelection({ type: 'object', key, frame, objType });
+      this.setSelection({ type: 'object', key, frame, objType, objSolid });
     }
   }
 
@@ -729,8 +732,9 @@ export class EditorScene extends Phaser.Scene {
         key: this.selection.key,
         frame: this.selection.frame,
         type: this.selection.objType,
+        solid: this.selection.objSolid ?? false,
       };
-      window.__setEditor_updateObjectSelected?.(this.selection.key, this.selection.frame, this.selection.objType);
+      window.__setEditor_updateObjectSelected?.(this.selection.key, this.selection.frame, this.selection.objType, this.selection.objSolid ?? false);
     }
   }
 
@@ -895,7 +899,7 @@ export class EditorScene extends Phaser.Scene {
       const objDef = OBJECTS.find(o => o.key === obj.key);
       const { occupyW: occW, occupyH: occH } = getFrameDimensions(objDef, obj.frame);
       const bounds = this._getOccupancy(obj.tx, obj.ty, occW, occH);
-      return { type: 'object', key: obj.key, frame: obj.frame, objType: obj.type, bounds };
+      return { type: 'object', key: obj.key, frame: obj.frame, objType: obj.type, objSolid: !!obj.solid, bounds };
     }
 
     // Buscar tile en la capa activa
@@ -909,10 +913,10 @@ export class EditorScene extends Phaser.Scene {
   _copyFromSource(source) {
     if (source.type === 'object') {
       const objDef = OBJECTS.find(o => o.key === source.key);
-      this.setSelection({ type: 'object', key: source.key, frame: source.frame, objType: source.objType });
+      this.setSelection({ type: 'object', key: source.key, frame: source.frame, objType: source.objType, objSolid: source.objSolid });
       this.setEditorTab('objects');
       this.setMode('object');
-      window.__setEditor_syncObjectFromCanvas?.(objDef, source.frame, source.objType);
+      window.__setEditor_syncObjectFromCanvas?.(objDef, source.frame, source.objType, source.objSolid);
     } else {
       this.setSelection({ type: 'tile', gid: source.gid, layer: source.layer });
       this.setEditorTab('tileset');
@@ -926,7 +930,7 @@ export class EditorScene extends Phaser.Scene {
     const inBounds = (x, y) => x >= 0 && y >= 0 && x < this.cols && y < this.rows;
     const sel = this.selection;
     if (sel.type === 'object') {
-      this._placeObject(tx, ty, sel.key, sel.frame, sel.objType);
+      this._placeObject(tx, ty, sel.key, sel.frame, sel.objType, sel.objSolid);
     } else {
       // Tile: coloca el GID en la capa activa
       if (!inBounds(tx, ty)) {
@@ -1072,6 +1076,7 @@ export class EditorScene extends Phaser.Scene {
         }
         this._removeObjectsInFootprint(startTx, startTy, endTx, endTy);
         const newObj = { tx, ty, key: removed.key, frame: removed.frame, type: removed.type };
+        if (removed.solid) newObj.solid = true;
         this.objects.push(newObj);
         this._renderObject(newObj);
         window.__setEditor_showToast?.('Objeto movido', 'success');

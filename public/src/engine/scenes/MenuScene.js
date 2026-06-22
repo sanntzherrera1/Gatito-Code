@@ -1,5 +1,7 @@
 import { TILE, COLS, ROWS } from '../../config/game.js';
 import { getCustomLevels, addCustomLevel, createNewLevel, getAllLevels, getCompletedLevels, BUILTIN_LEVELS } from '../../services/Storage.js';
+import { playMusic } from '../audio.js';
+import * as Settings from '../../services/Settings.js';
 
 export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
@@ -12,8 +14,7 @@ export class MenuScene extends Phaser.Scene {
 
     if (!this.sound.get('bgm1')?.isPlaying) {
       this.sound.stopAll();
-      this.menuMusic = this.sound.add('bgm1', { loop: true, volume: 0.12 });
-      this.menuMusic.play();
+      this.menuMusic = playMusic(this, 'bgm1');
     }
     // Cursor "pointing" sobre botones de Phaser (dibujados en canvas): al pasar
     // por cualquier objeto interactivo de la escena, marcamos body.cursor-point
@@ -77,6 +78,7 @@ export class MenuScene extends Phaser.Scene {
       let y = 60;
       this.makeButton(bx, y, 'Niveles', () => this.showScreen('levels')); y += STEP + 6;
       this.makeButton(bx, y, 'Editor de Niveles', () => this.showScreen('editor')); y += STEP + 6;
+      this.makeButton(bx, y, 'Configuracion', () => this.showScreen('settings')); y += STEP + 6;
       this.makeButton(bx, y, 'Creditos', () => this.showScreen('credits'));
     } else if (screen === 'levels') {
       this.addLabel('selección de niveles');
@@ -211,7 +213,69 @@ export class MenuScene extends Phaser.Scene {
       }
 
       this.makeButton(bx, H - 18, '← Volver', () => this.showScreen('main'));
+    } else if (screen === 'settings') {
+      this.addLabel('configuración');
+
+      const panelW = 210, panelH = 100, panelY = 96;
+      const panel = this.add.nineslice(bx, panelY, 'settings_panel', undefined, panelW, panelH, 12, 12, 12, 12);
+      this.dynamicGroup.add(panel);
+
+      const left = bx - panelW / 2;
+      const right = bx + panelW / 2;
+      const sliderX = left + 30;
+      const sliderW = panelW - 30 - 16;
+
+      const addAudioRow = (cy, label, getV, setV) => {
+        const spk = this.add.image(left + 15, cy, 'settings_speaker');
+        const lbl = this.add.text(left + 28, cy - 13, label, {
+          fontFamily: "'Press Start 2P', monospace", fontSize: '7px', color: '#4a2810',
+        }).setOrigin(0, 0.5);
+        const pct = this.add.text(right - 14, cy - 13, `${Math.round(getV() * 100)}%`, {
+          fontFamily: "'Press Start 2P', monospace", fontSize: '6px', color: '#6b3f1c',
+        }).setOrigin(1, 0.5);
+        this.dynamicGroup.add(spk);
+        this.dynamicGroup.add(lbl);
+        this.dynamicGroup.add(pct);
+        this.makeSlider(sliderX, cy + 5, sliderW, getV, (v) => {
+          setV(v);
+          pct.setText(`${Math.round(v * 100)}%`);
+        });
+      };
+
+      addAudioRow(panelY - 22, 'Musica',  () => Settings.getMusicVolume(), (v) => Settings.setMusicVolume(v));
+      addAudioRow(panelY + 22, 'Efectos', () => Settings.getSfxVolume(),   (v) => Settings.setSfxVolume(v));
+
+      this.makeButton(bx, H - 18, '← Volver', () => this.showScreen('main'));
     }
+  }
+
+  // Slider de volumen arrastrable (track marron + relleno verde + knob crema).
+  makeSlider(x, y, w, getVal, setVal) {
+    const h = 7;
+    const track = this.add.rectangle(x, y, w, h, 0x7a5a36).setOrigin(0, 0.5).setStrokeStyle(2, 0x4a2810);
+    const fill  = this.add.rectangle(x, y, w, h, 0x8fce4f).setOrigin(0, 0.5);
+    const knob  = this.add.circle(x, y, 7, 0xf3deb6).setStrokeStyle(2, 0x4a2810);
+
+    const applyV = (v) => {
+      v = Phaser.Math.Clamp(v, 0, 1);
+      fill.scaleX = v;
+      knob.x = x + w * v;
+      setVal(v);
+    };
+    const v0 = Phaser.Math.Clamp(getVal(), 0, 1);
+    fill.scaleX = v0;
+    knob.x = x + w * v0;
+
+    knob.setInteractive({ draggable: true, useHandCursor: true });
+    this.input.setDraggable(knob);
+    knob.on('drag', (_pointer, dragX) => applyV((dragX - x) / w));
+
+    // Click directo sobre la barra: salta a esa posicion (localX = desde el borde izq).
+    // Solo el track es interactivo (el fill se escala y daria hit-areas inconsistentes).
+    track.setInteractive({ useHandCursor: true });
+    track.on('pointerdown', (_p, localX) => applyV(localX / w));
+
+    for (const o of [track, fill, knob]) { o.setDepth(5); this.dynamicGroup.add(o); }
   }
 
   _createLevelSquare(x, y, num, level, isUnlocked, isCompleted) {

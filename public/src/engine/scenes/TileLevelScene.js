@@ -10,6 +10,7 @@ import { WorldObjectView } from '../../engine/entities/WorldObjectView.js';
 import { getAllLevels, markLevelCompleted } from '../../services/Storage.js';
 import { animatePath } from '../../engine/level/PathAnimator.js';
 import { injectStyles } from '../levels/intro.js';
+import { playMusic, playSfx } from '../audio.js';
 
 /**
  * Gameplay scene driven by the program-queue d-pad.
@@ -63,8 +64,7 @@ export class TileLevelScene extends Phaser.Scene {
     const levelIdx = allLevels.findIndex(l => l.key === this.levelKey);
     const bgmKey = (levelIdx >= 0 && levelIdx < 6) ? 'bgm2' : 'bgm3';
     this.sound.stopAll();
-    this.bgm = this.sound.add(bgmKey, { loop: true, volume: 0.12 });
-    this.bgm.play();
+    this.bgm = playMusic(this, bgmKey);
 
     const bus = window.__GYM;
     if (bus) {
@@ -169,22 +169,50 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   _addRepeatPathButton() {
-    const btn = document.createElement('button');
-    btn.textContent = 'mostrar camino';
-    btn.id = 'repeat-path-btn';
-    Object.assign(btn.style, {
+    const wrap = document.createElement('div');
+    wrap.id = 'path-buttons';
+    Object.assign(wrap.style, {
       position: 'absolute', bottom: '28px', right: '16px',
-      background: '#ffe600', border: '2px solid #c8a800',
-      color: '#3d2008', fontFamily: "'SproutPixel', monospace", fontSize: '11px',
-      fontWeight: 'bold', padding: '4px 12px', borderRadius: '5px', cursor: 'pointer',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+      display: 'flex', gap: '6px', alignItems: 'center',
     });
+
+    const baseStyle = {
+      border: '2px solid #c8a800', color: '#3d2008',
+      fontFamily: "'SproutPixel', monospace", fontSize: '11px', fontWeight: 'bold',
+      padding: '4px 12px', borderRadius: '5px', cursor: 'pointer',
+      boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+    };
+
+    // "ayuda": muestra/oculta el camino guia amarillo (marcadores del path).
+    const ayuda = document.createElement('button');
+    ayuda.id = 'help-path-btn';
+    ayuda.textContent = 'ayuda';
+    Object.assign(ayuda.style, baseStyle);
+    const syncAyuda = () => {
+      const on = !!this.pathMarkers?.visible;
+      ayuda.style.background = on ? '#ffe600' : '#cdbb6a';
+      ayuda.style.filter = on ? 'none' : 'grayscale(0.5)';
+      ayuda.style.opacity = on ? '1' : '0.85';
+      ayuda.title = on ? 'Ocultar camino guia' : 'Mostrar camino guia';
+    };
+    ayuda.addEventListener('click', () => {
+      if (this.pathMarkers) this.pathMarkers.setVisible(!this.pathMarkers.visible);
+      syncAyuda();
+    });
+    syncAyuda();
+
+    // "mostrar camino": repite la animacion del camino (sin disparar tutoriales).
+    const btn = document.createElement('button');
+    btn.id = 'repeat-path-btn';
+    btn.textContent = 'mostrar camino';
+    Object.assign(btn.style, { ...baseStyle, background: '#ffe600' });
     btn.addEventListener('mouseenter', () => btn.style.background = '#ffd000');
     btn.addEventListener('mouseleave', () => btn.style.background = '#ffe600');
-    // Solo repite la animacion del camino, sin disparar tutoriales (onComplete)
     btn.addEventListener('click', () => animatePath(this));
-    document.getElementById('result-panel')?.appendChild(btn);
-    this.events.once('shutdown', () => btn.remove());
+
+    wrap.append(ayuda, btn);
+    document.getElementById('result-panel')?.appendChild(wrap);
+    this.events.once('shutdown', () => wrap.remove());
   }
 
   _pathGoal() {
@@ -225,6 +253,8 @@ export class TileLevelScene extends Phaser.Scene {
       targets: g, alpha: { from: 0.45, to: 1 },
       duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
     });
+    // Referencia para el boton "ayuda" (mostrar/ocultar el camino guia amarillo).
+    this.pathMarkers = g;
   }
 
   /** Subclass hook — pickups, props, non-tilemap decor. */
@@ -259,6 +289,9 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   loadObjects(objects) {
+    // Objetos "altos" (mas de 1 tile de alto) que pueden tapar al jugador: se
+    // vuelven semitransparentes cuando el personaje pasa por detras (ver update()).
+    this.fadeObjects = [];
     for (const obj of objects) {
       if (obj.type === 'pickup' || obj.type === 'pickup_with_animation') {
         const animated = obj.type === 'pickup_with_animation';
@@ -267,7 +300,30 @@ export class TileLevelScene extends Phaser.Scene {
         const objDef = OBJECTS.find(o => o.key === obj.key);
         const isBridge = objDef?.group === 'bridge';
         const depthOverride = isBridge ? 30 : (obj.type === 'top' ? 45 : null);
-        new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame, depthOverride);
+        const view = new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame, depthOverride);
+        if (view.sprite && view.sprite.height > TILE) this.fadeObjects.push(view);
+      }
+    }
+  }
+
+  // Baja el alpha de los objetos altos cuando el jugador queda detras y los solapa,
+  // para que no lo tapen (arboles, casas, etc.). Lo llama update() cada frame.
+  _updateObjectFade() {
+    const list = this.fadeObjects;
+    if (!list || !list.length) return;
+    const p = this.playerView?.sprite;
+    if (!p) return;
+    const pBounds = p.getBounds();
+    const pDepth = p.depth;
+    for (const v of list) {
+      const s = v.sprite;
+      if (!s || !s.active) continue;
+      const behind = s.depth > pDepth;   // el objeto se dibuja por encima del jugador
+      const overlap = behind && Phaser.Geom.Intersects.RectangleToRectangle(pBounds, s.getBounds());
+      const target = overlap ? 0.5 : 1;
+      if (s._fadeTarget !== target) {
+        s._fadeTarget = target;
+        this.tweens.add({ targets: s, alpha: target, duration: 150, ease: 'Sine.easeOut' });
       }
     }
   }
@@ -366,12 +422,12 @@ export class TileLevelScene extends Phaser.Scene {
           markLevelCompleted(this.levelKey);
           this.playerView.playCelebrate();
           if (this.bgm) this.bgm.stop();
-          this.sound.play('win_sound', { volume: 0.15 });
+          playSfx(this, 'win_sound', 0.15);
           this.showResultOverlay(true);
         } else {
           this.playerView.playSad();
           if (this.bgm) this.bgm.stop();
-          this.sound.play('lose_sound', { volume: 0.15 });
+          playSfx(this, 'lose_sound', 0.15);
           this.showResultOverlay(false);
         }
       }
@@ -432,6 +488,7 @@ export class TileLevelScene extends Phaser.Scene {
 
   update() {
     this.crosshair.setPosition(this.playerModel.tx * TILE, this.playerModel.ty * TILE);
+    this._updateObjectFade();
     if (this.fpsVisible) {
       const fps = this.game.loop.actualFps.toFixed(0);
       this.debugText.setText(

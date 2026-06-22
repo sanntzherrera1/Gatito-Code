@@ -735,7 +735,7 @@
       0,
       0,
       0,
-      734,
+      0,
       0,
       0,
       0,
@@ -1121,20 +1121,6 @@
       "type": "deco"
     },
     {
-      "key": "tree_orange",
-      "frame": 0,
-      "tx": 9,
-      "ty": 4,
-      "type": "deco"
-    },
-    {
-      "key": "tree_orange",
-      "frame": 0,
-      "tx": 7,
-      "ty": 4,
-      "type": "deco"
-    },
-    {
       "key": "farming",
       "frame": 9,
       "tx": 14,
@@ -1203,41 +1189,6 @@
       "tx": 14,
       "ty": 5,
       "type": "pickup_with_animation"
-    },
-    {
-      "key": "grass_props",
-      "frame": 10,
-      "tx": 9,
-      "ty": 5,
-      "type": "deco"
-    },
-    {
-      "key": "grass_props",
-      "frame": 10,
-      "tx": 3,
-      "ty": 5,
-      "type": "deco"
-    },
-    {
-      "key": "grass_props",
-      "frame": 10,
-      "tx": 4,
-      "ty": 9,
-      "type": "deco"
-    },
-    {
-      "key": "grass_props",
-      "frame": 10,
-      "tx": 7,
-      "ty": 7,
-      "type": "deco"
-    },
-    {
-      "key": "tree_full",
-      "frame": 0,
-      "tx": 5,
-      "ty": 6,
-      "type": "deco"
     },
     {
       "key": "chicken",
@@ -1317,20 +1268,6 @@
       "type": "deco"
     },
     {
-      "key": "tree_pear",
-      "frame": 2,
-      "tx": 10,
-      "ty": 2,
-      "type": "deco"
-    },
-    {
-      "key": "tree_apple",
-      "frame": 0,
-      "tx": 8,
-      "ty": 8,
-      "type": "deco"
-    },
-    {
       "key": "trees_v2",
       "frame": 22,
       "tx": 6,
@@ -1346,10 +1283,83 @@
     },
     {
       "tx": 4,
+      "ty": 5,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 4,
       "ty": 7,
-      "key": "grass_props",
-      "frame": 10,
-      "type": "deco"
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 4,
+      "ty": 9,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 7,
+      "ty": 7,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 9,
+      "ty": 4,
+      "key": "tree_orange",
+      "frame": 3,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 7,
+      "ty": 4,
+      "key": "tree_orange",
+      "frame": 3,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 8,
+      "ty": 8,
+      "key": "tree_full",
+      "frame": 2,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 9,
+      "ty": 5,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 10,
+      "ty": 2,
+      "key": "tree_pear",
+      "frame": 2,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 5,
+      "ty": 5,
+      "key": "tree_full",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
     }
   ],
   "weather": {

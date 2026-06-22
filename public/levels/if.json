@@ -539,11 +539,11 @@
       0,
       0,
       0,
-      4950,
       0,
-      4950,
       0,
-      4950,
+      0,
+      0,
+      0,
       0,
       0,
       0,
@@ -1196,6 +1196,30 @@
       "key": "boats",
       "frame": 0,
       "type": "deco"
+    },
+    {
+      "tx": 7,
+      "ty": 5,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 5,
+      "ty": 5,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 3,
+      "ty": 5,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
     }
   ],
   "weather": {
