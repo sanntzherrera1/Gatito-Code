@@ -1094,13 +1094,6 @@
     },
     {
       "key": "tree_full",
-      "frame": 2,
-      "tx": 9,
-      "ty": 4,
-      "type": "deco"
-    },
-    {
-      "key": "tree_full",
       "frame": 1,
       "tx": 1,
       "ty": 1,
@@ -1156,27 +1149,6 @@
       "type": "pickup_with_animation"
     },
     {
-      "key": "tree_orange",
-      "frame": 3,
-      "tx": 5,
-      "ty": 6,
-      "type": "deco"
-    },
-    {
-      "key": "tree_apple",
-      "frame": 3,
-      "tx": 8,
-      "ty": 6,
-      "type": "deco"
-    },
-    {
-      "key": "tree_orange",
-      "frame": 3,
-      "tx": 7,
-      "ty": 8,
-      "type": "deco"
-    },
-    {
       "key": "tree_pear",
       "frame": 3,
       "tx": 4,
@@ -1210,6 +1182,38 @@
       "key": "grass_props",
       "frame": 10,
       "type": "deco"
+    },
+    {
+      "tx": 9,
+      "ty": 4,
+      "key": "tree_full",
+      "frame": 2,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 8,
+      "ty": 6,
+      "key": "tree_apple",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 5,
+      "ty": 6,
+      "key": "tree_orange",
+      "frame": 3,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 7,
+      "ty": 8,
+      "key": "tree_orange",
+      "frame": 3,
+      "type": "deco",
+      "solid": true
     }
   ],
   "weather": {

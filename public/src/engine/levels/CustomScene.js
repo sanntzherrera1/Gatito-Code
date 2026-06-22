@@ -27,8 +27,8 @@ const LEVEL_COPY = {
   },
 };
 
-const IF_LEVELS = ['if', 'si_2', 'si_1', 'si_3'];
-const FOR_LEVELS = ['for'];
+const IF_LEVELS = ['if', 'si_2'];
+const FOR_LEVELS = ['for', 'si_1', 'si_3'];
 
 export class CustomScene extends TileLevelScene {
   constructor() {
