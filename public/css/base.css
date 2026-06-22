@@ -43,6 +43,35 @@ html, body {
   letter-spacing: 0.5px;
 }
 
+/* ─── Cursor: patita de gato (tema SproutLands) ───
+   Tres estados (hotspot 8 2 = toe superior-izquierdo, igual en todos para que
+   no "salte" al cambiar de imagen):
+     1. Default (nada interactivo)  → huella normal
+     2. Hover sobre algo clickeable → patita que apunta
+     3. Presionando (body.mouse-held, ver src/ui/index.js) → patita que sostiene */
+* {
+  cursor: url('../assets/SproutLands-UI/Sprite sheets/Mouse sprites/catpaw-cursor.png') 8 2, auto !important;
+}
+button, a, select, summary, label, [role="button"], [draggable="true"],
+input[type="button"], input[type="submit"], input[type="checkbox"], input[type="radio"], input[type="range"],
+[data-dir], [data-target], [data-jdir] {
+  cursor: url('../assets/SproutLands-UI/Sprite sheets/Mouse sprites/catpaw-cursor-point.png') 8 2, auto !important;
+}
+/* Botones dibujados por Phaser (menu, seleccion de niveles): no son DOM, asi que
+   las escenas togglean body.cursor-point al pasar por un objeto interactivo. */
+body.cursor-point canvas {
+  cursor: url('../assets/SproutLands-UI/Sprite sheets/Mouse sprites/catpaw-cursor-point.png') 8 2, auto !important;
+}
+body.mouse-held *,
+body.mouse-held canvas {
+  cursor: url('../assets/SproutLands-UI/Sprite sheets/Mouse sprites/catpaw-cursor-hold.png') 8 2, auto !important;
+}
+/* Mantener el cursor de texto en campos editables */
+input:not([type="button"]):not([type="submit"]):not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+textarea, [contenteditable="true"] {
+  cursor: text !important;
+}
+
 /* ─── Mobile-first: columna vertical, compacto ─── */
 body {
   display: flex;

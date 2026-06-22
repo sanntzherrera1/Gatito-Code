@@ -129,6 +129,19 @@ export function initQueue() {
 
   document.getElementById('restart').addEventListener('click', () => {
     if (GYM.running) return;
+    window.__clearProgram();
+    GYM.onRestart?.();
+  });
+
+  // Bloquea/desbloquea agregar movimientos y ejecutar (tras ganar/perder).
+  window.__lockInput = (on) => {
+    GYM.locked = !!on;
+    setRunning(GYM.running);   // re-aplica el estado disabled de los controles
+  };
+
+  // Limpia todas las colas del programa (principal, funcion 1, for, condiciones).
+  // Se llama al cambiar de nivel para no arrastrar movimientos al siguiente.
+  window.__clearProgram = () => {
     GYM.queue.length = 0;
     GYM.queueFunc1.length = 0;
     GYM.queueFor.length = 0;
@@ -136,8 +149,7 @@ export function initQueue() {
     GYM.ifCondition = '';
     GYM.ifAction = '';
     renderAllSlots();
-    GYM.onRestart?.();
-  });
+  };
 
 window.__setPanels = visible => {
     document.getElementById('panels').style.display = visible ? 'flex' : 'none';
@@ -260,17 +272,19 @@ function initPanelesPlegables() {
 
 function setRunning(on) {
   GYM.running = on;
+  // Bloqueado mientras ejecuta O mientras hay un resultado (ganar/perder) sin reintentar.
+  const blocked = on || GYM.locked;
   runBtn.classList.toggle('running', on);
   runBtn.querySelector('.queue-label').textContent = on ? 'ejecutando...' : 'ejecutar';
   runBtn.querySelector('.queue-icon').textContent = on ? '\u23f5' : '\u2713';
-  dirsPanel.querySelectorAll('button:not(.target-opt)').forEach(b => b.disabled = on);
-  if (ifConditionSelect) ifConditionSelect.disabled = on;
-  if (ifActionSelect) ifActionSelect.disabled = on;
-  if (forCountSelect) forCountSelect.disabled = on;
-  runBtn.disabled = on;
-  clearBtn.disabled = on;
-  clearFunc1Btn.disabled = on;
-  if (clearForBtn) clearForBtn.disabled = on;
+  dirsPanel.querySelectorAll('button:not(.target-opt)').forEach(b => b.disabled = blocked);
+  if (ifConditionSelect) ifConditionSelect.disabled = blocked;
+  if (ifActionSelect) ifActionSelect.disabled = blocked;
+  if (forCountSelect) forCountSelect.disabled = blocked;
+  runBtn.disabled = blocked;
+  clearBtn.disabled = blocked;
+  clearFunc1Btn.disabled = blocked;
+  if (clearForBtn) clearForBtn.disabled = blocked;
 }
 
 function setupDropZone(container, queue, queueId) {

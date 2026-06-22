@@ -1,6 +1,5 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
-import { showCard, injectStyles } from './intro.js';
-import { pathDirections } from '../level/PathAnimator.js';
+import { showCard, injectStyles, ico } from './intro.js';
 
 export class Nivel3Scene extends TileLevelScene {
   constructor() {
@@ -117,7 +116,7 @@ export class Nivel3Scene extends TileLevelScene {
     }
     // Paso 2a: mensaje mientras se resalta el boton de la Funcion
     await showCard(
-      'Ahora desbloqueaste la Funcion 🎉<br><br>Con este panel vas a poder tener movimientos extras…',
+      `Ahora desbloqueaste la Funcion ${ico('estrella')}<br><br>Con este panel vas a poder tener movimientos extras…`,
       null
     );
     if (func1Btn) func1Btn.classList.remove('intro-highlight');   // apaga el pulso, queda revelado
@@ -178,7 +177,9 @@ export class Nivel3Scene extends TileLevelScene {
       el.style.transition = 'opacity 0.7s ease, filter 0.7s ease';
       el.style.opacity = '';
       el.style.filter = '';
-      el.style.pointerEvents = 'auto';
+      // Revelar es SOLO visual: la Funcion / F1 / switch siguen NO tocables hasta
+      // que termina la demo (la demo igual los acciona por codigo con .click()).
+      el.style.pointerEvents = 'none';
     }
 
     // Paso 5: al terminar el glow (ya desvanecido) limpiar y arrancar la demo
@@ -214,12 +215,13 @@ export class Nivel3Scene extends TileLevelScene {
     (async () => {
       await delay(800);
 
-      // Direcciones reales del camino (capa `path` asignada en el editor del nivel).
-      // El panel principal admite 5 slots: ponemos 4 movimientos + ƒ, y el resto en F1.
-      const dirs = pathDirections(this);
-      if (!dirs.length) { this._lockPanels(false); return; }   // sin path no hay demo
-      const mainDirs = dirs.slice(0, 4);
-      const funcDirs = dirs.slice(4);
+      // Secuencia fija del tutorial. El camino de nivel3 no es lineal (sube al
+      // pickup de arriba y vuelve), asi que no se puede derivar automaticamente:
+      // la solucion correcta es R R U D + ƒ, con la Funcion ƒ = R R R.
+      // El panel principal admite 5 slots: 4 movimientos + ƒ, y el resto en F1.
+      const mainDirs = ['right', 'right', 'up', 'down'];
+      const funcDirs = ['right', 'right', 'right'];
+      const dirs = [...mainDirs, ...funcDirs];
 
       // Arrancar con las colas limpias
       document.getElementById('clear')?.click();
@@ -243,7 +245,7 @@ export class Nivel3Scene extends TileLevelScene {
 
       // 1. Plantear el problema y cargar los primeros 4 movimientos en el panel principal
       queueEl?.classList.add('intro-highlight');
-      await showCard('El panel principal solo permite <b>5</b> movimientos… pero este camino necesita <b>6</b>. 🤔', null);
+      await showCard(`El panel principal solo permite <b>5</b> movimientos… pero este camino necesita <b>${dirs.length}</b>. ${ico('pregunta')}`, null);
       queueEl?.classList.remove('intro-highlight');
       await delay(200);
       for (const dir of mainDirs) await tapDir(dir);
@@ -290,7 +292,7 @@ export class Nivel3Scene extends TileLevelScene {
       await delay(500);
 
       // 6. Ejecutar: el gatito recorre los 4 + 2 = 6 pasos hasta el final
-      await showCard(`4 movimientos + ${funcDirs.length} en la funcion = <b>${dirs.length} pasos</b>. ¡Le damos a <b>Ejecutar</b>! ▶`, null);
+      await showCard(`4 movimientos + ${funcDirs.length} en la funcion = <b>${dirs.length} pasos</b>. ¡Le damos a <b>Ejecutar</b>! ${ico('check')}`, null);
 
       // Sacar el backdrop oscuro → el juego se ilumina
       backdrop.classList.add('out');
@@ -314,14 +316,20 @@ export class Nivel3Scene extends TileLevelScene {
       canvas?.classList.remove('intro-highlight');
 
       // 7. Mensaje final + invitacion a jugar
-      await showCard('¡Asi se usa la funcion! 🎉<br><br>Cuando te faltan slots en el panel principal, metes movimientos extra en <b>F1</b> y los llamas con <b>ƒ</b>.', null);
-      await showCard('¡Ahora probalo vos! 🎮<br><br>No te preocupes si no llegas de una, podes intentarlo las veces que quieras.', null);
+      await showCard(`¡Asi se usa la funcion! ${ico('estrella')}<br><br>Cuando te faltan slots en el panel principal, metes movimientos extra en <b>F1</b> y los llamas con <b>ƒ</b>.`, null);
+      await showCard(`¡Ahora probalo vos! ${ico('control')}<br><br>No te preocupes si no llegas de una, podes intentarlo las veces que quieras.`, null);
 
       // 8. Reiniciar para el jugador: limpiar colas, volver al spawn y habilitar
       document.getElementById('clear')?.click();
       document.getElementById('clear-func1')?.click();
       this.resetLevel();
       this._lockPanels(false);
+      // Recien ahora el jugador puede tocar: soltar el pointerEvents inline que
+      // mantuvo bloqueados la Funcion, el panel F1 (incl. borrar F1) y el switch.
+      for (const sel of ['[data-dir="func1"]', '#queue-func1', '#target-switch']) {
+        const el = document.querySelector(sel);
+        if (el) el.style.pointerEvents = '';
+      }
     })();
   }
 }

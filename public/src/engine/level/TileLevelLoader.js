@@ -101,6 +101,15 @@ export function loadLevel(scene, levelKey) {
     }
   }
 
+  // Objetos marcados como solidos en el editor (flag `solid`): bloquean su tile
+  // sin importar occupyW (arboles, props, etc.). Puede pisar el corredor `path`
+  // a proposito (obstaculo). Nunca bloqueamos el spawn.
+  for (const obj of objects) {
+    if (obj.solid !== true) continue;
+    if (obj.tx === spawn.tx && obj.ty === spawn.ty) continue;
+    if (solid[obj.ty]) solid[obj.ty][obj.tx] = true;
+  }
+
   const rockGids = new Set();
   for (const ts of TILESETS) {
     if (ts.properties?.isRock) {

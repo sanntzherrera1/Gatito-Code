@@ -558,7 +558,7 @@
       0,
       0,
       0,
-      4950,
+      0,
       0,
       0,
       0,
@@ -571,7 +571,7 @@
       104,
       0,
       0,
-      4950,
+      0,
       0,
       0,
       0,
@@ -1189,6 +1189,22 @@
       "tx": 11,
       "ty": 7,
       "type": "deco"
+    },
+    {
+      "tx": 6,
+      "ty": 6,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 3,
+      "ty": 7,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
     }
   ],
   "weather": {

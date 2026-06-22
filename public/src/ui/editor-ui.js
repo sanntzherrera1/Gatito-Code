@@ -38,6 +38,7 @@ let activeTerrainName = null;
 let activeObjCategory = 'objects';
 let activeObjTabIdx = 0;
 let activeObjType = 'deco';
+let activeObjSolid = false;   // brocha: si los objetos colocados bloquean el paso
 let activeGroup = null;
 let activeVariant = {};
 let activeEditorTab = 'tileset';
@@ -99,14 +100,16 @@ export function initEditor() {
   };
   window.__setEditor_updateSelected = (gid) => { selectedGid = gid; activeTerrainName = null; selectedObject = { key: null, frame: 0, type: 'deco' }; highlightSelected(); highlightTerrain(); updateSelectionInfo(); };
   window.__setEditor_updateTerrain = (name) => { activeTerrainName = name; selectedGid = 0; selectedObject = { key: null, frame: 0, type: 'deco' }; highlightTerrain(); updateSelectionInfo(); };
-  window.__setEditor_updateObjectSelected = (key, frame, type) => { selectedObject = { key, frame, type }; selectedGid = 0; activeTerrainName = null; updateSelectionInfo(); };
-  window.__setEditor_syncObjectFromCanvas = (objDef, frame, objType) => {
+  window.__setEditor_updateObjectSelected = (key, frame, type, solid = false) => { selectedObject = { key, frame, type, solid }; selectedGid = 0; activeTerrainName = null; updateSelectionInfo(); };
+  window.__setEditor_syncObjectFromCanvas = (objDef, frame, objType, solid = false) => {
     if (!edCfg || !objDef) return;
     activeEditorTab = 'objects';
-    selectedObject = { key: objDef.key, frame, type: objType };
+    selectedObject = { key: objDef.key, frame, type: objType, solid };
     selectedGid = 0;
     activeTerrainName = null;
     activeObjType = objType;
+    activeObjSolid = !!solid;
+    syncObjSolidUI();
     activeObjCategory = objDef.category;
     activeObjTabIdx = findEntryIndexForObject(objDef);
     activeGroup = objDef.group ?? null;
@@ -518,6 +521,16 @@ function showEditor(cfg) {
     };
   });
 
+  activeObjSolid = false;
+  const solidCb = document.getElementById('ed-obj-solid-cb');
+  if (solidCb) {
+    solidCb.checked = false;
+    solidCb.onchange = () => {
+      activeObjSolid = solidCb.checked;
+      edCfg?.onObjectSolidChange?.(activeObjSolid);
+    };
+  }
+
   renderTabs();
   renderTilesetTree(cfg);
   renderObjectsTree(cfg);
@@ -844,7 +857,7 @@ function updateSelectionInfo() {
     text.innerHTML = `<b>terreno</b> ${activeTerrainName}`;
     text.classList.remove('empty');
   } else if (selectedObject?.key) {
-    text.innerHTML = `<b>${selectedObject.key}</b> · frame ${selectedObject.frame} · ${selectedObject.type}`;
+    text.innerHTML = `<b>${selectedObject.key}</b> · frame ${selectedObject.frame} · ${selectedObject.type}${selectedObject.solid ? ' · sólido' : ''}`;
     text.classList.remove('empty');
   } else {
     text.textContent = 'Sin seleccion · elige tile u objeto';
@@ -862,6 +875,11 @@ function highlightObjType() {
   document.getElementById('ed-obj-type').querySelectorAll('button').forEach(b => {
     b.classList.toggle('active', b.dataset.objtype === activeObjType);
   });
+}
+
+function syncObjSolidUI() {
+  const cb = document.getElementById('ed-obj-solid-cb');
+  if (cb) cb.checked = !!activeObjSolid;
 }
 
 function getCategoryObjects() {
@@ -1059,7 +1077,7 @@ function renderObjPalette() {
       inner.style.imageRendering = 'pixelated';
 
       d.appendChild(inner);
-      d.addEventListener('click', () => edCfg.onObjectSelect(o.key, i, activeObjType));
+      d.addEventListener('click', () => edCfg.onObjectSelect(o.key, i, activeObjType, activeObjSolid));
       objPalette.appendChild(d);
     }
   } else {
@@ -1078,7 +1096,7 @@ function renderObjPalette() {
         d.style.backgroundSize = style.backgroundSize;
         d.style.backgroundPosition = style.backgroundPosition;
         d.title = `${o.label} frame ${frame}`;
-        d.addEventListener('click', () => edCfg.onObjectSelect(o.key, frame, activeObjType));
+        d.addEventListener('click', () => edCfg.onObjectSelect(o.key, frame, activeObjType, activeObjSolid));
         objPalette.appendChild(d);
       }
     }

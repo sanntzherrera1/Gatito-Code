@@ -66,14 +66,14 @@
 .result-bubble {
   position: absolute;
   top: 24px;
-  left: 112px;
-  right: 32px;
+  left: 116px;
+  right: 44px;
   bottom: 24px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 10px;
-  padding: 2px 8px;
+  padding: 6px 16px;
 }
 
 .result-message {

@@ -10,6 +10,7 @@ import { WorldObjectView } from '../../engine/entities/WorldObjectView.js';
 import { getAllLevels, markLevelCompleted } from '../../services/Storage.js';
 import { animatePath } from '../../engine/level/PathAnimator.js';
 import { injectStyles } from '../levels/intro.js';
+import { playMusic, playSfx } from '../audio.js';
 
 /**
  * Gameplay scene driven by the program-queue d-pad.
@@ -49,6 +50,11 @@ export class TileLevelScene extends Phaser.Scene {
     this.loadObjects(this.level.objects);
     this.decorate();
 
+    // Total de pickups del nivel (tras cargar objetos y decorar). Define la
+    // condicion de victoria: con pickups se gana al juntarlos todos; sin pickups
+    // (ej. nivel0 "llegar a casa") se gana al llegar a la meta del path.
+    this.totalPickups = this.pickups.size;
+
     if (this.level.weather && Object.values(this.level.weather).some(v => v > 0)) {
       createWeather(this, this.level.weather);
     }
@@ -58,8 +64,7 @@ export class TileLevelScene extends Phaser.Scene {
     const levelIdx = allLevels.findIndex(l => l.key === this.levelKey);
     const bgmKey = (levelIdx >= 0 && levelIdx < 6) ? 'bgm2' : 'bgm3';
     this.sound.stopAll();
-    this.bgm = this.sound.add(bgmKey, { loop: true, volume: 0.12 });
-    this.bgm.play();
+    this.bgm = playMusic(this, bgmKey);
 
     const bus = window.__GYM;
     if (bus) {
@@ -88,6 +93,11 @@ export class TileLevelScene extends Phaser.Scene {
       destroyWeather(this);
       window.__setPanels?.(false);
       window.__setMission?.(null);
+      // El #result-panel es independiente de #panels: hay que ocultarlo a mano al
+      // dejar el nivel, si no el mensaje de "¡ganaste!" persiste en el siguiente.
+      window.__hideResult?.();
+      window.__lockInput?.(false);   // el bloqueo de win/lose no debe cruzar de nivel
+      window.__clearProgram?.();     // no arrastrar movimientos (incl. funcion/for) al siguiente nivel
       document.removeEventListener('keydown', onDocEsc);
       if (window.__GYM) { window.__GYM.onRun = null; window.__GYM.onRestart = null; }
       this._exiting = false;
@@ -159,22 +169,50 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   _addRepeatPathButton() {
-    const btn = document.createElement('button');
-    btn.textContent = 'repetir camino';
-    btn.id = 'repeat-path-btn';
-    Object.assign(btn.style, {
-      position: 'absolute', bottom: '10px', right: '16px',
-      background: '#ffe600', border: '2px solid #c8a800',
-      color: '#3d2008', fontFamily: "'SproutPixel', monospace", fontSize: '11px',
-      fontWeight: 'bold', padding: '4px 12px', borderRadius: '5px', cursor: 'pointer',
-      boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+    const wrap = document.createElement('div');
+    wrap.id = 'path-buttons';
+    Object.assign(wrap.style, {
+      position: 'absolute', bottom: '28px', right: '16px',
+      display: 'flex', gap: '6px', alignItems: 'center',
     });
+
+    const baseStyle = {
+      border: '2px solid #c8a800', color: '#3d2008',
+      fontFamily: "'SproutPixel', monospace", fontSize: '11px', fontWeight: 'bold',
+      padding: '4px 12px', borderRadius: '5px', cursor: 'pointer',
+      boxShadow: '0 2px 6px rgba(0,0,0,0.25)',
+    };
+
+    // "ayuda": muestra/oculta el camino guia amarillo (marcadores del path).
+    const ayuda = document.createElement('button');
+    ayuda.id = 'help-path-btn';
+    ayuda.textContent = 'ayuda';
+    Object.assign(ayuda.style, baseStyle);
+    const syncAyuda = () => {
+      const on = !!this.pathMarkers?.visible;
+      ayuda.style.background = on ? '#ffe600' : '#cdbb6a';
+      ayuda.style.filter = on ? 'none' : 'grayscale(0.5)';
+      ayuda.style.opacity = on ? '1' : '0.85';
+      ayuda.title = on ? 'Ocultar camino guia' : 'Mostrar camino guia';
+    };
+    ayuda.addEventListener('click', () => {
+      if (this.pathMarkers) this.pathMarkers.setVisible(!this.pathMarkers.visible);
+      syncAyuda();
+    });
+    syncAyuda();
+
+    // "mostrar camino": repite la animacion del camino (sin disparar tutoriales).
+    const btn = document.createElement('button');
+    btn.id = 'repeat-path-btn';
+    btn.textContent = 'mostrar camino';
+    Object.assign(btn.style, { ...baseStyle, background: '#ffe600' });
     btn.addEventListener('mouseenter', () => btn.style.background = '#ffd000');
     btn.addEventListener('mouseleave', () => btn.style.background = '#ffe600');
-    // Solo repite la animacion del camino, sin disparar tutoriales (onComplete)
     btn.addEventListener('click', () => animatePath(this));
-    document.getElementById('result-panel')?.appendChild(btn);
-    this.events.once('shutdown', () => btn.remove());
+
+    wrap.append(ayuda, btn);
+    document.getElementById('result-panel')?.appendChild(wrap);
+    this.events.once('shutdown', () => wrap.remove());
   }
 
   _pathGoal() {
@@ -215,6 +253,8 @@ export class TileLevelScene extends Phaser.Scene {
       targets: g, alpha: { from: 0.45, to: 1 },
       duration: 900, yoyo: true, repeat: -1, ease: 'Sine.easeInOut',
     });
+    // Referencia para el boton "ayuda" (mostrar/ocultar el camino guia amarillo).
+    this.pathMarkers = g;
   }
 
   /** Subclass hook — pickups, props, non-tilemap decor. */
@@ -249,6 +289,9 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   loadObjects(objects) {
+    // Objetos "altos" (mas de 1 tile de alto) que pueden tapar al jugador: se
+    // vuelven semitransparentes cuando el personaje pasa por detras (ver update()).
+    this.fadeObjects = [];
     for (const obj of objects) {
       if (obj.type === 'pickup' || obj.type === 'pickup_with_animation') {
         const animated = obj.type === 'pickup_with_animation';
@@ -257,7 +300,30 @@ export class TileLevelScene extends Phaser.Scene {
         const objDef = OBJECTS.find(o => o.key === obj.key);
         const isBridge = objDef?.group === 'bridge';
         const depthOverride = isBridge ? 30 : (obj.type === 'top' ? 45 : null);
-        new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame, depthOverride);
+        const view = new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame, depthOverride);
+        if (view.sprite && view.sprite.height > TILE) this.fadeObjects.push(view);
+      }
+    }
+  }
+
+  // Baja el alpha de los objetos altos cuando el jugador queda detras y los solapa,
+  // para que no lo tapen (arboles, casas, etc.). Lo llama update() cada frame.
+  _updateObjectFade() {
+    const list = this.fadeObjects;
+    if (!list || !list.length) return;
+    const p = this.playerView?.sprite;
+    if (!p) return;
+    const pBounds = p.getBounds();
+    const pDepth = p.depth;
+    for (const v of list) {
+      const s = v.sprite;
+      if (!s || !s.active) continue;
+      const behind = s.depth > pDepth;   // el objeto se dibuja por encima del jugador
+      const overlap = behind && Phaser.Geom.Intersects.RectangleToRectangle(pBounds, s.getBounds());
+      const target = overlap ? 0.5 : 1;
+      if (s._fadeTarget !== target) {
+        s._fadeTarget = target;
+        this.tweens.add({ targets: s, alpha: target, duration: 150, ease: 'Sine.easeOut' });
       }
     }
   }
@@ -340,24 +406,28 @@ export class TileLevelScene extends Phaser.Scene {
       hayRocaAdelante: (dir) => this.hayRocaAdelante(dir),
       estaBloqueado: (dir) => this.estaBloqueado(dir),
       onComplete: () => {
+        // Con pickups: ganar al recolectarlos todos (no hace falta pisar un tile final).
+        // Sin pickups: ganar al llegar a la meta del path (niveles tipo "llegar a X").
         const atGoal = !goal || (this.playerModel.tx === goal.tx && this.playerModel.ty === goal.ty);
-        const isWin = atGoal && this.pickups.size === 0;
-        // Auto-demo del tutorial: el jugador todavia no jugo, asi que no marcamos
-        // el nivel como completado ni mostramos el overlay de resultado.
+        const isWin = this.totalPickups > 0 ? this.pickups.size === 0 : atGoal;
+        // Auto-demo del tutorial: el jugador todavia no jugo. La demo siempre
+        // muestra la solucion correcta, asi que el gatito festeja, pero NO marcamos
+        // el nivel como completado ni mostramos el overlay de resultado (el panel
+        // de abajo queda normal hasta que juega el jugador).
         if (this._demoRunning) {
-          this.playerView[isWin ? 'playCelebrate' : 'playSad']();
+          this.playerView.playCelebrate();
           return;
         }
         if (isWin) {
           markLevelCompleted(this.levelKey);
           this.playerView.playCelebrate();
           if (this.bgm) this.bgm.stop();
-          this.sound.play('win_sound', { volume: 0.15 });
+          playSfx(this, 'win_sound', 0.15);
           this.showResultOverlay(true);
         } else {
           this.playerView.playSad();
           if (this.bgm) this.bgm.stop();
-          this.sound.play('lose_sound', { volume: 0.15 });
+          playSfx(this, 'lose_sound', 0.15);
           this.showResultOverlay(false);
         }
       }
@@ -418,6 +488,7 @@ export class TileLevelScene extends Phaser.Scene {
 
   update() {
     this.crosshair.setPosition(this.playerModel.tx * TILE, this.playerModel.ty * TILE);
+    this._updateObjectFade();
     if (this.fpsVisible) {
       const fps = this.game.loop.actualFps.toFixed(0);
       this.debugText.setText(

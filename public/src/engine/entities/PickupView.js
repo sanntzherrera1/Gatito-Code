@@ -1,6 +1,7 @@
 import { TILE, COLS } from '../../config/game.js';
 import { OBJECTS, getFrameDimensions, getValidFrame } from '../../engine/level/TileRegistry.js';
 import { deriveAnimKey } from './WorldObjectView.js';
+import { playSfx } from '../audio.js';
 
 /**
  * Visual representation of a pickup item — floating sprite + collection effect.
@@ -36,7 +37,7 @@ export class PickupView {
    * Play the collection animation and self-destruct.
    */
   collect() {
-    this.scene.sound.play('pickup_sound', { volume: 0.12 });
+    playSfx(this.scene, 'pickup_sound', 0.12);
     this.scene.tweens.killTweensOf(this.sprite);
     const s = this.sprite;
 

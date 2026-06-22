@@ -41,6 +41,10 @@ export class BootScene extends Phaser.Scene {
       { frameWidth: 16, frameHeight: 16 }
     );
 
+    // UI de configuracion (panel + icono altavoz)
+    this.load.image('settings_panel', 'assets/SproutLands-UI/Sprite sheets/settings-panel.png');
+    this.load.image('settings_speaker', 'assets/SproutLands-UI/Sprite sheets/settings-speaker.png');
+
     // Audio
     this.load.audio('bgm1', 'assets/audio/background-music-1.mp3');
     this.load.audio('bgm2', 'assets/audio/background-music-2.wav');

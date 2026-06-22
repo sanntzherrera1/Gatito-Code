@@ -22,7 +22,7 @@ export class Nivel0Scene extends TileLevelScene {
     window.__setForPanel?.(false);
     this.debugText?.setVisible(false);
     this.fpsVisible = false;
-    this._disableFunc1();
+    this._hideFunc1();
 
     const signal = { cancelled: false, _cbs: [], _onCancel(cb) { this._cbs.push(cb); } };
     this.events.once('shutdown', () => {
@@ -44,7 +44,10 @@ export class Nivel0Scene extends TileLevelScene {
       });
   }
 
-  _disableFunc1() {
+  // Nivel0 (tutorial): la Funcion no existe todavia. Ocultamos por completo el
+  // boton ƒ del panel de movimientos, su panel F1 y el switch Program/F1/FOR
+  // (queda solo el programa principal). Se restauran al salir del nivel.
+  _hideFunc1() {
     const els = [
       document.querySelector('[data-dir="func1"]'),
       document.getElementById('queue-func1'),
@@ -52,16 +55,12 @@ export class Nivel0Scene extends TileLevelScene {
     ];
     for (const el of els) {
       if (!el) continue;
-      el.style.opacity = '0.3';
-      el.style.pointerEvents = 'none';
-      el.style.filter = 'grayscale(1)';
+      el.style.display = 'none';
     }
     this.events.once('shutdown', () => {
       for (const el of els) {
         if (!el) continue;
-        el.style.opacity = '';
-        el.style.pointerEvents = '';
-        el.style.filter = '';
+        el.style.display = '';
       }
     });
   }
