@@ -348,15 +348,6 @@
 .if-select:disabled {
   opacity: .5;
 }
-#queue-func1 h3 {
-  display: block;
-  margin: 0 0 10px 0;
-  height: auto;
-  color: #4b688a;
-  text-shadow: none;
-  font-size: 16px;
-  text-align: left;
-}
 #queue-for h3 {
   display: block;
   margin: 0 0 10px 0;
@@ -388,6 +379,10 @@
   font-size: 16px !important;
   text-transform: uppercase;
   line-height: 1;
+}
+#queue-func1 .panel-toggle {
+  color: #4b688a !important;
+  border-bottom-color: rgba(75,104,138,.2) !important;
 }
 #queue-for .panel-toggle {
   color: #7a4a12 !important;

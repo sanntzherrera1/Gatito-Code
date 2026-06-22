@@ -78,14 +78,19 @@
         <button id="restart"><span class="queue-icon">↺</span><span class="queue-label">reiniciar</span></button>
       </div>
 
-      <div class="sprout-panel" id="queue-func1">
-        <h3>FUNCION 1</h3>
+      <div class="sprout-panel panel-plegable" id="queue-func1">
+        <button class="panel-toggle" type="button" data-toggle-panel="queue-func1" aria-expanded="true" aria-controls="queue-func1-content">
+          <span>FUNCION 1</span>
+          <span class="panel-toggle-icon">&#9662;</span>
+        </button>
+        <div class="panel-cuerpo" id="queue-func1-content">
         <div class="slots f1-slots" id="slots-func1" style="margin-bottom: 12px; gap: 8px;">
           <div class="slot"></div>
           <div class="slot"></div>
           <div class="slot"></div>
         </div>
         <button id="clear-func1" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR F1</span></button>
+        </div>
       </div>
 
       <div class="sprout-panel panel-plegable" id="queue-for">

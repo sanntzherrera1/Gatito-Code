@@ -85,24 +85,46 @@ export class MenuScene extends Phaser.Scene {
       const allLevels = getAllLevels();
       const completed = getCompletedLevels();
 
-      const GRID_COLS = 4;
+      const GRID_COLS = 3;
       const SPACING = 42;
       const START_X = (W - (GRID_COLS - 1) * SPACING) / 2;
-      const START_Y = 60;
+      const SCROLL_TOP = 60;
+      const SCROLL_BOTTOM = H - 40;
+      const SCROLL_H = SCROLL_BOTTOM - SCROLL_TOP;
+      const totalRows = Math.ceil(allLevels.length / GRID_COLS);
+      const CONTENT_H = totalRows * SPACING + 10;
+
+      const scrollContainer = this.add.container(0, SCROLL_TOP);
+      this.dynamicGroup.add(scrollContainer);
 
       allLevels.forEach((level, i) => {
         const row = Math.floor(i / GRID_COLS);
         const col = i % GRID_COLS;
         const x = START_X + col * SPACING;
-        const y = START_Y + row * SPACING;
+        const y = row * SPACING + 16;
 
         const isUnlocked = (i === 0) || completed.includes(allLevels[i - 1].key);
         const isCompleted = completed.includes(level.key);
 
-        this._createLevelSquare(x, y, i, level, isUnlocked, isCompleted);
+        this._createLevelSquare(x, y, i, level, isUnlocked, isCompleted, scrollContainer);
       });
 
-      this.makeButton(bx, H - 30, '← Back', () => this.showScreen('main'));
+      const maskShape = this.make.graphics({ add: false });
+      maskShape.fillRect(0, SCROLL_TOP, W, SCROLL_H);
+      scrollContainer.setMask(new Phaser.Display.Masks.GeometryMask(this, maskShape));
+
+      const maxScroll = Math.max(0, CONTENT_H - SCROLL_H);
+      let scrollY = 0;
+
+      if (maxScroll > 0) {
+        this._scrollHandler = (e) => {
+          scrollY = Phaser.Math.Clamp(scrollY + (e.deltaY > 0 ? 15 : -15), 0, maxScroll);
+          scrollContainer.y = SCROLL_TOP - scrollY;
+        };
+        this.game.canvas.addEventListener('wheel', this._scrollHandler);
+      }
+
+      this.makeButton(bx, H - 18, 'Volver', () => this.showScreen('main'));
     } else if (screen === 'editor') {
       this.addLabel('editor de niveles');
       this.makeButton(bx, 52, '+ Nuevo nivel', () => this.promptNewLevel(), 'accent');
@@ -117,7 +139,7 @@ export class MenuScene extends Phaser.Scene {
         ...getCustomLevels()
       ];
 
-      const GRID_COLS = 4;
+      const GRID_COLS = 3;
       const SPACING = 42;
       const START_X = (W - (GRID_COLS - 1) * SPACING) / 2;
 
@@ -278,23 +300,27 @@ export class MenuScene extends Phaser.Scene {
     for (const o of [track, fill, knob]) { o.setDepth(5); this.dynamicGroup.add(o); }
   }
 
-  _createLevelSquare(x, y, num, level, isUnlocked, isCompleted) {
+  _createLevelSquare(x, y, num, level, isUnlocked, isCompleted, parentContainer) {
     const container = this.add.container(x, y);
-    const size = 30;
+    const size = 26;
 
     const bg = this.add.rectangle(0, 0, size, size, isUnlocked ? 0x3b5488 : 0x444455)
       .setStrokeStyle(2, isCompleted ? 0x66ff99 : 0x222233);
 
     const txtNum = this.add.text(0, 0, num.toString(), {
-      fontFamily: "'Press Start 2P', monospace", fontSize: '14px', color: '#ffffff', fontWeight: 'bold'
+      fontFamily: "'Press Start 2P', monospace", fontSize: '10px', color: '#ffffff', fontWeight: 'bold'
     }).setOrigin(0.5);
 
     const txtName = this.add.text(0, size / 2 + 6, level.name, {
-      fontFamily: "'Press Start 2P', monospace", fontSize: '6px', color: isUnlocked ? '#8ef' : '#666',
+      fontFamily: "'Press Start 2P', monospace", fontSize: '5px', color: isUnlocked ? '#8ef' : '#666',
     }).setOrigin(0.5);
 
     container.add([bg, txtNum, txtName]);
-    this.dynamicGroup.add(container);
+    if (parentContainer) {
+      parentContainer.add(container);
+    } else {
+      this.dynamicGroup.add(container);
+    }
 
     if (isUnlocked) {
       bg.setInteractive({ useHandCursor: true });
