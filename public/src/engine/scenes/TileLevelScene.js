@@ -123,7 +123,6 @@ export class TileLevelScene extends Phaser.Scene {
 
     this.keys = this.input.keyboard.addKeys({
       G: Phaser.Input.Keyboard.KeyCodes.G,
-      F: Phaser.Input.Keyboard.KeyCodes.F,
       ESC: Phaser.Input.Keyboard.KeyCodes.ESC,
     });
     this.keys.ESC.on('down', () => {
@@ -135,14 +134,11 @@ export class TileLevelScene extends Phaser.Scene {
     this.drawGrid();
     this.gridVisible = false;
     this.grid.setVisible(false);
-    this.debugText = this.add.text(4, 4, '', {
-      fontFamily: 'monospace', fontSize: '8px', color: '#8ef', backgroundColor: '#000a',
-    }).setDepth(101).setPadding(2, 1, 2, 1).setScrollFactor(0);
-    this.fpsVisible = true;
     this.crosshair = this.add.rectangle(0, 0, TILE, TILE).setStrokeStyle(1, 0xffcc33, 0.8).setOrigin(0).setDepth(99).setScrollFactor(0);
 
     this.keys.G.on('down', () => { this.gridVisible = !this.gridVisible; this.grid.setVisible(this.gridVisible); });
-    this.keys.F.on('down', () => { this.fpsVisible = !this.fpsVisible; this.debugText.setVisible(this.fpsVisible); });
+
+    this._createPickupCounter();
   }
 
   exitToMenu(screen) {
@@ -486,14 +482,79 @@ export class TileLevelScene extends Phaser.Scene {
     for (let y = 0; y <= this.rows; y++) this.grid.lineBetween(0, y * TILE, this.cols * TILE, y * TILE);
   }
 
+  // ── Contador de pickups restantes (HUD estilo panel) ────────────────────────
+  // Reemplaza al viejo texto de debug. Solo aparece desde el nivel 2 (main) en
+  // adelante y cuando el nivel tiene pickups. Usa el sprite del propio
+  // coleccionable como icono y la paleta de los paneles (#c8a87a).
+  _createPickupCounter() {
+    const allLevels = getAllLevels();
+    const idx = allLevels.findIndex(l => l.key === this.levelKey);
+    if (idx < 2 || this.totalPickups <= 0) return;
+
+    const firstPickup = this.level.objects.find(
+      o => o.type === 'pickup' || o.type === 'pickup_with_animation'
+    );
+
+    const cont = this.add.container(6, 6).setScrollFactor(0).setDepth(5000);
+
+    const bg = this.add.graphics();
+    cont.add(bg);
+
+    let textX = 8;
+    if (firstPickup?.key) {
+      const icon = this.add.image(7, 9, firstPickup.key, firstPickup.frame ?? 0)
+        .setOrigin(0, 0.5);
+      icon.setDisplaySize(12, 12);
+      cont.add(icon);
+      textX = 22;
+    }
+
+    const label = this.add.text(textX, 9, '', {
+      fontFamily: 'SproutPixel, monospace', fontSize: '11px', color: '#3d2008',
+    }).setOrigin(0, 0.5);
+    cont.add(label);
+
+    this.pickupCounter = cont;
+    this.pickupCounterBg = bg;
+    this.pickupCounterText = label;
+    this.pickupCounterTextX = textX;
+    this._lastPickupLeft = -1;
+  }
+
+  // Dibuja el fondo del badge ajustado al ancho del texto, con la paleta de los
+  // paneles (#c8a87a + banda clara + borde marron).
+  _drawPickupCounterBg() {
+    const H = 18, R = 5, padR = 9;
+    const W = this.pickupCounterTextX + Math.ceil(this.pickupCounterText.width) + padR;
+    const g = this.pickupCounterBg;
+    g.clear();
+    g.fillStyle(0xc8a87a, 1);
+    g.fillRoundedRect(0, 0, W, H, R);
+    g.fillStyle(0xdfc99e, 0.5);
+    g.fillRoundedRect(2, 2, W - 4, (H - 4) / 2, 3);
+    g.lineStyle(1.5, 0x5a3a1a, 0.4);
+    g.strokeRoundedRect(0.75, 0.75, W - 1.5, H - 1.5, R);
+  }
+
+  _updatePickupCounter() {
+    if (!this.pickupCounter) return;
+    // Se oculta mientras la camara tiene zoom (intros / tutoriales cinematicos).
+    const zoomed = Math.abs(this.cameras.main.zoom - 1) > 0.02;
+    const left = this.pickups.size;
+    const show = left > 0 && !zoomed;
+    this.pickupCounter.setVisible(show);
+    if (!show) return;
+    if (left !== this._lastPickupLeft) {
+      this._lastPickupLeft = left;
+      const palabra = left === 1 ? 'Falta 1 fruta' : `Faltan ${left} frutas`;
+      this.pickupCounterText.setText(palabra);
+      this._drawPickupCounterBg();
+    }
+  }
+
   update() {
     this.crosshair.setPosition(this.playerModel.tx * TILE, this.playerModel.ty * TILE);
     this._updateObjectFade();
-    if (this.fpsVisible) {
-      const fps = this.game.loop.actualFps.toFixed(0);
-      this.debugText.setText(
-        `fps ${fps}  tile ${this.playerModel.tx},${this.playerModel.ty}  face ${this.playerModel.facing}  picked ${this.collected}/${this.collected + this.pickups.size}`
-      );
-    }
+    this._updatePickupCounter();
   }
 }

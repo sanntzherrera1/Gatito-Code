@@ -1,5 +1,5 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
-import { runNivel0Intro } from './intro.js';
+import { runNivel0Intro, unlockPanels } from './intro.js';
 
 export class Nivel0Scene extends TileLevelScene {
   constructor() {
@@ -20,8 +20,6 @@ export class Nivel0Scene extends TileLevelScene {
     super.create();
     window.__setIfPanel?.(false);
     window.__setForPanel?.(false);
-    this.debugText?.setVisible(false);
-    this.fpsVisible = false;
     this._hideFunc1();
 
     const signal = { cancelled: false, _cbs: [], _onCancel(cb) { this._cbs.push(cb); } };
@@ -31,6 +29,7 @@ export class Nivel0Scene extends TileLevelScene {
       signal.cancelled = true;
       signal._cbs.forEach(cb => cb());
       signal._cbs = [];
+      unlockPanels();
       document.getElementById('intro-card')?.remove();
       document.getElementById('dirs')?.classList.remove('intro-highlight', 'intro-zoom');
       document.getElementById('queue')?.classList.remove('intro-highlight', 'intro-zoom');
