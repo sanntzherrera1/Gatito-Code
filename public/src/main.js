@@ -25,7 +25,7 @@ const game = new Phaser.Game({
   backgroundColor: '#12161d',
   scale: {
     mode: Phaser.Scale.FIT,
-    autoCenter: Phaser.Scale.NO_CENTER,
+    autoCenter: Phaser.Scale.CENTER_HORIZONTALLY,
   },
   physics: { default: 'arcade', arcade: { debug: false, gravity: { x: 0, y: 0 } } },
   scene: [BootScene, MenuScene, Nivel0Scene, GymScene, MainScene, Nivel3Scene, BosqueFloralScene, EditorScene, CustomScene],

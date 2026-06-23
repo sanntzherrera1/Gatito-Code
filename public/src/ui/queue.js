@@ -268,6 +268,16 @@ function initPanelesPlegables() {
       btn.setAttribute('aria-expanded', String(!plegado));
     });
   });
+  if (window.innerWidth < 768) {
+    ['queue-func1', 'queue-for', 'queue-if-rule'].forEach(id => {
+      const panel = document.getElementById(id);
+      if (panel && !panel.classList.contains('plegado')) {
+        panel.classList.add('plegado');
+        const btn = panel.querySelector('.panel-toggle');
+        if (btn) btn.setAttribute('aria-expanded', 'false');
+      }
+    });
+  }
 }
 
 function setRunning(on) {

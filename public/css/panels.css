@@ -243,6 +243,10 @@
 
 /* ─── Slots container ─── */
 .slots { display: flex; flex-direction: column; gap: 4px; }
+
+/* Wrapper de botones de accion del Program: transparente en desktop
+   (no altera el layout en columna), fila compacta en mobile. */
+.queue-actions { display: contents; }
 .slots.f1-slots { margin-bottom: 8px; gap: 6px; }
 
 .slot {
@@ -561,6 +565,185 @@
   font-size: 12px;
   color: #c0e0ff;
   line-height: 1.6;
+}
+
+/* ─── Mobile (<768px): D-pad cruz + compactación ─── */
+@media (max-width: 767px) {
+  .sprout-panel {
+    padding: 6px 8px;
+    gap: 0;
+  }
+
+  /* D-pad cruz clásica */
+  #dirs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "header header header"
+      ".      up     ."
+      "left   .      right"
+      ".      down   ."
+      "func1  func1  forbtn";
+    gap: 1px;
+    padding: 4px 6px;
+  }
+  #dirs .panel-header  { grid-area: header; margin-bottom: 2px; padding-bottom: 2px; }
+  #dirs button[data-dir="up"]    { grid-area: up; }
+  #dirs button[data-dir="down"]  { grid-area: down; }
+  #dirs button[data-dir="left"]  { grid-area: left; }
+  #dirs button[data-dir="right"] { grid-area: right; }
+  #dirs button[data-dir="func1"] { grid-area: func1; }
+  #dirs button[data-dir="for"]   { grid-area: forbtn; }
+  #dirs button[data-dir] {
+    justify-content: center;
+    min-height: 38px;
+    padding: 2px !important;
+  }
+  #dirs .dir-label {
+    display: none;
+  }
+
+  /* Target switch compacto */
+  .target-opt {
+    padding: 2px 5px !important;
+    font-size: 9px !important;
+  }
+
+  /* Slots compactos */
+  .sprout-panel .slot {
+    height: 28px !important;
+    min-height: 28px;
+    margin-bottom: 1px;
+  }
+
+  /* Ocultar labels de botones de acción */
+  #queue .queue-label {
+    display: none;
+  }
+  /* Botones de accion en fila (solo iconos) para acortar el panel Program */
+  #queue .queue-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-top: 2px;
+  }
+  #queue .queue-actions > button {
+    flex: 1;
+    min-width: 0;
+    min-height: 32px;
+    padding: 2px !important;
+    justify-content: center;
+  }
+
+  /* Títulos más compactos */
+  .sprout-panel h3 {
+    font-size: 10px;
+  }
+  #queue > h3 {
+    margin-bottom: 2px;
+    padding-bottom: 2px;
+    font-size: 10px;
+  }
+
+  /* Paneles plegables más compactos */
+  .panel-toggle {
+    min-height: 22px;
+    font-size: 12px !important;
+    padding: 0 0 3px !important;
+    margin: 0 0 3px !important;
+  }
+
+}
+
+/* ─── Mobile landscape ─── */
+@media (orientation: landscape) and (max-height: 500px) {
+  .sprout-panel {
+    padding: 6px 8px;
+    gap: 1px;
+  }
+  #dirs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "header header header"
+      ".      up     ."
+      "left   .      right"
+      ".      down   ."
+      "func1  func1  forbtn";
+    gap: 2px;
+    padding: 4px 6px;
+  }
+  #dirs .panel-header { grid-area: header; margin-bottom: 2px; padding-bottom: 2px; }
+  #dirs button[data-dir="up"]    { grid-area: up; }
+  #dirs button[data-dir="down"]  { grid-area: down; }
+  #dirs button[data-dir="left"]  { grid-area: left; }
+  #dirs button[data-dir="right"] { grid-area: right; }
+  #dirs button[data-dir="func1"] { grid-area: func1; }
+  #dirs button[data-dir="for"]   { grid-area: forbtn; }
+  #dirs button[data-dir] {
+    justify-content: center;
+    min-height: 36px;
+    padding: 2px !important;
+  }
+  #dirs .dir-label { display: none; }
+  .sprout-panel .slot {
+    height: 24px !important;
+    min-height: 24px;
+  }
+  #queue .queue-label { display: none; }
+  #queue .queue-actions {
+    display: flex;
+    flex-direction: row;
+    gap: 4px;
+    margin-top: 2px;
+  }
+  #queue .queue-actions > button {
+    flex: 1;
+    min-width: 0;
+    min-height: 28px;
+    padding: 2px !important;
+    justify-content: center;
+  }
+  .sprout-panel h3 { font-size: 10px; }
+  .panel-toggle { font-size: 11px !important; min-height: 20px; }
+}
+
+/* ─── Tablet (768px–1099px) ─── */
+@media (min-width: 768px) and (max-width: 1099px) {
+  .sprout-panel {
+    width: 100%;
+  }
+}
+
+/* ─── Nivel 9 (FOR): el panel FOR se mueve a la columna izquierda por JS
+   (body.level-for). Pequeño respiro entre el D-pad y el panel FOR. ─── */
+@keyframes icard-fade-in {
+  from { opacity: 0; transform: translateY(10px) scale(.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);   }
+}
+@keyframes icard-fade-out {
+  from { opacity: 1; transform: translateY(0)    scale(1);   }
+  to   { opacity: 0; transform: translateY(10px) scale(.96); }
+}
+@media (max-width: 767px) {
+  body.level-for #panels #queue-for {
+    margin-top: 4px;
+  }
+  /* Mientras el FOR esta desplegado (auto-demo del tutorial), el panel crece
+     en la columna izquierda y taparia el cartel centrado. Lo corremos a la
+     derecha, fuera de la columna izquierda, para que se lea completo. */
+  body.level-for.for-open #intro-card {
+    left: auto;
+    right: 4px;
+    bottom: 8%;
+    transform: none;
+    min-width: 0;
+    max-width: 56vw;
+    animation: icard-fade-in .25s ease both !important;
+  }
+  body.level-for.for-open #intro-card.icard-out {
+    animation: icard-fade-out .2s ease forwards !important;
+  }
 }
 
 /* ─── Desktop (≥1100px): tamaños originales ─── */

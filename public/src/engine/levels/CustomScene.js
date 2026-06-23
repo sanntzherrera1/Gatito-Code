@@ -96,6 +96,10 @@ export class CustomScene extends TileLevelScene {
       window.__setForPanel?.(false);
       window.__setIfPanel?.(false);
       lockPanels();
+      // Nivel 9: el panel FOR vive en la columna izquierda (debajo del D-pad);
+      // los mensajes del tutorial se reubican en el espacio sobrante via CSS
+      // (body.level-for, ver panels.css).
+      this._moveForPanelToLeft();
 
       // Mismo patron de cancelacion que el tutorial del IF.
       this._forSignal = { cancelled: false, _cbs: [], _onCancel(cb) { this._cbs.push(cb); } };
@@ -104,6 +108,7 @@ export class CustomScene extends TileLevelScene {
         this._forSignal._cbs.forEach(cb => cb());
         this._forSignal._cbs = [];
         this._tutorialActive = false;
+        this._restoreForPanel();
         unlockPanels();
         document.getElementById('intro-card')?.remove();
         document.getElementById('panel-backdrop')?.remove();
@@ -168,5 +173,27 @@ export class CustomScene extends TileLevelScene {
   showIdlePanel() {
     if (this._tutorialActive && (this.levelKey === 'if' || this.levelKey === 'for')) return;
     super.showIdlePanel();
+  }
+
+  // Nivel 9 (FOR): reubica el panel FOR a la columna izquierda (#panels), debajo
+  // del D-pad. Guarda su posicion original para devolverlo al salir del nivel.
+  _moveForPanelToLeft() {
+    const forPanel = document.getElementById('queue-for');
+    const leftCol = document.getElementById('panels');
+    if (!forPanel || !leftCol) return;
+    this._forPanelHome = { parent: forPanel.parentNode, next: forPanel.nextSibling };
+    leftCol.appendChild(forPanel);
+    document.body.classList.add('level-for');
+  }
+
+  // Devuelve el panel FOR a su contenedor original (#right-panels) en la misma
+  // posicion en la que estaba, para no romper el layout de otros niveles.
+  _restoreForPanel() {
+    document.body.classList.remove('level-for', 'for-open');
+    const forPanel = document.getElementById('queue-for');
+    if (forPanel && this._forPanelHome?.parent) {
+      this._forPanelHome.parent.insertBefore(forPanel, this._forPanelHome.next);
+    }
+    this._forPanelHome = null;
   }
 }

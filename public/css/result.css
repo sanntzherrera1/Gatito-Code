@@ -111,3 +111,37 @@
 .result-actions button:active {
   transform: translateY(1px) scale(.97);
 }
+
+/* ─── Mobile responsive ─── */
+@media (max-width: 767px) {
+  #result-panel {
+    width: calc(100vw - 16px);
+    max-width: 608px;
+    height: auto;
+    min-height: 80px;
+    background-size: 100% 100%;
+    bottom: 8px;
+  }
+  .result-portrait {
+    top: 16px;
+    left: 12px;
+    width: 48px;
+    height: 48px;
+    background-size: 240px 720px;
+  }
+  .result-bubble {
+    left: 72px;
+    right: 16px;
+    top: 16px;
+    bottom: 16px;
+    padding: 4px 8px;
+    gap: 6px;
+  }
+  .result-message {
+    font-size: 12px;
+  }
+  .result-actions button {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+}

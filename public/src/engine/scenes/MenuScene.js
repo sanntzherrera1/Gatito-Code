@@ -77,7 +77,9 @@ export class MenuScene extends Phaser.Scene {
       this.addLabel('Menu Principal');
       let y = 60;
       this.makeButton(bx, y, 'Niveles', () => this.showScreen('levels')); y += STEP + 6;
-      this.makeButton(bx, y, 'Editor de Niveles', () => this.showScreen('editor')); y += STEP + 6;
+      if (window.innerWidth >= 768) {
+        this.makeButton(bx, y, 'Editor de Niveles', () => this.showScreen('editor')); y += STEP + 6;
+      }
       this.makeButton(bx, y, 'Configuracion', () => this.showScreen('settings')); y += STEP + 6;
       this.makeButton(bx, y, 'Creditos', () => this.showScreen('credits'));
     } else if (screen === 'levels') {

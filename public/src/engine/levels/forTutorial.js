@@ -73,6 +73,13 @@ export async function runForTutorial(scene, signal) {
   if (forPanel) {
     forPanel.style.position = 'relative';
     forPanel.style.zIndex = '9002';
+    // En mobile el panel FOR arranca plegado; lo desplegamos para que la
+    // auto-demostracion (desplegable + slots llenandose) sea visible completa.
+    forPanel.classList.remove('plegado');
+    forPanel.querySelector('.panel-toggle')?.setAttribute('aria-expanded', 'true');
+    // Con el FOR desplegado, los carteles del tutorial se corren a la derecha
+    // (via CSS body.for-open) para no quedar tapados por el panel.
+    document.body.classList.add('for-open');
   }
   // Iluminamos a la vez el panel FOR (derecha) y el boton FOR del panel de
   // movimientos. Para que el glow del boton se vea sobre el backdrop hay que
