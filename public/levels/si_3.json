@@ -1163,27 +1163,6 @@
       "type": "pickup_with_animation"
     },
     {
-      "tx": 4,
-      "ty": 6,
-      "key": "grass_props",
-      "frame": 10,
-      "type": "deco"
-    },
-    {
-      "tx": 5,
-      "ty": 8,
-      "key": "grass_props",
-      "frame": 10,
-      "type": "deco"
-    },
-    {
-      "tx": 7,
-      "ty": 5,
-      "key": "grass_props",
-      "frame": 10,
-      "type": "deco"
-    },
-    {
       "tx": 9,
       "ty": 4,
       "key": "tree_full",
@@ -1212,6 +1191,30 @@
       "ty": 8,
       "key": "tree_orange",
       "frame": 3,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 7,
+      "ty": 5,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 4,
+      "ty": 6,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
+      "type": "deco",
+      "solid": true
+    },
+    {
+      "tx": 5,
+      "ty": 8,
+      "key": "dungeon_rocks_obj",
+      "frame": 0,
       "type": "deco",
       "solid": true
     }
