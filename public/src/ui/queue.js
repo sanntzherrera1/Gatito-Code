@@ -14,7 +14,7 @@ let clearFunc1Btn;
 let clearForBtn;
 let trashZoneEl;
 let activeTarget = 'main';
-const uiSfx = () => window.__playUiSfx?.();
+const uiSfx = (key) => window.__playUiSfx?.(key);
 
 export function initQueue() {
   slotsEl = document.getElementById('slots');
@@ -122,7 +122,7 @@ export function initQueue() {
   runBtn.addEventListener('click', async () => {
     if (GYM.running) return;
     if (GYM.queue.length === 0) return;
-    uiSfx();
+    uiSfx('ui_execute');
     if (typeof GYM.onRun !== 'function') return;
     setRunning(true);
     try {

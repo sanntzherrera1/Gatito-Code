@@ -89,6 +89,7 @@ export class TileLevelScene extends Phaser.Scene {
     document.addEventListener('keydown', onDocEsc);
 
     this.events.once('shutdown', () => {
+      if (this._celebrateTimer) { this._celebrateTimer.remove(); this._celebrateTimer = null; }
       if (this.bgm) { this.bgm.stop(); this.bgm.destroy(); this.bgm = null; }
       destroyWeather(this);
       window.__setPanels?.(false);
@@ -258,6 +259,7 @@ export class TileLevelScene extends Phaser.Scene {
   decorate() { }
 
   resetLevel() {
+    if (this._celebrateTimer) { this._celebrateTimer.remove(); this._celebrateTimer = null; }
     if (this.bgm) { this.bgm.stop(); this.bgm.play(); }
 
     this.playerModel.reset();
@@ -346,6 +348,7 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   async jumpInPlace() {
+    playSfx(this, 'jump_sound', 0.15);
     await this.playerView.jumpTo(
       this.playerModel.tx, this.playerModel.ty,
       this.playerModel.tx, this.playerModel.ty
@@ -354,6 +357,7 @@ export class TileLevelScene extends Phaser.Scene {
 
   async jumpDir(dir) {
     const jumpResult = this.playerModel.tryJump(dir);
+    playSfx(this, 'jump_sound', 0.15);
     await this.playerView.jumpTo(
       jumpResult.fromTx, jumpResult.fromTy,
       jumpResult.toTx, jumpResult.toTy
@@ -416,6 +420,11 @@ export class TileLevelScene extends Phaser.Scene {
         }
         if (isWin) {
           markLevelCompleted(this.levelKey);
+          playSfx(this, 'jump_sound', 0.15);
+          this._celebrateTimer = this.time.addEvent({
+            delay: 500, loop: true,
+            callback: () => playSfx(this, 'jump_sound', 0.15),
+          });
           this.playerView.playCelebrate();
           if (this.bgm) this.bgm.stop();
           playSfx(this, 'win_sound', 0.15);

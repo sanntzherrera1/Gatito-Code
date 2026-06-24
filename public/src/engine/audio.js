@@ -28,7 +28,7 @@ export function playSfx(scene, key, base = 0.15) {
 
 /** Conecta el sound manager de Phaser para que los botones DOM puedan emitir sonido. */
 export function bindUiSfx(soundManager) {
-  window.__playUiSfx = () => {
-    try { soundManager.play('ui_click', { volume: 0.15 * Settings.getSfxVolume() }); } catch {}
+  window.__playUiSfx = (key = 'ui_click') => {
+    try { soundManager.play(key, { volume: 0.15 * Settings.getSfxVolume() }); } catch {}
   };
 }
