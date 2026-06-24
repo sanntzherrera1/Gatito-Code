@@ -40,8 +40,8 @@ export class MenuScene extends Phaser.Scene {
       stroke: '#000', strokeThickness: 3,
     }).setOrigin(0.5);
 
-    const cat = this.add.sprite(16, H - 16, 'character_base', 0);
-    cat.anims.play('walk_down');
+    const cat = this.add.sprite(16, H - 26, 'character_base', 0);
+    cat.anims.play('idle_down');
 
     this.add.text(W / 2, H - 6, t('menu.hint'), {
       fontFamily: "'Press Start 2P', monospace", fontSize: '6px', color: '#556',

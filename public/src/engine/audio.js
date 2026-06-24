@@ -26,14 +26,18 @@ export function playSfx(scene, key, base = 0.15) {
   scene.sound.play(key, { volume: base * Settings.getSfxVolume() });
 }
 
+let _focusObserver = null;
+
 /** Conecta el sound manager de Phaser para que los botones DOM puedan emitir sonido. */
 export function bindUiSfx(soundManager) {
   window.__playUiSfx = (key = 'ui_click') => {
     try { soundManager.play(key, { volume: 0.15 * Settings.getSfxVolume() }); } catch {}
   };
 
+  if (_focusObserver) _focusObserver.disconnect();
+
   const FOCUS_CLASSES = ['intro-highlight', 'unlock-glow'];
-  new MutationObserver((mutations) => {
+  _focusObserver = new MutationObserver((mutations) => {
     for (const m of mutations) {
       if (m.type !== 'attributes' || m.attributeName !== 'class') continue;
       const el = m.target;
@@ -45,5 +49,6 @@ export function bindUiSfx(soundManager) {
         el._uiFocusPlayed = false;
       }
     }
-  }).observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
+  });
+  _focusObserver.observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
 }
