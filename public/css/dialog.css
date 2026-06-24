@@ -39,7 +39,7 @@
 
 #level-dialog-portrait {
   width: 64px; height: 64px;
-  background-image: url('../assets/sproutlands-ui/Sprite sheets/Dialouge UI/Emotes/Teemo Basic emote animations sprite sheet.png');
+  background-image: url('../assets/SproutLands-UI/Sprite sheets/Dialouge UI/Emotes/Teemo Basic emote animations sprite sheet.png');
   background-size: 320px 960px;
   background-position: 0 0;
   background-repeat: no-repeat;
@@ -73,7 +73,7 @@
 
 #level-dialog-btn-icon {
   width: 32px; height: 32px;
-  background-image: url('../assets/sproutlands-ui/Sprite sheets/buttons/Small Square Buttons.png');
+  background-image: url('../assets/SproutLands-UI/Sprite sheets/buttons/Small Square Buttons.png');
   background-size: 64px 256px; background-position: 0 -96px;
   background-repeat: no-repeat; image-rendering: pixelated;
   display: flex; align-items: center; justify-content: center;

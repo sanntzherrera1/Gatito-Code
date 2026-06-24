@@ -163,7 +163,7 @@
 /* ─── Icons ─── */
 .dir-icon, .queue-icon {
   width: 32px; height: 32px; flex-shrink: 0;
-  background-image: url('../assets/sproutlands-ui/Sprite sheets/buttons/Small Square Buttons.png');
+  background-image: url('../assets/SproutLands-UI/Sprite sheets/buttons/Small Square Buttons.png');
   background-size: 64px 256px;
   background-repeat: no-repeat;
   image-rendering: pixelated;
