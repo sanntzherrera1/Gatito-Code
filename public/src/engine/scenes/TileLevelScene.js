@@ -1,6 +1,6 @@
 import { DIRS, TILE, STEP_MS } from '../../config/game.js';
 import { loadLevel } from '../../engine/level/TileLevelLoader.js';
-import { esGidDeRoca, OBJECTS } from '../../engine/level/TileRegistry.js';
+import { esGidDeRoca, OBJECTS, categoryForGid } from '../../engine/level/TileRegistry.js';
 import { createWeather, destroyWeather } from '../../engine/level/WeatherSystem.js';
 import { Player } from '../../domain/Player.js';
 import { executeProgram } from '../../engine/program/ProgramExecutor.js';
@@ -45,6 +45,7 @@ export class TileLevelScene extends Phaser.Scene {
 
     this.pathFlat = levelData.flat?.path || [];
     this.wallsFlat = levelData.flat?.walls || [];
+    this.floorFlat = levelData.flat?.floor || [];
     this.drawPathMarkers(this.pathFlat);
 
     this.loadObjects(this.level.objects);
@@ -334,6 +335,21 @@ export class TileLevelScene extends Phaser.Scene {
 
   tileCenter(tx, ty) { return [tx * TILE + TILE / 2, ty * TILE + TILE / 2]; }
 
+  _playFootstep(tx, ty) {
+    const WOOD_KEYS = ['wood_bridge', 'wooden_bridge_v2'];
+    const onWood = this.level.objects.some(o => o.tx === tx && o.ty === ty && WOOD_KEYS.includes(o.key));
+    let prefix = 'step_grass_';
+    if (onWood) {
+      prefix = 'step_wood_';
+    } else {
+      const gid = this.floorFlat[ty * this.cols + tx] || 0;
+      const cat = categoryForGid(gid);
+      if (cat === 'buildings' || cat === 'dungeon') prefix = 'step_wood_';
+    }
+    const idx = Phaser.Math.Between(0, 2);
+    playSfx(this, `${prefix}${idx}`, 0.08);
+  }
+
   async step(dir) {
     const moveResult = this.playerModel.tryMove(dir);
 
@@ -343,6 +359,7 @@ export class TileLevelScene extends Phaser.Scene {
       return;
     }
 
+    this._playFootstep(moveResult.tx, moveResult.ty);
     await this.playerView.moveTo(moveResult.tx, moveResult.ty);
     this.checkPickup(moveResult.tx, moveResult.ty);
   }

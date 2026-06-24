@@ -5408,6 +5408,15 @@ export function getFrameDimensions(objDef, frameIndex) {
 }
 
 
+export function categoryForGid(gid) {
+  if (!gid) return null;
+  for (let i = TILESETS.length - 1; i >= 0; i--) {
+    const t = TILESETS[i];
+    if (gid >= t.firstgid && gid < t.firstgid + t.cols * t.rows) return t.category;
+  }
+  return null;
+}
+
 export function isSameTerrain(gid, terrain) {
   return Object.values(terrain.tiles).includes(gid);
 }
