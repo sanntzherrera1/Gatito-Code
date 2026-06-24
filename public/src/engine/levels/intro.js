@@ -40,6 +40,7 @@ const MSGS = [
 
 // Mueve y hace zoom a (pos.x, pos.y) de forma suave usando la API nativa de Phaser
 export function panTo(scene, pos, zoom, duration = 900) {
+  window.__playUiSfx?.('cam_slide');
   const cam = scene.cameras.main;
   return new Promise(resolve => {
     let done = 0;
