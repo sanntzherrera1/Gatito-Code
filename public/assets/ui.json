@@ -3,44 +3,44 @@
     {
       "type": "spritesheet",
       "key": "basic_pack",
-      "url": "assets/sproutlands-ui/Sprite sheets/Sprite sheet for Basic Pack.png",
+      "url": "assets/SproutLands-UI/Sprite sheets/Sprite sheet for Basic Pack.png",
       "frameConfig": { "frameWidth": 16, "frameHeight": 16 }
     },
     {
       "type": "spritesheet",
       "key": "teemo_emotes",
-      "url": "assets/sproutlands-ui/Sprite sheets/Dialouge UI/Emotes/Teemo Basic emote animations sprite sheet.png",
+      "url": "assets/SproutLands-UI/Sprite sheets/Dialouge UI/Emotes/Teemo Basic emote animations sprite sheet.png",
       "frameConfig": { "frameWidth": 32, "frameHeight": 32 }
     },
     {
       "type": "image",
       "key": "settings_menu_bg",
-      "url": "assets/sproutlands-ui/Sprite sheets/Setting menu.png"
+      "url": "assets/SproutLands-UI/Sprite sheets/Setting menu.png"
     },
     {
       "type": "image",
       "key": "play_button",
-      "url": "assets/sproutlands-ui/Sprite sheets/UI Big Play Button.png"
+      "url": "assets/SproutLands-UI/Sprite sheets/UI Big Play Button.png"
     },
     {
       "type": "image",
       "key": "settings_buttons",
-      "url": "assets/sproutlands-ui/Sprite sheets/UI Settings Buttons.png"
+      "url": "assets/SproutLands-UI/Sprite sheets/UI Settings Buttons.png"
     },
     {
       "type": "image",
       "key": "special_icons",
-      "url": "assets/sproutlands-ui/Sprite sheets/Icons/special icons/Special Icons.png"
+      "url": "assets/SproutLands-UI/Sprite sheets/Icons/special icons/Special Icons.png"
     },
     {
       "type": "image",
       "key": "dialog_medium",
-      "url": "assets/sproutlands-ui/Sprite sheets/Dialouge UI/dialog box medium.png"
+      "url": "assets/SproutLands-UI/Sprite sheets/Dialouge UI/dialog box medium.png"
     },
     {
       "type": "image",
       "key": "dialog_small",
-      "url": "assets/sproutlands-ui/Sprite sheets/Dialouge UI/dialog box small.png"
+      "url": "assets/SproutLands-UI/Sprite sheets/Dialouge UI/dialog box small.png"
     }
   ],
   "animations": [
