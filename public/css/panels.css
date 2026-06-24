@@ -163,7 +163,7 @@
 /* ─── Icons ─── */
 .dir-icon, .queue-icon {
   width: 32px; height: 32px; flex-shrink: 0;
-  background-image: url('../assets/sproutlands-ui/Sprite sheets/buttons/Small Square Buttons.png');
+  background-image: url('../assets/SproutLands-UI/Sprite sheets/buttons/Small Square Buttons.png');
   background-size: 64px 256px;
   background-repeat: no-repeat;
   image-rendering: pixelated;
@@ -351,6 +351,11 @@
 }
 .if-select:disabled {
   opacity: .5;
+}
+.if-rule-sep {
+  height: 1px;
+  margin: 10px 0 2px;
+  background: rgba(90,58,26,.28);
 }
 #queue-for h3 {
   display: block;

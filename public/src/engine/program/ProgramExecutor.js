@@ -66,29 +66,38 @@ function normalizarRepeticiones(valor) {
 }
 
 async function ejecutarMovimiento(direccion, context, bus) {
-  const regla = obtenerReglaIf(bus);
+  // Se evalúan las reglas IF en orden; dispara la primera que coincide (if / else-if).
+  // Como una casilla nunca es roca y árbol a la vez, no hay conflicto.
+  const reglas = obtenerReglasIf(bus);
 
-  if (debeAplicarIf(direccion, context, regla)) {
-    await ejecutarAccionIf(direccion, context, regla.action);
-    return;
+  for (const regla of reglas) {
+    if (debeAplicarIf(direccion, context, regla)) {
+      await ejecutarAccionIf(direccion, context, regla.action);
+      return;
+    }
   }
 
   await context.step(direccion);
 }
 
-function obtenerReglaIf(bus) {
+function obtenerReglasIf(bus) {
+  // Compat: regla vieja embebida como token.
   const reglaVieja = bus?.queueIfRock?.[0] || '';
   if (reglaVieja === 'if-rock-jump') {
-    return { condition: 'rock-ahead', action: 'jump' };
+    return [{ condition: 'rock-ahead', action: 'jump' }];
   }
   if (reglaVieja === 'if-navigate') {
-    return { condition: 'blocked-ahead', action: 'navigate' };
+    return [{ condition: 'blocked-ahead', action: 'navigate' }];
   }
 
-  return {
-    condition: bus?.ifCondition || '',
-    action: bus?.ifAction || '',
-  };
+  const reglas = [];
+  if (bus?.ifCondition && bus?.ifAction) {
+    reglas.push({ condition: bus.ifCondition, action: bus.ifAction });
+  }
+  if (bus?.ifCondition2 && bus?.ifAction2) {
+    reglas.push({ condition: bus.ifCondition2, action: bus.ifAction2 });
+  }
+  return reglas;
 }
 
 function debeAplicarIf(direccion, context, regla) {
@@ -102,6 +111,10 @@ function debeAplicarIf(direccion, context, regla) {
     return !!context.estaBloqueado?.(direccion);
   }
 
+  if (regla.condition === 'tree-ahead') {
+    return !!context.hayArbolAdelante?.(direccion);
+  }
+
   return false;
 }
 
@@ -113,6 +126,11 @@ async function ejecutarAccionIf(direccion, context, action) {
 
   if (action === 'navigate') {
     await ejecutarRodeo(direccion, context);
+    return;
+  }
+
+  if (action === 'cut') {
+    await context.cutDir(direccion);
     return;
   }
 

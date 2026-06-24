@@ -104,6 +104,12 @@ export const OBJECT_ANIMATIONS = {
     sleep:  { frames: [80,81,82,83], frameRate: 3, repeat: -1 },
     eat:    { frames: [88,89,90,91,92,93,96,97], frameRate: 4, repeat: -1 },
   },
+  // Árboles frutales: sacudida que tira la fruta (fila 3 del sheet = frames 11-22),
+  // terminando en un árbol pelado (frame 22). Tras esto el árbol queda "normal".
+  tree_apple:  { shake: { frames: [11,12,13,14,15,16,17,18,19,20,21,22], frameRate: 12, repeat: 0 } },
+  tree_orange: { shake: { frames: [11,12,13,14,15,16,17,18,19,20,21,22], frameRate: 12, repeat: 0 } },
+  tree_peach:  { shake: { frames: [11,12,13,14,15,16,17,18,19,20,21,22], frameRate: 12, repeat: 0 } },
+  tree_pear:   { shake: { frames: [11,12,13,14,15,16,17,18,19,20,21,22], frameRate: 12, repeat: 0 } },
 };
 
 /**

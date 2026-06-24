@@ -282,12 +282,35 @@ export class TileLevelScene extends Phaser.Scene {
         this.addPickup(obj.tx, obj.ty, obj.frame, obj.key, true, animated);
       }
     }
+
+    // Restaurar árboles talados/sacudidos: destruir las vistas actuales y
+    // reconstruirlas desde el JSON, devolviendo solidez y grilla de árboles.
+    if (this.treeViews) {
+      for (const view of this.treeViews.values()) {
+        if (view.sprite) { this.tweens.killTweensOf(view.sprite); view.sprite.destroy(); }
+        const i = this.fadeObjects.indexOf(view);
+        if (i >= 0) this.fadeObjects.splice(i, 1);
+      }
+      this.treeViews.clear();
+      for (const obj of this.level.objects) {
+        const def = OBJECTS.find(o => o.key === obj.key);
+        if (!def?.isTree) continue;
+        const view = new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame);
+        if (view.sprite && view.sprite.height > TILE) this.fadeObjects.push(view);
+        this.treeViews.set(`${obj.tx},${obj.ty}`, view);
+        if (this.level.trees[obj.ty]) this.level.trees[obj.ty][obj.tx] = true;
+        if (obj.solid === true && this.level.solid[obj.ty]) this.level.solid[obj.ty][obj.tx] = true;
+      }
+    }
   }
 
   loadObjects(objects) {
     // Objetos "altos" (mas de 1 tile de alto) que pueden tapar al jugador: se
     // vuelven semitransparentes cuando el personaje pasa por detras (ver update()).
     this.fadeObjects = [];
+    // Árboles talables (frutales): referencia por casilla del tronco para poder
+    // reproducir la animación de caída cuando se cortan (regla "árbol adelante → cortar").
+    this.treeViews = new Map();
     for (const obj of objects) {
       if (obj.type === 'pickup' || obj.type === 'pickup_with_animation') {
         const animated = obj.type === 'pickup_with_animation';
@@ -298,6 +321,7 @@ export class TileLevelScene extends Phaser.Scene {
         const depthOverride = isBridge ? 30 : (obj.type === 'top' ? 45 : null);
         const view = new WorldObjectView(this, obj.tx, obj.ty, obj.key, obj.frame, depthOverride);
         if (view.sprite && view.sprite.height > TILE) this.fadeObjects.push(view);
+        if (objDef?.isTree) this.treeViews.set(`${obj.tx},${obj.ty}`, view);
       }
     }
   }
@@ -363,6 +387,40 @@ export class TileLevelScene extends Phaser.Scene {
     }
   }
 
+  // Tala el árbol que está en la casilla de adelante.
+  //  - Árbol frutal con fruta: la primera tala lo SACUDE (cae la fruta) y lo deja
+  //    como árbol normal pelado; el gato NO avanza (hace falta otra tala).
+  //  - Árbol normal (o ya sacudido): golpe → cae → tronquito que se desvanece →
+  //    la casilla queda caminable y el gato avanza.
+  async cutDir(dir) {
+    this.playerModel.facing = dir;
+    const { tx, ty } = this.casillaEnDireccion(dir);
+    const key = `${tx},${ty}`;
+    const view = this.treeViews.get(key);
+
+    // 1) Golpe de hacha del jugador (one-shot).
+    await this.playerView.playAxe(dir);
+
+    // 2a) Frutal con fruta: solo se sacude, cae la fruta y queda pelado. No avanza.
+    if (view && view.hasFruit) {
+      await view.shake();
+      return;
+    }
+
+    // 2b) Árbol normal: cae y deja un tronquito que se desvanece.
+    if (view) {
+      this.treeViews.delete(key);
+      const idx = this.fadeObjects.indexOf(view);
+      if (idx >= 0) this.fadeObjects.splice(idx, 1);
+      await view.fall(dir);
+    }
+
+    // 3) Liberar la casilla (solid compartido con el Player) y avanzar a ella.
+    if (this.level.solid[ty]) this.level.solid[ty][tx] = false;
+    if (this.level.trees[ty]) this.level.trees[ty][tx] = false;
+    await this.step(dir);
+  }
+
   puedeSalirPorEscape() {
     if (document.visibilityState !== 'visible') return false;
     if (typeof document.hasFocus === 'function' && !document.hasFocus()) return false;
@@ -392,6 +450,15 @@ export class TileLevelScene extends Phaser.Scene {
     return !this.playerModel.canEnter(siguiente.tx, siguiente.ty);
   }
 
+  hayArbolEn(tx, ty) {
+    return this.level.isTree(tx, ty);
+  }
+
+  hayArbolAdelante(dir = this.playerModel.facing) {
+    const siguiente = this.casillaEnDireccion(dir);
+    return this.hayArbolEn(siguiente.tx, siguiente.ty);
+  }
+
   async runProgram(moves) {
     const goal = this._pathGoal();
     const context = {
@@ -401,6 +468,8 @@ export class TileLevelScene extends Phaser.Scene {
       obtenerDireccion: () => this.playerModel.facing,
       hayRocaAdelante: (dir) => this.hayRocaAdelante(dir),
       estaBloqueado: (dir) => this.estaBloqueado(dir),
+      hayArbolAdelante: (dir) => this.hayArbolAdelante(dir),
+      cutDir: (dir) => this.cutDir(dir),
       onComplete: () => {
         // Con pickups: ganar al recolectarlos todos (no hace falta pisar un tile final).
         // Sin pickups: ganar al llegar a la meta del path (niveles tipo "llegar a X").
