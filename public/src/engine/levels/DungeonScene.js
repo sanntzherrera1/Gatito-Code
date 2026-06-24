@@ -1,15 +1,16 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
+import { t } from '../../services/i18n.js';
 
 export class DungeonScene extends TileLevelScene {
   constructor() {
     super('Dungeon');
     this.levelKey = 'dungeon';
-    this.missionText = 'Escapa del dungeon helado antes de que la tormenta te atrape.';
   }
 
   init(data) {
     super.init(data);
-    this.welcomeMessage = 'El frio muerde tus huesos. No todos los que entraron aqui salieron.';
+    this.missionText = t('dungeon.mission');
+    this.welcomeMessage = t('dungeon.welcome');
     if (!data?.returnScreen) this.returnScreen = 'levels';
   }
 }

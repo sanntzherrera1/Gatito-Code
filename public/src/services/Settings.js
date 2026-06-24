@@ -3,7 +3,7 @@
 // de Configuracion del menu (engine/scenes/MenuScene.js).
 
 const KEY = 'gatito_settings';
-const defaults = { musicVolume: 1, sfxVolume: 1 };
+const defaults = { musicVolume: 1, sfxVolume: 1, language: 'es' };
 
 let state = load();
 const listeners = new Set();
@@ -24,6 +24,18 @@ export function getMusicVolume() { return state.musicVolume; }
 export function getSfxVolume()   { return state.sfxVolume; }
 export function setMusicVolume(v) { state.musicVolume = clamp(v); persist(); emit(); }
 export function setSfxVolume(v)   { state.sfxVolume = clamp(v); persist(); emit(); }
+
+export function getLanguage() {
+  const lang = state.language;
+  return (lang === 'es' || lang === 'en') ? lang : 'es';
+}
+export function setLanguage(lang) {
+  if (lang !== 'es' && lang !== 'en') return;
+  if (state.language === lang) return;
+  state.language = lang;
+  persist();
+  emit();
+}
 
 /** Suscribe a cambios; devuelve una funcion para desuscribirse. */
 export function onChange(cb) { listeners.add(cb); return () => listeners.delete(cb); }

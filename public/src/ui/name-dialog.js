@@ -37,8 +37,8 @@ export function initNameDialog() {
     cb?.(name);
   }
 
-  confirmBtn.addEventListener('click', confirm);
-  cancelBtn.addEventListener('click', close);
+  confirmBtn.addEventListener('click', () => { window.__playUiSfx?.(); confirm(); });
+  cancelBtn.addEventListener('click', () => { window.__playUiSfx?.(); close(); });
   dialog.addEventListener('click', e => { if (e.target === dialog) close(); });
   input.addEventListener('keydown', e => {
     if (e.key === 'Enter') confirm();

@@ -7,6 +7,7 @@
 // regla en blanco para que el jugador la active.
 
 import { showCard, injectStyles, ico, lockPanels, unlockPanels, panTo } from './intro.js';
+import { t } from '../../services/i18n.js';
 
 const TILE = 16;
 const FULL = { x: 128, y: 96 }; // centro del mapa (COLS*TILE/2, ROWS*TILE/2)
@@ -44,13 +45,13 @@ export async function runIfTutorial(scene, signal) {
   // 1. Acercar la camara al gato y la primera roca
   await panTo(scene, { x: 40, y: 88 }, 2.3, 900);
   if (signal?.cancelled) return;
-  await showCard(`${ico('gato')} Gatito quiere cruzar… pero hay una <b>roca</b> en el camino.`, signal);
+  await showCard(t('if_tut.rock_block'), signal);
   if (signal?.cancelled) return;
 
   // 2. Demostrar que avanzar de frente no funciona
   await scene.step('right'); // (1,5) → (2,5), mira a la derecha
   if (signal?.cancelled) return;
-  await showCard(`${ico('pregunta')} Si solo avanza de frente, <b>choca</b> y no puede pasar.`, signal);
+  await showCard(t('if_tut.crash'), signal);
   if (signal?.cancelled) return;
   await scene.step('right'); // bloqueado por la roca de (3,5): se queda en el lugar
   await bump(scene, 'right');
@@ -71,17 +72,14 @@ export async function runIfTutorial(scene, signal) {
   }
   window.__setIfPanel?.(true);
   ifPanel?.classList.add('unlock-glow', 'unlock-layer');
-  await showCard(
-    `${ico('estrella')} ¡Desbloqueaste el <b>IF</b>!<br><br><b>SI</b> pasa algo, <b>ENTONCES</b> Gatito hace otra cosa.`,
-    signal,
-  );
+  await showCard(t('if_tut.unlock'), signal);
   ifPanel?.classList.remove('unlock-glow', 'unlock-layer');
   if (signal?.cancelled) return;
 
   // 3a. "SI pasa" → roca adelante
   const cond = document.getElementById('if-condition-select');
   cond?.classList.add('intro-highlight');
-  await showCard(`${ico('pregunta')} <b>SI pasa:</b> elegimos <b>roca adelante</b>.`, signal);
+  await showCard(t('if_tut.condition'), signal);
   setSelect(cond, 'rock-ahead');
   cond?.classList.remove('intro-highlight');
   if (signal?.cancelled) return;
@@ -89,7 +87,7 @@ export async function runIfTutorial(scene, signal) {
   // 3b. "Hacer esto" → saltar
   const act = document.getElementById('if-action-select');
   act?.classList.add('intro-highlight');
-  await showCard(`${ico('check')} <b>ENTONCES hace esto:</b> elegimos <b>saltar</b>.`, signal);
+  await showCard(t('if_tut.action'), signal);
   setSelect(act, 'jump');
   act?.classList.remove('intro-highlight');
   if (signal?.cancelled) return;
@@ -103,7 +101,7 @@ export async function runIfTutorial(scene, signal) {
   }
   await panTo(scene, { x: 56, y: 88 }, 2.3, 600);
   if (signal?.cancelled) return;
-  await showCard(`${ico('estrella')} ¡Mira! Ahora, al avanzar, <b>salta la roca solo</b>.`, signal);
+  await showCard(t('if_tut.payoff'), signal);
   if (signal?.cancelled) return;
   await scene.jumpDir('right'); // (2,5) → (4,5), salta la roca de (3,5)
   await new Promise(resolve => scene.time.delayedCall(400, resolve));
@@ -117,8 +115,5 @@ export async function runIfTutorial(scene, signal) {
   setSelect(act, '');
   window.__setIfPanel?.(true);
   unlockPanels();
-  await showCard(
-    `${ico('control')} ¡Ahora vos! Activa <b>SI ROCA SALTAR</b> y usa <b>mover a la derecha</b> para cruzar.`,
-    signal,
-  );
+  await showCard(t('if_tut.try_it'), signal);
 }

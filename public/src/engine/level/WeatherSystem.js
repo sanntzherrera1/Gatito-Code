@@ -45,7 +45,7 @@ const LABELS = {
 };
 
 export function getWeatherLabel(type) {
-  return LABELS[type] ?? type;
+  return window.__t?.('weather.' + type) ?? LABELS[type] ?? type;
 }
 
 /** Limpia todos los efectos climaticos activos de la escena. */

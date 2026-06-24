@@ -1,11 +1,16 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
+import { t } from '../../services/i18n.js';
 
 export class GymScene extends TileLevelScene {
   constructor() {
     super('Gym');
     this.levelKey = 'gym';
-    this.welcomeMessage = '¡Bienvenido al Nivel 1! 🌱\nUsa los botones para mover al personaje.';
-    this.missionText = 'Intenta usar combinacion de movimientos para llegar a la casilla final.';
+  }
+
+  init(data) {
+    super.init(data);
+    this.welcomeMessage = t('gym.welcome');
+    this.missionText = t('gym.mission');
   }
 
   addPickup() {}

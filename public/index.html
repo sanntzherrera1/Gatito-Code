@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en">
+<html lang="es">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -19,38 +19,38 @@
     <div id="boot-splash" aria-live="polite">
       <div class="boot-card">
         <div class="boot-badge" aria-hidden="true"></div>
-        <div class="boot-kicker">Cargando aventura</div>
-        <h1 class="boot-title">Gatito Code</h1>
-        <p class="boot-copy">Preparando niveles, objetos y musica del menu.</p>
+        <div class="boot-kicker" data-i18n="boot.loading">Cargando aventura</div>
+        <h1 class="boot-title" data-i18n="boot.title">Gatito Code</h1>
+        <p class="boot-copy" data-i18n="boot.copy">Preparando niveles, objetos y musica del menu.</p>
         <div class="boot-progress-shell">
           <div class="boot-progress-bar" id="boot-progress-bar"></div>
         </div>
         <div class="boot-progress-meta">
           <span id="boot-progress-label">0%</span>
-          <span id="boot-progress-status">Despertando gatito...</span>
+          <span id="boot-progress-status" data-i18n="boot.waking">Despertando gatito...</span>
         </div>
       </div>
     </div>
     <div id="game-frame"></div>
 
-    <div id="hud"><div><b>Gatito</b> · <kbd>Esc</kbd> back to menu</div></div>
+    <div id="hud"><div><b>Gatito</b> · <span data-i18n="hud.esc">Esc volver al menu</span></div></div>
 
     <div id="panels">
       <div class="sprout-panel" id="dirs">
         <div class="panel-header">
-          <h3>Movement</h3>
-          <div class="target-switch" id="target-switch" title="Switch target: Program or Funcion 1">
-            <button class="target-opt active" data-target="main">Program</button>
-            <button class="target-opt" data-target="func1">F1</button>
-            <button class="target-opt" data-target="for">FOR</button>
+          <h3 data-i18n="panel.movement">Movimiento</h3>
+          <div class="target-switch" id="target-switch" data-i18n-title="panel.switch_title" title="Cambiar destino: Programa o Funcion 1">
+            <button class="target-opt active" data-target="main" data-i18n="panel.program">Programa</button>
+            <button class="target-opt" data-target="func1" data-i18n="panel.f1">F1</button>
+            <button class="target-opt" data-target="for" data-i18n="panel.for">FOR</button>
           </div>
         </div>
-        <button data-dir="up"><span class="dir-icon">▲</span><span class="dir-label">move up</span></button>
-        <button data-dir="down"><span class="dir-icon">▼</span><span class="dir-label">move down</span></button>
-        <button data-dir="left"><span class="dir-icon">◀</span><span class="dir-label">move left</span></button>
-        <button data-dir="right"><span class="dir-icon">▶</span><span class="dir-label">move right</span></button>
-        <button data-dir="func1"><span class="dir-icon" style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;">ƒ</span><span class="dir-label" style="color:#1a4a7a">FUNCTION 1</span></button>
-        <button data-dir="for"><span class="dir-icon for-icon">FOR</span><span class="dir-label for-label">REPETIR</span></button>
+        <button data-dir="up"><span class="dir-icon">▲</span><span class="dir-label" data-i18n="dir.up">mover arriba</span></button>
+        <button data-dir="down"><span class="dir-icon">▼</span><span class="dir-label" data-i18n="dir.down">mover abajo</span></button>
+        <button data-dir="left"><span class="dir-icon">◀</span><span class="dir-label" data-i18n="dir.left">mover izq.</span></button>
+        <button data-dir="right"><span class="dir-icon">▶</span><span class="dir-label" data-i18n="dir.right">mover der.</span></button>
+        <button data-dir="func1"><span class="dir-icon" style="color:#1a4a7a; font-style: italic; font-weight: 900; font-family: serif; text-shadow: 0.5px 0 0 #1a4a7a, -0.5px 0 0 #1a4a7a;">ƒ</span><span class="dir-label" style="color:#1a4a7a" data-i18n="btn.func1">FUNCION 1</span></button>
+        <button data-dir="for"><span class="dir-icon for-icon">FOR</span><span class="dir-label for-label" data-i18n="btn.for">REPETIR</span></button>
         <!-- Boton JUMP retirado del panel de movimientos: el salto se reimplementara
              mediante el comando IF (saltar). El picker (jump-picker.js / jump-picker.css)
              se conserva por si se reutiliza. -->
@@ -69,18 +69,18 @@
 
     <div id="right-panels">
       <div class="sprout-panel" id="queue">
-        <h3>Program (max 5)</h3>
+        <h3 data-i18n="panel.program_max">Programa (max 5)</h3>
         <div class="slots" id="slots">
           <div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div><div class="slot"></div>
         </div>
-        <button id="run" class="run"><span class="queue-icon">✓</span><span class="queue-label">ejecutar</span></button>
-        <button id="clear" class="clear"><span class="queue-icon">✕</span><span class="queue-label">borrar</span></button>
-        <button id="restart"><span class="queue-icon">↺</span><span class="queue-label">reiniciar</span></button>
+        <button id="run" class="run"><span class="queue-icon">✓</span><span class="queue-label" data-i18n="btn.run">ejecutar</span></button>
+        <button id="clear" class="clear"><span class="queue-icon">✕</span><span class="queue-label" data-i18n="btn.clear">borrar</span></button>
+        <button id="restart"><span class="queue-icon">↺</span><span class="queue-label" data-i18n="btn.restart">reiniciar</span></button>
       </div>
 
       <div class="sprout-panel panel-plegable" id="queue-func1">
         <button class="panel-toggle" type="button" data-toggle-panel="queue-func1" aria-expanded="true" aria-controls="queue-func1-content">
-          <span>FUNCION 1</span>
+          <span data-i18n="panel.func1_title">FUNCION 1</span>
           <span class="panel-toggle-icon">&#9662;</span>
         </button>
         <div class="panel-cuerpo" id="queue-func1-content">
@@ -89,62 +89,62 @@
           <div class="slot"></div>
           <div class="slot"></div>
         </div>
-        <button id="clear-func1" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR F1</span></button>
+        <button id="clear-func1" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label" data-i18n="btn.clear_f1">BORRAR F1</span></button>
         </div>
       </div>
 
       <div class="sprout-panel panel-plegable" id="queue-for">
         <button class="panel-toggle" type="button" data-toggle-panel="queue-for" aria-expanded="true" aria-controls="queue-for-content">
-          <span>FOR</span>
+          <span data-i18n="panel.for_title">FOR</span>
           <span class="panel-toggle-icon">▾</span>
         </button>
         <div class="panel-cuerpo" id="queue-for-content">
-          <label class="if-select-label" for="for-count-select">Repetir</label>
+          <label class="if-select-label" for="for-count-select" data-i18n="for.repeat">Repetir</label>
           <select id="for-count-select" class="if-select">
-            <option value="2">2 veces</option>
-            <option value="3">3 veces</option>
-            <option value="4">4 veces</option>
-            <option value="5">5 veces</option>
+            <option value="2" data-i18n="for.times_2">2 veces</option>
+            <option value="3" data-i18n="for.times_3">3 veces</option>
+            <option value="4" data-i18n="for.times_4">4 veces</option>
+            <option value="5" data-i18n="for.times_5">5 veces</option>
           </select>
           <div class="slots f1-slots" id="slots-for" style="margin-bottom: 12px; gap: 8px;">
             <div class="slot"></div>
             <div class="slot"></div>
             <div class="slot"></div>
           </div>
-          <button id="clear-for" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR FOR</span></button>
+          <button id="clear-for" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label" data-i18n="btn.clear_for">BORRAR FOR</span></button>
         </div>
       </div>
 
       <div class="sprout-panel panel-plegable" id="queue-if-rule">
         <button class="panel-toggle" type="button" data-toggle-panel="queue-if-rule" aria-expanded="true" aria-controls="queue-if-content">
-          <span>SI</span>
+          <span data-i18n="panel.if_title">SI</span>
           <span class="panel-toggle-icon">▾</span>
         </button>
         <div class="panel-cuerpo" id="queue-if-content">
-          <label class="if-select-label" for="if-condition-select">Si pasa</label>
+          <label class="if-select-label" for="if-condition-select" data-i18n="if.condition_label">Si pasa</label>
           <select id="if-condition-select" class="if-select">
-            <option value="">sin condicion</option>
-            <option value="rock-ahead">roca adelante</option>
-            <option value="tree-ahead">arbol adelante</option>
+            <option value="" data-i18n="if.no_condition">sin condicion</option>
+            <option value="rock-ahead" data-i18n="if.rock_ahead">roca adelante</option>
+            <option value="tree-ahead" data-i18n="if.tree_ahead">arbol adelante</option>
           </select>
-          <label class="if-select-label" for="if-action-select">Hacer esto</label>
+          <label class="if-select-label" for="if-action-select" data-i18n="if.action_label">Hacer esto</label>
           <select id="if-action-select" class="if-select">
-            <option value="">sin accion</option>
-            <option value="jump">saltar</option>
-            <option value="cut">cortar</option>
+            <option value="" data-i18n="if.no_action">sin accion</option>
+            <option value="jump" data-i18n="if.jump">saltar</option>
+            <option value="cut" data-i18n="if.cut">cortar</option>
           </select>
           <div class="if-rule-sep"></div>
-          <label class="if-select-label" for="if-condition-select-2">Y si pasa</label>
+          <label class="if-select-label" for="if-condition-select-2" data-i18n="if.condition_label_2">Y si pasa</label>
           <select id="if-condition-select-2" class="if-select">
-            <option value="">sin condicion</option>
-            <option value="rock-ahead">roca adelante</option>
-            <option value="tree-ahead">arbol adelante</option>
+            <option value="" data-i18n="if.no_condition">sin condicion</option>
+            <option value="rock-ahead" data-i18n="if.rock_ahead">roca adelante</option>
+            <option value="tree-ahead" data-i18n="if.tree_ahead">arbol adelante</option>
           </select>
-          <label class="if-select-label" for="if-action-select-2">Hacer esto</label>
+          <label class="if-select-label" for="if-action-select-2" data-i18n="if.action_label">Hacer esto</label>
           <select id="if-action-select-2" class="if-select">
-            <option value="">sin accion</option>
-            <option value="jump">saltar</option>
-            <option value="cut">cortar</option>
+            <option value="" data-i18n="if.no_action">sin accion</option>
+            <option value="jump" data-i18n="if.jump">saltar</option>
+            <option value="cut" data-i18n="if.cut">cortar</option>
           </select>
         </div>
       </div>
@@ -157,7 +157,7 @@
         <div id="level-dialog-text"></div>
         <button id="level-dialog-btn">
           <span id="level-dialog-btn-icon">✓</span>
-          <span>continuar</span>
+          <span data-i18n="dialog.continue">continuar</span>
         </button>
       </div>
     </div>
@@ -165,11 +165,11 @@
 
     <div id="name-dialog">
       <div id="name-dialog-box">
-        <h3>Nuevo nivel</h3>
-        <input id="name-dialog-input" type="text" maxlength="30" placeholder="Nombre del nivel…" autocomplete="off" />
+        <h3 data-i18n="name_dialog.title">Nuevo nivel</h3>
+        <input id="name-dialog-input" type="text" maxlength="30" data-i18n-placeholder="name_dialog.placeholder" placeholder="Nombre del nivel…" autocomplete="off" />
         <div id="name-dialog-actions">
-          <button id="name-dialog-cancel">Cancelar</button>
-          <button id="name-dialog-confirm" class="confirm">Crear</button>
+          <button id="name-dialog-cancel" data-i18n="name_dialog.cancel">Cancelar</button>
+          <button id="name-dialog-confirm" class="confirm" data-i18n="name_dialog.confirm">Crear</button>
         </div>
       </div>
     </div>
@@ -177,84 +177,84 @@
     <div id="editor-panel">
       <div class="ed-header">
         <div class="ed-header-title">
-          <h3 id="ed-title">Editor</h3>
+          <h3 id="ed-title" data-i18n="editor.title">Editor</h3>
           <div class="ed-status" id="ed-status">
             <span class="ed-status-dot" id="ed-status-dot"></span>
             <span id="ed-status-text">—</span>
-            <span class="empty" id="ed-sel-text">Sin seleccion</span>
+            <span class="empty" id="ed-sel-text" data-i18n="editor.no_selection">Sin seleccion</span>
             <span class="empty" id="ed-hover-text">—</span>
           </div>
         </div>
       </div>
 
       <div class="ed-col-toggle" id="ed-col-toggle">
-        <button data-col="tools"><span class="ed-col-arrow">❮</span> 🔧 Herramientas</button>
-        <button data-col="palette">🎨 Paleta <span class="ed-col-arrow">❯</span></button>
+        <button data-col="tools"><span class="ed-col-arrow">❮</span> 🔧 <span data-i18n="editor.tools">Herramientas</span></button>
+        <button data-col="palette">🎨 <span data-i18n="editor.palette">Paleta</span> <span class="ed-col-arrow">❯</span></button>
       </div>
 
       <div class="ed-columns">
         <div class="ed-col ed-col-tools">
           <div class="ed-section">
-            <h3>Nivel</h3>
+            <h3 data-i18n="editor.level">Nivel</h3>
             <div id="ed-summary" class="ed-summary">
-              <span>Pickups: <b id="ed-sum-pickups">0</b></span>
-              <span>Objetos: <b id="ed-sum-objetos">0</b></span>
-              <span>Spawn: <b id="ed-sum-spawn">✓</b></span>
+              <span><span data-i18n="editor.pickups">Pickups:</span> <b id="ed-sum-pickups">0</b></span>
+              <span><span data-i18n="editor.objects">Objetos:</span> <b id="ed-sum-objetos">0</b></span>
+              <span><span data-i18n="editor.spawn">Spawn:</span> <b id="ed-sum-spawn">✓</b></span>
             </div>
           </div>
 
           <div class="ed-section">
-            <h3>Historial</h3>
+            <h3 data-i18n="editor.history">Historial</h3>
             <div id="ed-toolbar" class="ed-toolbar">
-              <button id="ed-tool-undo" title="Deshacer (Ctrl+Z)"><span class="ed-btn-glyph">↶</span></button>
-              <button id="ed-tool-redo" title="Rehacer (Ctrl+Y)"><span class="ed-btn-glyph">↷</span></button>
+              <button id="ed-tool-undo" data-i18n-title="editor.undo" title="Deshacer (Ctrl+Z)"><span class="ed-btn-glyph">↶</span></button>
+              <button id="ed-tool-redo" data-i18n-title="editor.redo" title="Rehacer (Ctrl+Y)"><span class="ed-btn-glyph">↷</span></button>
             </div>
           </div>
 
           <div class="ed-section">
             <div class="ed-section-title-row">
-              <h3>Capa</h3>
-              <button id="ed-clear" class="ed-section-title-btn" title="Limpiar capa actual">✕ Limpiar</button>
+              <h3 data-i18n="editor.layer">Capa</h3>
+              <button id="ed-clear" class="ed-section-title-btn" data-i18n-title="editor.clear_layer_title" title="Limpiar capa actual"><span data-i18n="editor.clear_layer_btn">✕ Limpiar</span></button>
             </div>
             <div class="ed-layers" id="ed-layers">
-              <button data-layer="floor"><span class="ed-layer-num">1</span><span>Floor</span></button>
-              <button data-layer="walls" class="active"><span class="ed-layer-num">2</span><span>Walls</span></button>
-              <button data-layer="path"><span class="ed-layer-num">3</span><span>Path</span></button>
-              <button data-layer="overlay"><span class="ed-layer-num">4</span><span>Overlay</span></button>
-              <button data-layer="top"><span class="ed-layer-num">5</span><span>Top</span></button>
+              <button data-layer="floor"><span class="ed-layer-num">1</span><span data-i18n="editor.floor">Floor</span></button>
+              <button data-layer="walls" class="active"><span class="ed-layer-num">2</span><span data-i18n="editor.walls">Walls</span></button>
+              <button data-layer="path"><span class="ed-layer-num">3</span><span data-i18n="editor.path">Path</span></button>
+              <button data-layer="overlay"><span class="ed-layer-num">4</span><span data-i18n="editor.overlay">Overlay</span></button>
+              <button data-layer="top"><span class="ed-layer-num">5</span><span data-i18n="editor.top">Top</span></button>
             </div>
           </div>
 
           <div class="ed-section">
-            <h3>Modos</h3>
+            <h3 data-i18n="editor.modes">Modos</h3>
             <div class="ed-modes">
-              <button id="ed-spawn"><span class="ed-btn-glyph">◉</span> Spawn S</button>
-              <button id="ed-intro-mode"><span class="ed-btn-glyph">▸</span> Intro I</button>
+              <button id="ed-spawn"><span class="ed-btn-glyph">◉</span> <span data-i18n="editor.spawn_mode">Spawn S</span></button>
+              <button id="ed-intro-mode"><span class="ed-btn-glyph">▸</span> <span data-i18n="editor.intro_mode">Intro I</span></button>
             </div>
           </div>
 
           <div class="ed-section">
-            <h3>Acciones</h3>
+            <h3 data-i18n="editor.actions">Acciones</h3>
             <div class="ed-actions">
-              <button class="save" id="ed-save"><span class="ui-icon ui-icon-star dark"></span> Guardar </button>
-              <button id="ed-play"><span class="ui-icon ui-icon-joystick dark"></span> Probar</button>
-              <button id="ed-revert"><span class="ed-btn-glyph">↶</span> Revertir </button>
-              <button class="menu" id="ed-menu"><span class="ui-icon ui-icon-house dark"></span> Menu </button>
+              <button class="save" id="ed-save"><span class="ui-icon ui-icon-star dark"></span> <span data-i18n="editor.save">Guardar</span></button>
+              <button id="ed-play"><span class="ui-icon ui-icon-joystick dark"></span> <span data-i18n="editor.test">Probar</span></button>
+              <button id="ed-revert"><span class="ed-btn-glyph">↶</span> <span data-i18n="editor.revert">Revertir</span></button>
+              <button class="menu" id="ed-menu"><span class="ui-icon ui-icon-house dark"></span> <span data-i18n="editor.menu">Menu</span></button>
             </div>
           </div>
         </div>
 
         <div class="ed-col ed-col-palette">
           <div id="ed-main-tabs-bar">
-            <button data-tab="assets">ASSETS</button>
-            <button data-tab="weather">CLIMA</button>
+            <button data-tab="assets" data-i18n="editor.assets_tab">ASSETS</button>
+            <button data-tab="weather" data-i18n="editor.weather_tab">CLIMA</button>
           </div>
           <div id="ed-assets-panel" class="ed-main-panel">
             <div id="ed-tab-content">
               <div id="ed-tileset-panel" class="ed-asset-tree active">
                 <div class="ed-tree-root open active" data-tree-node="tileset-root" role="tree" aria-label="Tileset">
                   <button class="ed-tree-header" type="button" aria-expanded="true" role="treeitem" aria-level="1">
-                    <span class="ed-tree-header-label"><span>Tileset</span></span>
+                    <span class="ed-tree-header-label"><span data-i18n="editor.tileset">Tileset</span></span>
                     <span class="ed-tree-arrow" aria-hidden="true"></span>
                   </button>
                   <div class="ed-tree-body" id="ed-tileset-tree" role="group"></div>
@@ -263,7 +263,7 @@
               <div id="ed-objects-panel" class="ed-asset-tree">
                 <div class="ed-tree-root open" data-tree-node="objects-root" role="tree" aria-label="Objetos">
                   <button class="ed-tree-header" type="button" aria-expanded="true" role="treeitem" aria-level="1">
-                    <span class="ed-tree-header-label"><span>Objetos</span></span>
+                    <span class="ed-tree-header-label"><span data-i18n="editor.objects_tree">Objetos</span></span>
                     <span class="ed-tree-arrow" aria-hidden="true"></span>
                   </button>
                   <div class="ed-tree-body" id="ed-objects-tree" role="group"></div>
@@ -281,13 +281,13 @@
                 </button>
               </div>
               <div class="ed-obj-type" id="ed-obj-type">
-                <span class="ed-obj-type-label">Tipo:</span>
-                <button data-objtype="pickup_with_animation">Pickup anim</button>
-                <button data-objtype="pickup">Pickup</button>
-                <button data-objtype="deco">Deco</button>
-                <button data-objtype="top">Top</button>
-                <label class="ed-obj-solid" id="ed-obj-solid" title="El objeto bloquea el paso del jugador">
-                  <input type="checkbox" id="ed-obj-solid-cb"> Sólido
+                <span class="ed-obj-type-label" data-i18n="editor.type">Tipo:</span>
+                <button data-objtype="pickup_with_animation" data-i18n="editor.pickup_anim">Pickup anim</button>
+                <button data-objtype="pickup" data-i18n="editor.pickup">Pickup</button>
+                <button data-objtype="deco" data-i18n="editor.deco">Deco</button>
+                <button data-objtype="top" data-i18n="editor.top_obj">Top</button>
+                <label class="ed-obj-solid" id="ed-obj-solid" data-i18n-title="editor.solid_title" title="El objeto bloquea el paso del jugador">
+                  <input type="checkbox" id="ed-obj-solid-cb"> <span data-i18n="editor.solid">Sólido</span>
                 </label>
               </div>
             </div>
@@ -307,8 +307,8 @@
       <div class="ed-modal-box">
         <p id="ed-modal-text"></p>
         <div class="ed-modal-actions">
-          <button id="ed-modal-cancel">Cancelar</button>
-          <button id="ed-modal-confirm" class="confirm">Confirmar</button>
+          <button id="ed-modal-cancel" data-i18n="editor.cancel">Cancelar</button>
+          <button id="ed-modal-confirm" class="confirm" data-i18n="editor.confirm">Confirmar</button>
         </div>
       </div>
     </div>

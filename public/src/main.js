@@ -11,8 +11,14 @@ import { DungeonScene } from './engine/levels/DungeonScene.js';
 import { BosqueDePruebaScene } from './engine/levels/BosqueDePruebaScene.js';
 import { BosqueFloralScene } from './engine/levels/BosqueFloralScene.js';
 import { TILE, COLS, ROWS, MAX_ZOOM } from './config/game.js';
+import { t, applyDomTranslations, onLanguageChange } from './services/i18n.js';
 
 export { TILE, COLS, ROWS, MAX_ZOOM };
+
+window.__t = t;
+window.__applyDomTranslations = applyDomTranslations;
+onLanguageChange(() => applyDomTranslations());
+applyDomTranslations();
 
 const game = new Phaser.Game({
   type: Phaser.AUTO,

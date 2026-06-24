@@ -8,6 +8,7 @@
 // jugador.
 
 import { showCard, injectStyles, ico, lockPanels, unlockPanels, panTo } from './intro.js';
+import { t } from '../../services/i18n.js';
 
 const FULL = { x: 128, y: 96 };    // centro del mapa (COLS*TILE/2, ROWS*TILE/2)
 const COLUMNA = { x: 56, y: 96 };  // vista de la bajada (columna x=3, spawn arriba)
@@ -40,13 +41,13 @@ export async function runForTutorial(scene, signal) {
   // 1. Acercar la camara a la bajada larga
   await panTo(scene, COLUMNA, 2.0, 900);
   if (signal?.cancelled) return;
-  await showCard(`${ico('gato')} Gatito tiene que bajar un <b>largo tramo</b>… siempre el <b>mismo paso</b>: abajo.`, signal);
+  await showCard(t('for_tut.long_path'), signal);
   if (signal?.cancelled) return;
 
   // 1b. Mostrar el primer regalo, que lo espera al final de esa bajada
   await panTo(scene, REGALO, 2.5, 800);
   if (signal?.cancelled) return;
-  await showCard(`${ico('manzana')} …para llegar hasta <b>su primer regalo</b>, que lo espera justo al final de la bajada.`, signal);
+  await showCard(t('for_tut.gift'), signal);
   if (signal?.cancelled) return;
 
   // 2. Demostrar lo tedioso de repetir a mano
@@ -56,7 +57,7 @@ export async function runForTutorial(scene, signal) {
     await scene.step('down');
     if (signal?.cancelled) return;
   }
-  await showCard(`${ico('pregunta')} Repetir el mismo movimiento a mano <b>llena todo el programa</b>. ¿Hay una forma más corta?`, signal);
+  await showCard(t('for_tut.tedious'), signal);
   if (signal?.cancelled) return;
 
   // 3. Revelar el panel FOR (climax)
@@ -85,10 +86,7 @@ export async function runForTutorial(scene, signal) {
   }
   forPanel?.classList.add('unlock-glow', 'unlock-layer');
   forBtn?.classList.add('unlock-glow', 'unlock-layer');
-  await showCard(
-    `${ico('estrella')} ¡Desbloqueaste el <b>FOR</b> (repetir)!<br><br>En vez de repetir a mano, le decís <b>qué</b> movimiento y <b>cuántas veces</b>.`,
-    signal,
-  );
+  await showCard(t('for_tut.unlock'), signal);
   forPanel?.classList.remove('unlock-glow', 'unlock-layer');
   forBtn?.classList.remove('unlock-glow', 'unlock-layer');
   if (dirsPanel) {
@@ -100,7 +98,7 @@ export async function runForTutorial(scene, signal) {
   // 3a. Cuantas veces
   const countSel = document.getElementById('for-count-select');
   countSel?.classList.add('intro-highlight');
-  await showCard(`${ico('pregunta')} <b>Repetir:</b> elegimos <b>5 veces</b>, los pasos que hay hasta el regalo.`, signal);
+  await showCard(t('for_tut.count'), signal);
   setSelect(countSel, String(PASOS_REGALO));
   countSel?.classList.remove('intro-highlight');
   if (signal?.cancelled) return;
@@ -109,7 +107,7 @@ export async function runForTutorial(scene, signal) {
   click('[data-target="for"]');
   const slotsFor = document.getElementById('slots-for');
   slotsFor?.classList.add('intro-highlight');
-  await showCard(`${ico('check')} <b>Qué repetir:</b> ponemos <b>abajo</b> en el bloque.`, signal);
+  await showCard(t('for_tut.what'), signal);
   click('[data-dir="down"]');
   await delay(scene, 450);
   slotsFor?.classList.remove('intro-highlight');
@@ -125,7 +123,7 @@ export async function runForTutorial(scene, signal) {
   }
   await panTo(scene, COLUMNA, 2.0, 600);
   if (signal?.cancelled) return;
-  await showCard(`${ico('estrella')} ¡Mira! Con <b>FOR</b> baja las <b>5 veces</b> solo y llega justo a su regalo.`, signal);
+  await showCard(t('for_tut.payoff'), signal);
   if (signal?.cancelled) return;
   for (let i = 0; i < PASOS_REGALO; i++) {
     await scene.step('down');
@@ -141,8 +139,5 @@ export async function runForTutorial(scene, signal) {
   window.__setForPanel?.(true);
   window.__setIfPanel?.(true);
   unlockPanels();
-  await showCard(
-    `${ico('control')} ¡Ahora vos! Usa <b>FOR</b> para repetir los pasos y combinalo con movimientos para llegar.`,
-    signal,
-  );
+  await showCard(t('for_tut.try_it'), signal);
 }

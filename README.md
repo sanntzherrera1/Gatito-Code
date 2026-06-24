@@ -1,8 +1,8 @@
-# Gatito-codev2
+# Gatito-Code
 
 Juego educativo de programacion con estetica pixel-art. El jugador controla un personaje en un mapa de tiles, ejecutando secuencias de comandos (arriba, abajo, izquierda, derecha, saltar) para recolectar objetos. Introduce a los jugadores a los algoritmos de forma didactica.
 
-Incluye un **editor visual de niveles** con soporte para clima, objetos con variantes y multiples tilesets.
+Incluye un **editor visual de niveles** con soporte para clima, objetos con variantes y multiples tilesets. Disponible en **español e inglés**.
 
 ## Demo
 
@@ -38,6 +38,7 @@ Con el servidor levantado en `http://localhost:3000`, estas son las rutas dispon
 - DevDependencies: `browser-sync` (servidor local) y `vitest` (tests)
 - Assets: [Sprout Lands](https://cup-nooble.itch.io/sprout-lands) + [SorrySprites](https://itch.io/) (sprites, tilesets, UI, objetos, animales, personajes)
 - Personajes: Basic Char (48×48) y Premium Char (48×48) incluidos
+- Audio: efectos de sonido WAV/OGG/MP3 para interacciones, gameplay y UI
 
 ## Levantar el proyecto
 
@@ -86,69 +87,85 @@ gatito-codev2/
 │   ├── presentacion-gestion/    # Deck de presentacion orientado a gestion del proyecto
 │   ├── proyecto-integrador/     # Deck de presentacion orientado a propuesta/producto
 │   ├── src/
-│   │   ├── main.js             # Configuracion Phaser + registro de escenas
+│   │   ├── main.js             # Configuracion Phaser + registro de escenas + globals i18n
 │   │   ├── config/
-│   │   │   └── game.js         # Constantes: TILE, COLS, ROWS, STEP_MS, DIRS
+│   │   │   ├── game.js         # Constantes: TILE, COLS, ROWS, STEP_MS, DIRS
+│   │   │   ├── icons.js        # Definicion de iconos pixel-art inline (ico())
+│   │   │   └── i18n-strings.js # Catalogo de traducciones ES / EN (~200 claves)
 │   │   ├── domain/             # JavaScript puro. Sin Phaser. Testable con Node.
 │   │   │   ├── Player.js       # Estado, colision, movimiento, facing
 │   │   │   ├── Level.js        # Grilla, solidos, spawn, objetos, clima
 │   │   │   └── Program.js      # Secuencia inmutable de comandos
 │   │   ├── engine/             # Todo lo que toca Phaser
+│   │   │   ├── audio.js        # playSfx(), bindUiSfx(), listener de focus para UI
 │   │   │   ├── scenes/
 │   │   │   │   ├── BootScene.js    # Preload de assets + animaciones globales
-│   │   │   │   ├── MenuScene.js    # Menu principal
+│   │   │   │   ├── MenuScene.js    # Menu principal con selector de idioma
 │   │   │   │   ├── EditorScene.js  # Editor visual de niveles
 │   │   │   │   └── TileLevelScene.js # Clase base de niveles jugables
 │   │   │   ├── levels/
-│   │   │   │   ├── GymScene.js     # Nivel 1 (gym) — tutorial
-│   │   │   │   ├── MainScene.js    # Nivel 2 (main)
-│   │   │   │   └── CustomScene.js  # Niveles personalizados
+│   │   │   │   ├── GymScene.js          # Nivel tutorial basico
+│   │   │   │   ├── MainScene.js         # Nivel principal
+│   │   │   │   ├── Nivel0Scene.js       # Nivel introductorio
+│   │   │   │   ├── Nivel3Scene.js       # Nivel con tutorial de Funcion 1
+│   │   │   │   ├── CustomScene.js       # Niveles personalizados (IF, FOR, etc.)
+│   │   │   │   ├── DungeonScene.js      # Nivel dungeon
+│   │   │   │   ├── BosqueDePruebaScene.js
+│   │   │   │   ├── BosqueFloralScene.js
+│   │   │   │   ├── PruebaScene.js
+│   │   │   │   ├── intro.js             # Tutorial cinematico base (carteles, camara)
+│   │   │   │   ├── ifTutorial.js        # Tutorial cinematico del IF
+│   │   │   │   └── forTutorial.js       # Tutorial cinematico del FOR
 │   │   │   ├── entities/
-│   │   │   │   ├── PlayerView.js   # Sprite, tweens, anims walk/idle/jump
-│   │   │   │   ├── PickupView.js   # Sprite flotante + efecto de recoleccion
-│   │   │   │   └── WorldObjectView.js # Sprite visual para objetos del mapa
+│   │   │   │   ├── PlayerView.js        # Sprite, tweens, anims walk/idle/jump/axe
+│   │   │   │   ├── PickupView.js        # Sprite flotante + efecto de recoleccion
+│   │   │   │   └── WorldObjectView.js   # Sprite visual para objetos del mapa
 │   │   │   ├── level/
-│   │   │   │   ├── TileRegistry.js     # Registro: 55 tilesets, ~221 objetos, terrenos, variantes
+│   │   │   │   ├── TileRegistry.js      # 55 tilesets, ~221 objetos, GIDs, variantes
 │   │   │   │   ├── ObjectAnimations.js  # Definicion de animaciones de objetos
-│   │   │   │   ├── TileLevelLoader.js  # JSON → Phaser Tilemap + domain/Level
-│   │   │   │   └── WeatherSystem.js    # Clima: lluvia, nieve, viento, tormenta, noche, etc.
+│   │   │   │   ├── TileLevelLoader.js   # JSON → Phaser Tilemap + domain/Level
+│   │   │   │   ├── PathAnimator.js      # Animacion del camino sugerido
+│   │   │   │   └── WeatherSystem.js     # Clima: lluvia, nieve, viento, tormenta, etc.
 │   │   │   └── program/
-│   │   │       └── ProgramExecutor.js  # Interprete asincrono de comandos
+│   │   │       └── ProgramExecutor.js   # Interprete asincrono de comandos
 │   │   ├── game/
-│   │   │   └── PickupManager.js    # Orquestacion de pickups en runtime
+│   │   │   └── PickupManager.js         # Orquestacion de pickups en runtime
 │   │   ├── services/
-│   │   │   └── Storage.js          # localStorage: overrides, niveles personalizados
-│   │   └── ui/                     # DOM: paleta, dialogos, cola de comandos
+│   │   │   ├── Storage.js               # localStorage: overrides, niveles personalizados
+│   │   │   ├── Settings.js              # Preferencias: volumen musica/sfx, idioma
+│   │   │   └── i18n.js                  # Runtime i18n: t(), applyDomTranslations()
+│   │   └── ui/                          # DOM: paleta, dialogos, cola de comandos
 │   │       ├── index.js
 │   │       ├── queue.js
 │   │       ├── dialog.js
 │   │       ├── mission.js
+│   │       ├── result.js
 │   │       ├── editor-ui.js
 │   │       ├── jump-picker.js
 │   │       ├── name-dialog.js
 │   │       └── state.js
-│   ├── levels/
-│   │   ├── gym.json            # Datos del nivel Gym
-│   │   └── main.json           # Datos del nivel Main
+│   ├── levels/                  # JSONs estaticos de niveles built-in
 │   └── assets/
-│       ├── ui.json             # Manifest de texturas/animaciones UI
+│       ├── audio/               # Efectos de sonido (WAV, OGG, MP3)
+│       ├── ui.json              # Manifest de texturas/animaciones UI
 │       ├── SproutLands-Sprites/ # Tilesets y sprites del personaje/objetos
 │       ├── SproutLands-SorrySprites/ # Packs extendidos (dungeon, invierno, aldea)
-│       └── SproutLands-UI/     # Fuentes, botones, menus, dialogs
+│       └── SproutLands-UI/      # Fuentes, botones, menus, dialogs
 ├── tests/
-│   └── domain.test.js          # Tests unitarios de dominio (Vitest)
-├── package.json                # Scripts npm (start, test)
-└── AGENTS.md / CLAUDE.md       # Documentacion de arquitectura para agentes de IA
+│   └── domain.test.js           # Tests unitarios de dominio (Vitest)
+├── package.json                 # Scripts npm (start, test)
+└── AGENTS.md / CLAUDE.md        # Documentacion de arquitectura para agentes de IA
 ```
 
 ## Arquitectura en capas
 
 | Capa | Descripcion | Puede importar de |
 |---|---|---|
+| **`config/`** | Constantes, catalogo de traducciones, definicion de iconos. Sin dependencias. | — |
 | **`domain/`** | Logica pura: estado del jugador, colisiones, geometria del nivel. **Sin Phaser.** | `config/` |
-| **`engine/`** | Renderizado, input, tweens, escenas de Phaser, efectos visuales. | `config/`, `domain/`, `services/` |
-| **`services/`** | Persistencia: localStorage, registro de niveles personalizados. | `config/`, `domain/`, `engine/level/` |
-| **`ui/`** | DOM/HTML superpuesto al canvas. Comunica con Phaser via `window.__GYM`. | `config/` (indirecto) |
+| **`engine/`** | Renderizado, input, tweens, escenas de Phaser, efectos visuales y audio. | `config/`, `domain/`, `services/` |
+| **`services/`** | Persistencia (localStorage), configuracion, runtime de i18n. | `config/`, `domain/`, `engine/level/` |
+| **`ui/`** | DOM/HTML superpuesto al canvas. Comunica con Phaser via `window.__GYM`. | `config/` (indirecto via globals) |
 
 **Flujo de datos:**
 ```
@@ -161,12 +178,14 @@ UI (DOM) ──window.__GYM──► engine/scenes/TileLevelScene
 
 ## Como jugar
 
-1. Desde el menu elegir **Gym** (nivel tutorial), **Main** o un **nivel personalizado**
+1. Desde el menu elegir un nivel (tutorial, gym, dungeon, bosque, etc.)
 2. Arrastrar o clickear los botones de direccion (panel izquierdo) para llenar los slots del programa (panel derecho)
 3. Presionar **Ejecutar** para que el personaje ejecute los movimientos en secuencia
 4. Recolectar todos los items para completar el nivel
 5. **Reiniciar** vuelve al personaje al punto de spawn
 6. **Funcion 1 (F1)**: Podes grabar una subrutina reutilizable que luego invocas con el boton `ƒ`
+7. **Repetir (FOR)**: Indica un movimiento y cuantas veces repetirlo
+8. **Si (IF)**: Define una condicion (roca adelante, arbol adelante) y una accion automatica (saltar, cortar)
 
 ## Editor de niveles
 
@@ -307,6 +326,60 @@ Los terrenos usan un bitmask de 4 vecinos cardinales: North=1, East=2, South=4, 
    ```
 3. **Si tiene variantes**, definirlas en `VARIANT_DEFS` (mismo archivo)
 4. **Recargar** — `BootScene.js` precarga automaticamente todo `OBJECTS`
+
+## Sistema de audio
+
+Ubicacion: `engine/audio.js`
+
+Todos los efectos se reproducen respetando el volumen configurado en Ajustes (slider de efectos).
+
+| Evento | Sonido |
+|---|---|
+| Click en boton de UI | `ui_click` |
+| Focus en elemento interactivo | `ui_focus` |
+| Borrar programa / slot | `ui_erase` |
+| Ejecutar programa | `ui_execute` |
+| Iniciar drag de comando | `drag_pick` |
+| Soltar comando en slot | `drag_drop` |
+| Salto del personaje | `jump_sound` |
+| Recolectar objeto | `pickup_sound` |
+| Paso sobre cesped | `step_grass_0/1/2` (aleatorio) |
+| Paso sobre madera | `step_wood_0/1/2` (aleatorio) |
+| Deslizamiento de camara (tutorial) | `cam_slide` |
+| Rebote del camino sugerido | `path_bounce` |
+| Victoria | `win_sound` |
+| Derrota | `lose_sound` |
+
+El bus de sonido de UI se expone como `window.__playUiSfx(key?)` para que las capas DOM puedan disparar efectos sin importar directamente Phaser.
+
+## Internacionalizacion (i18n)
+
+El juego soporta **español** (por defecto) e **inglés**, seleccionable desde el menu **Configuracion**.
+
+La preferencia se persiste en `localStorage` y se aplica al iniciar cada nivel.
+
+### Arquitectura
+
+| Archivo | Rol |
+|---|---|
+| `config/i18n-strings.js` | Catalogo plano de ~200 claves en ES y EN |
+| `config/icons.js` | Funcion `ico(name)` para iconos pixel-art inline |
+| `services/i18n.js` | Runtime: `t(key, params)`, `applyDomTranslations()`, `onLanguageChange(cb)` |
+| `services/Settings.js` | Persiste `language` en localStorage junto al volumen |
+
+### Uso
+
+```js
+// En Phaser (engine/)
+import { t } from '../../services/i18n.js';
+this.missionText = t('gym.mission');
+
+// En DOM (ui/) — via global
+const label = window.__t?.('btn.run') ?? 'ejecutar';
+
+// En HTML — actualizado automaticamente al cambiar idioma
+<span data-i18n="btn.run">ejecutar</span>
+```
 
 ## Limitaciones conocidas
 

@@ -20,6 +20,7 @@ export function initJumpPicker(renderAllSlots) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       if (GYM.running || !jumpQueue) return;
+      window.__playUiSfx?.();
       const d = btn.dataset.jdir;
       if (jumpQueue.length >= jumpMax) return;
       jumpQueue.push(d === 'none' ? 'jump' : `jump_${d}`);

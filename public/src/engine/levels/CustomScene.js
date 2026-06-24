@@ -2,33 +2,16 @@ import { TileLevelScene } from '../scenes/TileLevelScene.js';
 import { runIfTutorial } from './ifTutorial.js';
 import { runForTutorial } from './forTutorial.js';
 import { unlockPanels, lockPanels } from './intro.js';
+import { t } from '../../services/i18n.js';
 
-const LEVEL_COPY = {
-  if: {
-    welcome: 'Nuevo concepto: IF. SI sucede una condicion, Gatito hace otra cosa. En este nivel, si hay una roca adelante, la salta.',
-    mission: 'Mision: Activa SI ROCA SALTAR y usa mover a la derecha para cruzar la linea de piedras.',
-  },
-  si_2: {
-    welcome: 'Este tramo repite la misma idea dos veces. Usa FUNCION 1 como bloque reutilizable junto con SI ROCA SALTAR.',
-    mission: 'Mision: Repite una mini-rutina con F1 para juntar todo usando SI ROCA SALTAR.',
-  },
-  jardin_tutorial: {
-    welcome: 'Bienvenido al jardin. Recorre el camino con los movimientos basicos y recolecta todo lo que encuentres.',
-    mission: 'Mision: Usa los movimientos para recorrer el jardin y recolectar todos los items.',
-  },
-  for: {
-    welcome: 'Nuevo concepto: FOR. Repite un bloque varias veces sin llenar todo el programa principal. IF sigue disponible como herramienta ya desbloqueada.',
-    mission: 'Mision: Usa FOR para repetir una secuencia corta y llegar al objetivo. Tambien podes combinarlo con SI cuando haga falta.',
-  },
-  si_1: {
-    welcome: 'Ahora que ya conoces IF, usalo junto con movimientos normales para cruzar y despues girar.',
-    mission: 'Mision: Usa SI junto con movimientos normales para cruzar las rocas y recolectar todo.',
-  },
-  si_3: {
-    welcome: 'Este nivel mezcla saltos automaticos con giros. Si solo avanzas, no alcanza.',
-    mission: 'Mision: Usa SI ROCA SALTAR y cambia de direccion para juntar los dos objetos.',
-  },
-};
+function getLevelCopy(key) {
+  const known = ['if', 'si_2', 'jardin_tutorial', 'for', 'si_1', 'si_3'];
+  if (!known.includes(key)) return null;
+  return {
+    welcome: t(`custom.${key}.welcome`),
+    mission: t(`custom.${key}.mission`),
+  };
+}
 
 const IF_LEVELS = ['if', 'si_2'];
 const FOR_LEVELS = ['for', 'si_1', 'si_3'];
@@ -40,9 +23,9 @@ export class CustomScene extends TileLevelScene {
 
   init(data) {
     super.init(data);
-    const copy = LEVEL_COPY[this.levelKey];
-    this.welcomeMessage = copy?.welcome ?? `Jugando nivel: ${this.levelKey}.`;
-    this.missionText = copy?.mission ?? `Mision: Recolecta todos los items en el nivel ${this.levelKey}.`;
+    const copy = getLevelCopy(this.levelKey);
+    this.welcomeMessage = copy?.welcome ?? t('custom.default_welcome', { key: this.levelKey });
+    this.missionText = copy?.mission ?? t('custom.default_mission', { key: this.levelKey });
     if (this.levelKey === 'if') {
       // El nivel 6 (IF) arranca con un tutorial cinematico al cerrar la bienvenida.
       this.onWelcomeClose = () => this._startIfTutorial();

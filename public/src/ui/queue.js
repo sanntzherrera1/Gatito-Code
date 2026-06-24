@@ -1,4 +1,4 @@
-import { MAX, ARROW, LABEL, GYM } from './state.js';
+import { MAX, ARROW, GYM, getLabel } from './state.js';
 import { showJumpPickerForEl, initJumpPicker } from './jump-picker.js';
 
 let slotsEl;
@@ -16,6 +16,7 @@ let clearFunc1Btn;
 let clearForBtn;
 let trashZoneEl;
 let activeTarget = 'main';
+const uiSfx = (key) => window.__playUiSfx?.(key);
 
 export function initQueue() {
   slotsEl = document.getElementById('slots');
@@ -51,6 +52,7 @@ export function initQueue() {
         const queue = obtenerQueuePorId(payload.queueId);
         if (!queue) return;
         queue.splice(payload.index, 1);
+        uiSfx('ui_erase');
         renderAllSlots();
       }
     } catch (err) {}
@@ -65,6 +67,7 @@ export function initQueue() {
   dirsPanel.querySelectorAll('button[data-dir]:not([data-dir="jump"])').forEach(btn => {
     btn.addEventListener('click', () => {
       if (GYM.running) return;
+      uiSfx();
       const queue = obtenerQueuePorTarget(activeTarget);
       const max = obtenerMaximoQueue(queue);
       const dir = btn.dataset.dir;
@@ -79,6 +82,7 @@ export function initQueue() {
   if (jumpBtn) {
     jumpBtn.addEventListener('click', e => {
       if (GYM.running) return;
+      uiSfx();
       e.stopPropagation();
       const queue = obtenerQueuePorTarget(activeTarget);
       const max = obtenerMaximoQueue(queue);
@@ -90,6 +94,7 @@ export function initQueue() {
   dirsPanel.querySelectorAll('button[data-dir]:not([data-dir="jump"])').forEach(btn => {
     btn.setAttribute('draggable', 'true');
     btn.addEventListener('dragstart', e => {
+      uiSfx('drag_pick');
       e.dataTransfer.setData('text/plain', btn.dataset.dir);
       e.dataTransfer.effectAllowed = 'all';
     });
@@ -101,18 +106,21 @@ export function initQueue() {
 
   clearBtn.addEventListener('click', () => {
     if (GYM.running) return;
+    if (GYM.queue.length) uiSfx('ui_erase');
     GYM.queue.length = 0;
     renderAllSlots();
   });
 
   clearFunc1Btn.addEventListener('click', () => {
     if (GYM.running) return;
+    if (GYM.queueFunc1.length) uiSfx('ui_erase');
     GYM.queueFunc1.length = 0;
     renderAllSlots();
   });
 
   clearForBtn?.addEventListener('click', () => {
     if (GYM.running) return;
+    if (GYM.queueFor.length) uiSfx('ui_erase');
     GYM.queueFor.length = 0;
     renderAllSlots();
   });
@@ -120,6 +128,7 @@ export function initQueue() {
   runBtn.addEventListener('click', async () => {
     if (GYM.running) return;
     if (GYM.queue.length === 0) return;
+    uiSfx('ui_execute');
     if (typeof GYM.onRun !== 'function') return;
     setRunning(true);
     try {
@@ -133,6 +142,7 @@ export function initQueue() {
 
   document.getElementById('restart').addEventListener('click', () => {
     if (GYM.running) return;
+    uiSfx();
     window.__clearProgram();
     GYM.onRestart?.();
   });
@@ -202,7 +212,7 @@ window.__setPanels = visible => {
 function initTargetSwitch() {
   const switchEl = document.getElementById('target-switch');
   switchEl.querySelectorAll('.target-opt').forEach(opt => {
-    opt.addEventListener('click', () => activarTarget(opt.dataset.target));
+    opt.addEventListener('click', () => { uiSfx(); activarTarget(opt.dataset.target); });
   });
 }
 
@@ -226,7 +236,7 @@ function renderQueue(queue, container) {
         ? 'style="color:#7a4a12; font-size:10px; font-weight:900;"'
         : '';
     const labelStyle = isFunc ? 'style="color:#1a4a7a"' : isFor ? 'style="color:#7a4a12"' : '';
-    el.innerHTML = value ? `<span class="dir-icon" ${iconStyle}>${ARROW[value]}</span><span class="dir-label" ${labelStyle}>${LABEL[value]}</span>${varText}` : '';
+    el.innerHTML = value ? `<span class="dir-icon" ${iconStyle}>${ARROW[value]}</span><span class="dir-label" ${labelStyle}>${getLabel(value)}</span>${varText}` : '';
     el.classList.toggle('filled', !!value);
     el.draggable = !!value;
   });
@@ -288,6 +298,7 @@ function initPanelesPlegables() {
   });
   toggles.forEach(btn => {
     btn.addEventListener('click', () => {
+      uiSfx();
       const panel = document.getElementById(btn.dataset.togglePanel);
       if (!panel) return;
       const plegado = panel.classList.toggle('plegado');
@@ -311,7 +322,7 @@ function setRunning(on) {
   // Bloqueado mientras ejecuta O mientras hay un resultado (ganar/perder) sin reintentar.
   const blocked = on || GYM.locked;
   runBtn.classList.toggle('running', on);
-  runBtn.querySelector('.queue-label').textContent = on ? 'ejecutando...' : 'ejecutar';
+  runBtn.querySelector('.queue-label').textContent = on ? (window.__t?.('btn.running') ?? 'ejecutando...') : (window.__t?.('btn.run') ?? 'ejecutar');
   runBtn.querySelector('.queue-icon').textContent = on ? '\u23f5' : '\u2713';
   dirsPanel.querySelectorAll('button:not(.target-opt)').forEach(b => b.disabled = blocked);
   if (ifConditionSelect) ifConditionSelect.disabled = blocked;
@@ -378,6 +389,7 @@ function setupDropZone(container, queue, queueId) {
         if (queue.length > maxAllowed) queue.length = maxAllowed;
       }
 
+      uiSfx('drag_drop');
       renderAllSlots();
     });
 
@@ -386,6 +398,7 @@ function setupDropZone(container, queue, queueId) {
         e.preventDefault();
         return;
       }
+      uiSfx('drag_pick');
       const dir = queue[i];
       const payload = { isMove: true, dir, queueId, index: i };
       e.dataTransfer.setData('text/plain', JSON.stringify(payload));

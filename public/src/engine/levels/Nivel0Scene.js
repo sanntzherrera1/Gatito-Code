@@ -1,5 +1,6 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
 import { runNivel0Intro, unlockPanels } from './intro.js';
+import { t } from '../../services/i18n.js';
 
 export class Nivel0Scene extends TileLevelScene {
   constructor() {
@@ -35,7 +36,7 @@ export class Nivel0Scene extends TileLevelScene {
       document.getElementById('queue')?.classList.remove('intro-highlight', 'intro-zoom');
     });
 
-    runNivel0Intro(this, 'Ayuda a Gatito a llegar a su casa para descansar.', signal)
+    runNivel0Intro(this, t('nivel0.mission'), signal)
       .then(() => {
         if (signal.cancelled) return;
         this._introComplete = true;

@@ -28,8 +28,8 @@
 /* Spritesheet Teemo: 160×480, frames 32×32. Escala ×2 → 320×960, frames 64×64. */
 .result-portrait {
   position: absolute;
-  top: 24px;
-  left: 24px;
+  top: 32px;
+  left: 32px;
   width: 64px;
   height: 64px;
   background-image: url('../assets/SproutLands-UI/Sprite sheets/Dialouge UI/Emotes/Teemo Basic emote animations sprite sheet.png');

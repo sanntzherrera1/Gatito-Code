@@ -1,12 +1,17 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
 import { showCard, injectStyles, ico } from './intro.js';
+import { t } from '../../services/i18n.js';
 
 export class Nivel3Scene extends TileLevelScene {
   constructor() {
     super('Nivel3');
     this.levelKey = 'nivel3';
-    this.missionText = 'Usa el boton de funcion para agregarlo al panel principal.';
-    this.welcomeMessage = '¡Bienvenido al Nivel 3! 🌿\nRecolecta objetos y llega a la casilla final.';
+  }
+
+  init(data) {
+    super.init(data);
+    this.missionText = t('nivel3.mission');
+    this.welcomeMessage = t('nivel3.welcome');
   }
 
   create() {
@@ -71,8 +76,8 @@ export class Nivel3Scene extends TileLevelScene {
     window.__showResult?.({
       state: 'idle',
       message: pickupsLeft > 0
-        ? '¡Casi! Agrega mas movimientos para juntar todo. Volve a intentarlo 💪'
-        : '¡Buen intento! Ajusta tu programa y proba de nuevo 💪',
+        ? t('nivel3.almost')
+        : t('nivel3.good_try'),
       onRestart: () => {
         const domRestart = document.getElementById('restart');
         if (domRestart) domRestart.click();
@@ -115,10 +120,7 @@ export class Nivel3Scene extends TileLevelScene {
       func1Btn.classList.add('intro-highlight');
     }
     // Paso 2a: mensaje mientras se resalta el boton de la Funcion
-    await showCard(
-      `Ahora desbloqueaste la Funcion ${ico('estrella')}<br><br>Con este panel vas a poder tener movimientos extras…`,
-      null
-    );
+    await showCard(t('nivel3.unlock'), null);
     if (func1Btn) func1Btn.classList.remove('intro-highlight');   // apaga el pulso, queda revelado
 
     // Paso 2b: resaltar el switch Program/F1 y explicar
@@ -137,10 +139,7 @@ export class Nivel3Scene extends TileLevelScene {
       queueFunc1.style.position = 'relative';
       queueFunc1.classList.add('intro-highlight');
     }
-    await showCard(
-      'Si tocas <b>F1</b> y apretas un movimiento, se vera en el panel de la Funcion 1.',
-      null
-    );
+    await showCard(t('nivel3.f1_explain'), null);
     if (targetSwitch) {
       targetSwitch.classList.remove('intro-highlight');
       targetSwitch.style.opacity = '';
@@ -245,7 +244,7 @@ export class Nivel3Scene extends TileLevelScene {
 
       // 1. Plantear el problema y cargar los primeros 4 movimientos en el panel principal
       queueEl?.classList.add('intro-highlight');
-      await showCard(`El panel principal solo permite <b>5</b> movimientos… pero este camino necesita <b>${dirs.length}</b>. ${ico('pregunta')}`, null);
+      await showCard(t('nivel3.problem', { count: dirs.length }), null);
       queueEl?.classList.remove('intro-highlight');
       await delay(200);
       for (const dir of mainDirs) await tapDir(dir);
@@ -254,7 +253,7 @@ export class Nivel3Scene extends TileLevelScene {
       // 2. Quinto slot: la Funcion ƒ (los movimientos "extra")
       const func1Btn = dirBtn('func1');
       func1Btn?.classList.add('intro-highlight');
-      await showCard('Ya usamos 4 slots. En el ultimo metemos la <b>Funcion ƒ</b>, que nos da movimientos extra.', null);
+      await showCard(t('nivel3.func_slot'), null);
       press(func1Btn);
       await delay(180);
       func1Btn?.click();
@@ -265,7 +264,7 @@ export class Nivel3Scene extends TileLevelScene {
       const targetSwitch = document.getElementById('target-switch');
       const f1Btn        = document.querySelector('[data-target="func1"]');
       targetSwitch?.classList.add('intro-highlight');
-      await showCard('Ahora cambiamos a <b>F1</b> para cargar los movimientos extra de la funcion.', null);
+      await showCard(t('nivel3.switch_f1'), null);
       f1Btn?.classList.add('intro-highlight');
       await delay(250);
       press(f1Btn);
@@ -279,7 +278,7 @@ export class Nivel3Scene extends TileLevelScene {
       // 4. Cargar los movimientos restantes en el panel de la Funcion
       const queueFunc1 = document.getElementById('queue-func1');
       queueFunc1?.classList.add('intro-highlight');
-      await showCard(`Agregamos los <b>${funcDirs.length}</b> movimientos que faltan en la <b>Funcion</b>.`, null);
+      await showCard(t('nivel3.load_func', { count: funcDirs.length }), null);
       for (const dir of funcDirs) await tapDir(dir);
       await delay(400);
       queueFunc1?.classList.remove('intro-highlight');
@@ -292,7 +291,7 @@ export class Nivel3Scene extends TileLevelScene {
       await delay(500);
 
       // 6. Ejecutar: el gatito recorre los 4 + 2 = 6 pasos hasta el final
-      await showCard(`4 movimientos + ${funcDirs.length} en la funcion = <b>${dirs.length} pasos</b>. ¡Le damos a <b>Ejecutar</b>! ${ico('check')}`, null);
+      await showCard(t('nivel3.execute', { funcCount: funcDirs.length, totalCount: dirs.length }), null);
 
       // Sacar el backdrop oscuro → el juego se ilumina
       backdrop.classList.add('out');
@@ -316,8 +315,8 @@ export class Nivel3Scene extends TileLevelScene {
       canvas?.classList.remove('intro-highlight');
 
       // 7. Mensaje final + invitacion a jugar
-      await showCard(`¡Asi se usa la funcion! ${ico('estrella')}<br><br>Cuando te faltan slots en el panel principal, metes movimientos extra en <b>F1</b> y los llamas con <b>ƒ</b>.`, null);
-      await showCard(`¡Ahora probalo vos! ${ico('control')}<br><br>No te preocupes si no llegas de una, podes intentarlo las veces que quieras.`, null);
+      await showCard(t('nivel3.recap'), null);
+      await showCard(t('nivel3.try_it'), null);
 
       // 8. Reiniciar para el jugador: limpiar colas, volver al spawn y habilitar
       document.getElementById('clear')?.click();
