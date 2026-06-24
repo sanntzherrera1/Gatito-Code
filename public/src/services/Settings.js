@@ -25,7 +25,10 @@ export function getSfxVolume()   { return state.sfxVolume; }
 export function setMusicVolume(v) { state.musicVolume = clamp(v); persist(); emit(); }
 export function setSfxVolume(v)   { state.sfxVolume = clamp(v); persist(); emit(); }
 
-export function getLanguage()    { return state.language || 'es'; }
+export function getLanguage() {
+  const lang = state.language;
+  return (lang === 'es' || lang === 'en') ? lang : 'es';
+}
 export function setLanguage(lang) {
   if (lang !== 'es' && lang !== 'en') return;
   if (state.language === lang) return;

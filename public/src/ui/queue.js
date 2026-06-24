@@ -1,4 +1,4 @@
-import { MAX, ARROW, LABEL, GYM, getLabel } from './state.js';
+import { MAX, ARROW, GYM, getLabel } from './state.js';
 import { showJumpPickerForEl, initJumpPicker } from './jump-picker.js';
 
 let slotsEl;

@@ -360,8 +360,11 @@ export class TileLevelScene extends Phaser.Scene {
   tileCenter(tx, ty) { return [tx * TILE + TILE / 2, ty * TILE + TILE / 2]; }
 
   _playFootstep(tx, ty) {
-    const WOOD_KEYS = ['wood_bridge', 'wooden_bridge_v2'];
-    const onWood = this.level.objects.some(o => o.tx === tx && o.ty === ty && WOOD_KEYS.includes(o.key));
+    const woodKeys = this._woodFootstepKeys ??= new Set(['wood_bridge', 'wooden_bridge_v2']);
+    this._woodFootstepTiles ??= new Set(
+      this.level.objects.filter(o => woodKeys.has(o.key)).map(o => `${o.tx},${o.ty}`)
+    );
+    const onWood = this._woodFootstepTiles.has(`${tx},${ty}`);
     let prefix = 'step_grass_';
     if (onWood) {
       prefix = 'step_wood_';

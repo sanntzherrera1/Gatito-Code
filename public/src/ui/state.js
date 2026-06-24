@@ -15,7 +15,9 @@ const _LABEL_FALLBACK = {
 };
 export const LABEL = _LABEL_FALLBACK;
 export function getLabel(key) {
-  return window.__t?.('dir.' + key) ?? _LABEL_FALLBACK[key] ?? key;
+  const k = 'dir.' + key;
+  const tr = window.__t?.(k);
+  return (tr && tr !== k) ? tr : (_LABEL_FALLBACK[key] ?? key);
 }
 export const GYM = window.__GYM = {
   queue: [],

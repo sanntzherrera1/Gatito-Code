@@ -321,13 +321,13 @@ function hideModal() {
   edModal._onConfirm = null;
 }
 
+const _t = (k, fb) => { const tr = window.__t?.(k); return (tr && tr !== k) ? tr : fb; };
+
 function confirmClearLayer() {
-  const _t = (k, fb) => window.__t?.(k) ?? fb;
   showModal(_t('editor.clear_confirm', `¿Limpiar la capa "${edCfg?.getLayer?.()}"?`).replace('{layer}', edCfg?.getLayer?.() ?? ''), () => edCfg?.onClear?.());
 }
 
 function confirmRevert() {
-  const _t = (k, fb) => window.__t?.(k) ?? fb;
   showModal(_t('editor.revert_confirm', '¿Descartar los cambios y volver al archivo original?'), () => edCfg?.onRevert?.());
 }
 

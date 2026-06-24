@@ -21,7 +21,7 @@ export function initResult() {
     messageEl.textContent = message ?? '';
 
     actionsEl.innerHTML = '';
-    const _t = (k, fb) => window.__t?.(k) ?? fb;
+    const _t = (k, fb) => { const tr = window.__t?.(k); return (tr && tr !== k) ? tr : fb; };
     if (state === 'win') {
       addAction(hasNext ? _t('result.next', 'Siguiente') : _t('result.finish', 'Terminar'), () => onNext?.());
     } else if (state === 'lose') {

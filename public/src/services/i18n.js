@@ -18,7 +18,11 @@ export function onLanguageChange(cb) {
   return () => listeners.delete(cb);
 }
 
+let _lastLang = Settings.getLanguage();
 Settings.onChange(() => {
+  const lang = Settings.getLanguage();
+  if (lang === _lastLang) return;
+  _lastLang = lang;
   for (const cb of listeners) { try { cb(); } catch {} }
 });
 
