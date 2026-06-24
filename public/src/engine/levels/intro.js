@@ -7,39 +7,13 @@ const TILE  = 16;
 
 const FULL = { x: CAM_W / 2, y: CAM_H / 2 };
 
-// ── Iconos pixel-art del juego ───────────────────────────────────────────────
-// Reemplazan a los emojis del sistema para que los carteles combinen con la
-// estetica SproutLands. Cada entrada es [columna, fila] dentro del spritesheet
-// `Emoji_Spritesheet_Free.png` (grilla de 32px, 5 columnas x 19 filas).
-export const ICONS = {
-  gato:     [3, 2],   // gatito naranja sonriente
-  gatoFeliz:[3, 5],   // gatito con ojos de corazon (entusiasmado)
-  sprout:   [0, 12],  // brote / plantin
-  manzana:  [0, 13],  // manzana
-  jardin:   [2, 12],  // trebol de 4 hojas (jardin / naturaleza)
-  control:  [0, 11],  // joystick / mando
-  estrella: [4, 8],   // estrella (celebracion)
-  pregunta: [3, 7],   // signo de pregunta (duda)
-  pulgar:   [0, 9],   // pulgar arriba
-  check:    [0, 7],   // tilde verde
-};
-
-// Devuelve el HTML de un icono pixel-art inline para usar dentro de los carteles.
-export function ico(name) {
-  const [c, r] = ICONS[name] || [0, 0];
-  return `<i class="gico" style="--c:${c};--r:${r}"></i>`;
-}
-
-// Textos para cada punto de intro (por indice)
-const MSGS = [
-  `${ico('gato')} <b>¡Este es Gatito!</b>`,
-  `${ico('sprout')} Le gusta cuidar sus plantas.`,
-  '🎣 Le gusta pescar.',
-  `${ico('manzana')} Ademas le gusta cosechar sus frutas favoritas.`,
-];
+import { ico, ICONS } from '../../config/icons.js';
+export { ico, ICONS };
+import { t } from '../../services/i18n.js';
 
 // Mueve y hace zoom a (pos.x, pos.y) de forma suave usando la API nativa de Phaser
 export function panTo(scene, pos, zoom, duration = 900) {
+  window.__playUiSfx?.('cam_slide');
   const cam = scene.cameras.main;
   return new Promise(resolve => {
     let done = 0;
@@ -214,12 +188,13 @@ export function showCard(html, signal) {
   return new Promise(resolve => {
     const card = document.createElement('div');
     card.id = 'intro-card';
-    card.innerHTML = `<p>${html}</p><button>continuar ›</button>`;
+    card.innerHTML = `<p>${html}</p><button>${t('intro.continue')}</button>`;
     document.body.appendChild(card);
 
     const dismiss = () => { card.remove(); resolve(); };
 
     card.querySelector('button').addEventListener('click', () => {
+      window.__playUiSfx?.();
       card.classList.add('icard-out');
       card.addEventListener('animationend', dismiss, { once: true });
     });
@@ -233,7 +208,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
   const pts = scene.introPoints || [];
   if (!pts.length) return;
 
-  const msgs = opts.msgs || MSGS;
+  const msgs = opts.msgs || [t('intro.msg0'), t('intro.msg1'), t('intro.msg2'), t('intro.msg3')];
   const showGarden = opts.showGarden !== false;
   const showPanelTutorial = opts.showPanelTutorial !== false;
 
@@ -254,7 +229,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
     // Vista del jardin completo
     await panTo(scene, FULL, 1, 950);
     if (signal?.cancelled) return;
-    await showCard(`${ico('jardin')} Este es su jardin.`, signal);
+    await showCard(t('intro.garden'), signal);
     if (signal?.cancelled) return;
   }
 
@@ -280,7 +255,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
     // Panel de movimientos
     const dirsPanel = document.getElementById('dirs');
     dirsPanel?.classList.add('intro-highlight', 'intro-zoom');
-    await showCard(`${ico('control')} Tu mision es ayudarle mediante movimientos a conseguir sus preciadas frutas.<br><br>Elegi los movimientos adecuados… ¿me ayudas a que descanse despues de su dia de trabajo?`, signal);
+    await showCard(t('intro.mission'), signal);
     dirsPanel?.classList.remove('intro-highlight', 'intro-zoom');
     if (signal?.cancelled) return;
 
@@ -289,7 +264,7 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
     if (signal?.cancelled) return;
     const queuePanel = document.getElementById('queue');
     queuePanel?.classList.add('intro-highlight', 'intro-zoom');
-    await showCard(`${ico('control')} Aca se veran tus movimientos.`, signal);
+    await showCard(t('intro.queue'), signal);
     queuePanel?.classList.remove('intro-highlight', 'intro-zoom');
   }
 

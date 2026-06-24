@@ -321,12 +321,15 @@ function hideModal() {
   edModal._onConfirm = null;
 }
 
+const _t = (k, fb, params) => { const tr = window.__t?.(k, params); return (tr && tr !== k) ? tr : fb; };
+
 function confirmClearLayer() {
-  showModal(`¿Limpiar la capa "${edCfg?.getLayer?.()}"?`, () => edCfg?.onClear?.());
+  const layer = edCfg?.getLayer?.() ?? '';
+  showModal(_t('editor.clear_confirm', `¿Limpiar la capa "${layer}"?`, { layer }), () => edCfg?.onClear?.());
 }
 
 function confirmRevert() {
-  showModal('¿Descartar los cambios y volver al archivo original?', () => edCfg?.onRevert?.());
+  showModal(_t('editor.revert_confirm', '¿Descartar los cambios y volver al archivo original?'), () => edCfg?.onRevert?.());
 }
 
 function showToast(msg, type = 'info') {
@@ -348,8 +351,9 @@ function updateStatusText() {
   const statusText = document.getElementById('ed-status-text');
   if (!statusText) return;
   const layer = edCfg.getLayer?.() ?? '-';
-  const dirtyTag = isDirty ? ' · sin guardar' : '';
-  statusText.textContent = `capa: ${layer}${dirtyTag}`;
+  const _t = (k, fb, p) => window.__t?.(k, p) ?? fb;
+  const dirtyTag = isDirty ? _t('editor.unsaved', ' · sin guardar') : '';
+  statusText.textContent = `${_t('editor.layer_status', `capa: ${layer}`, { layer })}${dirtyTag}`;
 }
 
 function updateStatusDot() {
@@ -713,7 +717,7 @@ function renderTilesetTree(cfg) {
     if (!hasItems) {
       const empty = document.createElement('div');
       empty.className = 'ed-tree-empty';
-      empty.textContent = 'Sin tiles en esta categoría';
+      empty.textContent = window.__t?.('editor.no_tiles') ?? 'Sin tiles en esta categoría';
       body.appendChild(empty);
     }
 
@@ -782,7 +786,7 @@ function renderObjectsTree(cfg) {
     if (!hasItems) {
       const empty = document.createElement('div');
       empty.className = 'ed-tree-empty';
-      empty.textContent = 'Sin objetos en esta categoría';
+      empty.textContent = window.__t?.('editor.no_objects') ?? 'Sin objetos en esta categoría';
       body.appendChild(empty);
     }
 
@@ -860,7 +864,7 @@ function updateSelectionInfo() {
     text.innerHTML = `<b>${selectedObject.key}</b> · frame ${selectedObject.frame} · ${selectedObject.type}${selectedObject.solid ? ' · sólido' : ''}`;
     text.classList.remove('empty');
   } else {
-    text.textContent = 'Sin seleccion · elige tile u objeto';
+    text.textContent = window.__t?.('editor.no_selection_full') ?? 'Sin seleccion · elige tile u objeto';
     text.classList.add('empty');
   }
 }
@@ -1038,7 +1042,7 @@ function renderObjPalette() {
 
   if (!o) {
     const placeholder = document.createElement('div');
-    placeholder.textContent = 'Variante no disponible';
+    placeholder.textContent = window.__t?.('editor.variant_unavail') ?? 'Variante no disponible';
     placeholder.style.color = 'rgba(90,58,26,.6)';
     placeholder.style.fontSize = '10px';
     placeholder.style.padding = '8px';
@@ -1275,7 +1279,7 @@ function _buildWeatherCard(cfg, type, v) {
   range.value = String(v);
   range.tabIndex = 0;
   range.className = 'ed-wx-sr';
-  range.setAttribute('aria-label', `${getWeatherLabel(type)} intensidad`);
+  range.setAttribute('aria-label', window.__t?.('editor.intensity', { label: getWeatherLabel(type) }) ?? `${getWeatherLabel(type)} intensidad`);
   slider.appendChild(range);
 
   body.appendChild(slider);
@@ -1287,7 +1291,7 @@ function _buildWeatherCard(cfg, type, v) {
   const upBtn = document.createElement('button');
   upBtn.className = 'ed-wx-up';
   upBtn.textContent = '＋';
-  upBtn.setAttribute('aria-label', 'Subir');
+  upBtn.setAttribute('aria-label', window.__t?.('editor.up') ?? 'Subir');
   upBtn.onclick = () => {
     const range = item.querySelector('input[type="range"]');
     const cur = range ? parseFloat(range.value) : v;
@@ -1303,7 +1307,7 @@ function _buildWeatherCard(cfg, type, v) {
   const downBtn = document.createElement('button');
   downBtn.className = 'ed-wx-down';
   downBtn.textContent = '－';
-  downBtn.setAttribute('aria-label', 'Bajar');
+  downBtn.setAttribute('aria-label', window.__t?.('editor.down') ?? 'Bajar');
   downBtn.onclick = () => {
     const range = item.querySelector('input[type="range"]');
     const cur = range ? parseFloat(range.value) : v;

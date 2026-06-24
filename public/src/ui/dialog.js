@@ -6,8 +6,8 @@ export function initDialog() {
   levelDialogTxt = document.getElementById('level-dialog-text');
   levelDialogBtn = document.getElementById('level-dialog-btn');
 
-  levelDialogBtn.addEventListener('click', closeDialog);
-  levelDialog.addEventListener('click', e => { if (e.target === levelDialog) closeDialog(); });
+  levelDialogBtn.addEventListener('click', () => { window.__playUiSfx?.(); closeDialog(); });
+  levelDialog.addEventListener('click', e => { if (e.target === levelDialog) { window.__playUiSfx?.(); closeDialog(); } });
 
   window.__showDialog = ({ message, onClose }) => {
     levelDialogTxt.textContent = message;

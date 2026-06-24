@@ -25,3 +25,30 @@ export function playMusic(scene, key) {
 export function playSfx(scene, key, base = 0.15) {
   scene.sound.play(key, { volume: base * Settings.getSfxVolume() });
 }
+
+let _focusObserver = null;
+
+/** Conecta el sound manager de Phaser para que los botones DOM puedan emitir sonido. */
+export function bindUiSfx(soundManager) {
+  window.__playUiSfx = (key = 'ui_click') => {
+    try { soundManager.play(key, { volume: 0.15 * Settings.getSfxVolume() }); } catch {}
+  };
+
+  if (_focusObserver) _focusObserver.disconnect();
+
+  const FOCUS_CLASSES = ['intro-highlight', 'unlock-glow'];
+  _focusObserver = new MutationObserver((mutations) => {
+    for (const m of mutations) {
+      if (m.type !== 'attributes' || m.attributeName !== 'class') continue;
+      const el = m.target;
+      const cls = el.classList;
+      if (FOCUS_CLASSES.some(c => cls.contains(c)) && !el._uiFocusPlayed) {
+        el._uiFocusPlayed = true;
+        window.__playUiSfx('ui_focus');
+      } else if (!FOCUS_CLASSES.some(c => cls.contains(c))) {
+        el._uiFocusPlayed = false;
+      }
+    }
+  });
+  _focusObserver.observe(document.body, { attributes: true, attributeFilter: ['class'], subtree: true });
+}

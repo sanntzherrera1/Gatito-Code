@@ -21,15 +21,15 @@ export function initResult() {
     messageEl.textContent = message ?? '';
 
     actionsEl.innerHTML = '';
+    const _t = (k, fb) => { const tr = window.__t?.(k); return (tr && tr !== k) ? tr : fb; };
     if (state === 'win') {
-      addAction(hasNext ? 'Siguiente' : 'Terminar', () => onNext?.());
+      addAction(hasNext ? _t('result.next', 'Siguiente') : _t('result.finish', 'Terminar'), () => onNext?.());
     } else if (state === 'lose') {
-      addAction('Reintentar', () => onRestart?.());
-      addAction('Menu',       () => onMenu?.());
+      addAction(_t('result.retry', 'Reintentar'), () => onRestart?.());
+      addAction(_t('result.menu', 'Menu'),        () => onMenu?.());
     } else if (state === 'idle') {
-      // En niveles tutorial un intento fallido no es "perder": igual ofrecemos reintentar.
-      if (onRestart) addAction('Reintentar', () => onRestart?.());
-      if (onMenu)    addAction('Menu',       () => onMenu?.());
+      if (onRestart) addAction(_t('result.retry', 'Reintentar'), () => onRestart?.());
+      if (onMenu)    addAction(_t('result.menu', 'Menu'),        () => onMenu?.());
     }
 
     // Tras ganar/perder se bloquea mover/agregar movimientos hasta reintentar.
@@ -45,7 +45,7 @@ export function initResult() {
 function addAction(label, handler) {
   const b = document.createElement('button');
   b.textContent = label;
-  b.addEventListener('click', handler);
+  b.addEventListener('click', () => { window.__playUiSfx?.(); handler(); });
   actionsEl.appendChild(b);
 }
 

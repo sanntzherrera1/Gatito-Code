@@ -1,6 +1,6 @@
 import { DIRS, TILE, STEP_MS } from '../../config/game.js';
 import { loadLevel } from '../../engine/level/TileLevelLoader.js';
-import { esGidDeRoca, OBJECTS } from '../../engine/level/TileRegistry.js';
+import { esGidDeRoca, OBJECTS, categoryForGid } from '../../engine/level/TileRegistry.js';
 import { createWeather, destroyWeather } from '../../engine/level/WeatherSystem.js';
 import { Player } from '../../domain/Player.js';
 import { executeProgram } from '../../engine/program/ProgramExecutor.js';
@@ -45,6 +45,7 @@ export class TileLevelScene extends Phaser.Scene {
 
     this.pathFlat = levelData.flat?.path || [];
     this.wallsFlat = levelData.flat?.walls || [];
+    this.floorFlat = levelData.flat?.floor || [];
     this.drawPathMarkers(this.pathFlat);
 
     this.loadObjects(this.level.objects);
@@ -63,7 +64,7 @@ export class TileLevelScene extends Phaser.Scene {
     const allLevels = getAllLevels();
     const levelIdx = allLevels.findIndex(l => l.key === this.levelKey);
     const bgmKey = (levelIdx >= 0 && levelIdx < 6) ? 'bgm2' : 'bgm3';
-    this.sound.stopAll();
+    if (this.bgm) { this.bgm.stop(); this.bgm.destroy(); }
     this.bgm = playMusic(this, bgmKey);
 
     const bus = window.__GYM;
@@ -89,7 +90,8 @@ export class TileLevelScene extends Phaser.Scene {
     document.addEventListener('keydown', onDocEsc);
 
     this.events.once('shutdown', () => {
-      this.sound.stopAll();
+      if (this._celebrateTimer) { this._celebrateTimer.remove(); this._celebrateTimer = null; }
+      if (this.bgm) { this.bgm.stop(); this.bgm.destroy(); this.bgm = null; }
       destroyWeather(this);
       window.__setPanels?.(false);
       window.__setMission?.(null);
@@ -156,7 +158,7 @@ export class TileLevelScene extends Phaser.Scene {
   showIdlePanel() {
     window.__showResult?.({
       state: 'idle',
-      message: this.missionText || '¡A jugar! Arma tu programa y presiona Ejecutar.',
+      message: this.missionText || (window.__t?.('level.idle') ?? '¡A jugar! Arma tu programa y presiona Ejecutar.'),
     });
   }
 
@@ -182,16 +184,17 @@ export class TileLevelScene extends Phaser.Scene {
     // "ayuda": muestra/oculta el camino guia amarillo (marcadores del path).
     const ayuda = document.createElement('button');
     ayuda.id = 'help-path-btn';
-    ayuda.textContent = 'ayuda';
+    ayuda.textContent = window.__t?.('level.help') ?? 'ayuda';
     Object.assign(ayuda.style, baseStyle);
     const syncAyuda = () => {
       const on = !!this.pathMarkers?.visible;
       ayuda.style.background = on ? '#ffe600' : '#cdbb6a';
       ayuda.style.filter = on ? 'none' : 'grayscale(0.5)';
       ayuda.style.opacity = on ? '1' : '0.85';
-      ayuda.title = on ? 'Ocultar camino guia' : 'Mostrar camino guia';
+      ayuda.title = on ? (window.__t?.('level.hide_path') ?? 'Ocultar camino guia') : (window.__t?.('level.show_path_title') ?? 'Mostrar camino guia');
     };
     ayuda.addEventListener('click', () => {
+      window.__playUiSfx?.();
       if (this.pathMarkers) this.pathMarkers.setVisible(!this.pathMarkers.visible);
       syncAyuda();
     });
@@ -200,11 +203,11 @@ export class TileLevelScene extends Phaser.Scene {
     // "mostrar camino": repite la animacion del camino (sin disparar tutoriales).
     const btn = document.createElement('button');
     btn.id = 'repeat-path-btn';
-    btn.textContent = 'mostrar camino';
+    btn.textContent = window.__t?.('level.show_path') ?? 'mostrar camino';
     Object.assign(btn.style, { ...baseStyle, background: '#ffe600' });
     btn.addEventListener('mouseenter', () => btn.style.background = '#ffd000');
     btn.addEventListener('mouseleave', () => btn.style.background = '#ffe600');
-    btn.addEventListener('click', () => animatePath(this));
+    btn.addEventListener('click', () => { window.__playUiSfx?.(); animatePath(this); });
 
     wrap.append(ayuda, btn);
     document.getElementById('result-panel')?.appendChild(wrap);
@@ -257,8 +260,8 @@ export class TileLevelScene extends Phaser.Scene {
   decorate() { }
 
   resetLevel() {
-    this.sound.stopAll();
-    if (this.bgm) this.bgm.play();
+    if (this._celebrateTimer) { this._celebrateTimer.remove(); this._celebrateTimer = null; }
+    if (this.bgm) { this.bgm.stop(); this.bgm.play(); }
 
     this.playerModel.reset();
     this.playerView.stopAnimations();
@@ -356,6 +359,24 @@ export class TileLevelScene extends Phaser.Scene {
 
   tileCenter(tx, ty) { return [tx * TILE + TILE / 2, ty * TILE + TILE / 2]; }
 
+  _playFootstep(tx, ty) {
+    const woodKeys = this._woodFootstepKeys ??= new Set(['wood_bridge', 'wooden_bridge_v2']);
+    this._woodFootstepTiles ??= new Set(
+      this.level.objects.filter(o => woodKeys.has(o.key)).map(o => `${o.tx},${o.ty}`)
+    );
+    const onWood = this._woodFootstepTiles.has(`${tx},${ty}`);
+    let prefix = 'step_grass_';
+    if (onWood) {
+      prefix = 'step_wood_';
+    } else {
+      const gid = this.floorFlat[ty * this.cols + tx] || 0;
+      const cat = categoryForGid(gid);
+      if (cat === 'buildings' || cat === 'dungeon') prefix = 'step_wood_';
+    }
+    const idx = Phaser.Math.Between(0, 2);
+    playSfx(this, `${prefix}${idx}`, 0.08);
+  }
+
   async step(dir) {
     const moveResult = this.playerModel.tryMove(dir);
 
@@ -365,11 +386,13 @@ export class TileLevelScene extends Phaser.Scene {
       return;
     }
 
+    this._playFootstep(moveResult.tx, moveResult.ty);
     await this.playerView.moveTo(moveResult.tx, moveResult.ty);
     this.checkPickup(moveResult.tx, moveResult.ty);
   }
 
   async jumpInPlace() {
+    playSfx(this, 'jump_sound', 0.15);
     await this.playerView.jumpTo(
       this.playerModel.tx, this.playerModel.ty,
       this.playerModel.tx, this.playerModel.ty
@@ -378,6 +401,7 @@ export class TileLevelScene extends Phaser.Scene {
 
   async jumpDir(dir) {
     const jumpResult = this.playerModel.tryJump(dir);
+    playSfx(this, 'jump_sound', 0.15);
     await this.playerView.jumpTo(
       jumpResult.fromTx, jumpResult.fromTy,
       jumpResult.toTx, jumpResult.toTy
@@ -399,6 +423,8 @@ export class TileLevelScene extends Phaser.Scene {
     const view = this.treeViews.get(key);
 
     // 1) Golpe de hacha del jugador (one-shot).
+    const chopIdx = Phaser.Math.Between(0, 2);
+    playSfx(this, `chop_wood_${chopIdx}`, 0.25);
     await this.playerView.playAxe(dir);
 
     // 2a) Frutal con fruta: solo se sacude, cae la fruta y queda pelado. No avanza.
@@ -485,6 +511,11 @@ export class TileLevelScene extends Phaser.Scene {
         }
         if (isWin) {
           markLevelCompleted(this.levelKey);
+          playSfx(this, 'jump_sound', 0.15);
+          this._celebrateTimer = this.time.addEvent({
+            delay: 500, loop: true,
+            callback: () => playSfx(this, 'jump_sound', 0.15),
+          });
           this.playerView.playCelebrate();
           if (this.bgm) this.bgm.stop();
           playSfx(this, 'win_sound', 0.15);
@@ -507,11 +538,12 @@ export class TileLevelScene extends Phaser.Scene {
     const nextLevel = allLevels[currentIdx + 1];
 
     const pickupsLeft = this.pickups.size;
+    const _t = (k, fb) => window.__t?.(k) ?? fb;
     const message = isWin
-      ? '¡Lo lograste!'
+      ? _t('result.win', '¡Lo lograste!')
       : pickupsLeft > 0
-        ? 'Usa mas movimientos para llegar a todos los objetos.'
-        : 'Revisa tu programa.';
+        ? _t('result.lose_pickups', 'Usa mas movimientos para llegar a todos los objetos.')
+        : _t('result.lose_program', 'Revisa tu programa.');
 
     window.__showResult?.({
       state: isWin ? 'win' : 'lose',
@@ -615,7 +647,9 @@ export class TileLevelScene extends Phaser.Scene {
     if (!show) return;
     if (left !== this._lastPickupLeft) {
       this._lastPickupLeft = left;
-      const palabra = left === 1 ? 'Falta 1 fruta' : `Faltan ${left} frutas`;
+      const palabra = left === 1
+        ? (window.__t?.('result.pickup_one') ?? 'Falta 1 fruta')
+        : (window.__t?.('result.pickup_many', { count: left }) ?? `Faltan ${left} frutas`);
       this.pickupCounterText.setText(palabra);
       this._drawPickupCounterBg();
     }

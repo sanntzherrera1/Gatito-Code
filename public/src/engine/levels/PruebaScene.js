@@ -1,15 +1,16 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
+import { t } from '../../services/i18n.js';
 
 export class PruebaScene extends TileLevelScene {
   constructor() {
     super('Prueba');
     this.levelKey = 'prueba';
-    this.missionText = 'Mision: Recoge los objetos abandonados antes de que la tormenta empeore.';
   }
 
   init(data) {
     super.init(data);
-    this.welcomeMessage = 'No deberias estar aqui. Algo te observa desde las colinas.';
+    this.missionText = t('prueba.mission');
+    this.welcomeMessage = t('prueba.welcome');
     if (!data?.returnScreen) this.returnScreen = 'levels';
   }
 }

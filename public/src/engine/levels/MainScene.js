@@ -1,5 +1,6 @@
 import { TileLevelScene } from '../scenes/TileLevelScene.js';
-import { runNivel0Intro, ico } from './intro.js';
+import { runNivel0Intro } from './intro.js';
+import { t } from '../../services/i18n.js';
 
 export class MainScene extends TileLevelScene {
   constructor() {
@@ -47,11 +48,8 @@ export class MainScene extends TileLevelScene {
       }
     });
 
-    runNivel0Intro(this, 'Recolecta todos los plantines usando comandos de movimiento.', signal, {
-      msgs: [
-        `${ico('gatoFeliz')} <b>¡Gatito esta listo para explorar!</b>`,
-        `${ico('manzana')} Ahora tu misión es ayudar a Gatito a cosechar las frutas del jardín.`,
-      ],
+    runNivel0Intro(this, t('main.mission'), signal, {
+      msgs: [t('main.msg0'), t('main.msg1')],
       showGarden: false,
       showPanelTutorial: false,
     }).then(() => {

@@ -1,5 +1,6 @@
 import { preloadAssets, OBJECTS, defineTileFrames } from '../../engine/level/TileRegistry.js';
 import { createObjectAnimations } from '../../engine/level/ObjectAnimations.js';
+import { bindUiSfx } from '../audio.js';
 
 const BASE = 'assets/SproutLands-Sprites';
 
@@ -7,12 +8,21 @@ export class BootScene extends Phaser.Scene {
   constructor() { super('Boot'); }
 
   preload() {
-    this._setBootStatus('Cargando mundo base...');
+    this._loadingAudio = new Audio('assets/audio/loading.mp3');
+    this._loadingAudio.volume = 0.15;
+    const tryPlay = () => this._loadingAudio?.play().catch(() => {});
+    tryPlay();
+    const resume = () => { tryPlay(); document.removeEventListener('pointerdown', resume); document.removeEventListener('keydown', resume); };
+    document.addEventListener('pointerdown', resume, { once: true });
+    document.addEventListener('keydown', resume, { once: true });
+
+    const _t = (k) => window.__t?.(k) ?? k;
+    this._setBootStatus(_t('boot.world'));
     this.load.on('progress', (value) => {
-      this._setBootProgress(value, value < 1 ? 'Cargando recursos...' : 'Afinando menu...');
+      this._setBootProgress(value, value < 1 ? _t('boot.resources') : _t('boot.tuning'));
     });
     this.load.on('complete', () => {
-      this._setBootProgress(1, 'Listo');
+      this._setBootProgress(1, _t('boot.ready'));
     });
     // Character — Premium 384x1152 → 8x24 grid of 48x48 frames.
     // First 8 rows: idle_down, idle_up, idle_right, idle_left,
@@ -57,10 +67,31 @@ export class BootScene extends Phaser.Scene {
     this.load.audio('bgm3', 'assets/audio/background-music-3.mp3');
     this.load.audio('win_sound', 'assets/audio/win-sound.wav');
     this.load.audio('lose_sound', 'assets/audio/lose-sound.mp3');
-    this.load.audio('pickup_sound', 'assets/SproutLands-SorrySprites/Audio/boo_1.wav');
+    this.load.audio('pickup_sound', 'assets/audio/collect_point.wav');
+    this.load.audio('ui_click', 'assets/audio/bip_1.wav');
+    this.load.audio('jump_sound', 'assets/audio/squick_1.wav');
+    this.load.audio('ui_execute', 'assets/audio/bip_execute.mp3');
+    this.load.audio('ui_focus', 'assets/audio/ui_focus.mp3');
+    this.load.audio('ui_erase', 'assets/audio/erase.mp3');
+    this.load.audio('drag_pick', 'assets/audio/rollover4.ogg');
+    this.load.audio('drag_drop', 'assets/audio/rollover5.ogg');
+    this.load.audio('chop_wood_0', 'assets/audio/impact/impactWood_medium_000.ogg');
+    this.load.audio('chop_wood_1', 'assets/audio/impact/impactWood_medium_001.ogg');
+    this.load.audio('chop_wood_2', 'assets/audio/impact/impactWood_medium_004.ogg');
+    this.load.audio('cam_slide', 'assets/audio/slide_1.mp3');
+    this.load.audio('path_bounce', 'assets/audio/bounce.wav');
+    this.load.audio('step_grass_0', 'assets/audio/impact/footstep_grass_000.ogg');
+    this.load.audio('step_grass_1', 'assets/audio/impact/footstep_grass_003.ogg');
+    this.load.audio('step_grass_2', 'assets/audio/impact/footstep_grass_004.ogg');
+    this.load.audio('step_wood_0', 'assets/audio/impact/impactPlank_medium_000.ogg');
+    this.load.audio('step_wood_1', 'assets/audio/impact/impactPlank_medium_001.ogg');
+    this.load.audio('step_wood_2', 'assets/audio/impact/impactPlank_medium_002.ogg');
   }
 
   create() {
+    if (this._loadingAudio) { this._loadingAudio.pause(); this._loadingAudio = null; }
+    bindUiSfx(this.sound);
+
     // Generar textura de pixel blanco 2×2 para particulas climaticas.
     const canvas = document.createElement('canvas');
     canvas.width = 2;
@@ -153,7 +184,7 @@ export class BootScene extends Phaser.Scene {
 
   _loadUIAssets() {
     const manifest = this.cache.json.get('ui_manifest');
-    this._setBootStatus('Armando interfaz...');
+    this._setBootStatus(window.__t?.('boot.ui') ?? 'Armando interfaz...');
 
     for (const t of manifest.textures) {
       if (this.textures.exists(t.key)) continue;
@@ -171,13 +202,13 @@ export class BootScene extends Phaser.Scene {
           repeat: anim.repeat ?? 0,
         });
       }
-      this._setBootProgress(1, 'Abriendo menu...');
+      this._setBootProgress(1, window.__t?.('boot.menu') ?? 'Abriendo menu...');
       this.scene.start('Menu');
     });
 
     // If nothing new to load, complete fires synchronously only if we start the loader.
     if (this.load.totalToLoad === 0) {
-      this._setBootProgress(1, 'Abriendo menu...');
+      this._setBootProgress(1, window.__t?.('boot.menu') ?? 'Abriendo menu...');
       this.scene.start('Menu');
     } else {
       this.load.start();
