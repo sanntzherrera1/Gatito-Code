@@ -61,13 +61,14 @@ export class BootScene extends Phaser.Scene {
     this.load.audio('bgm3', 'assets/audio/background-music-3.mp3');
     this.load.audio('win_sound', 'assets/audio/win-sound.wav');
     this.load.audio('lose_sound', 'assets/audio/lose-sound.mp3');
-    this.load.audio('pickup_sound', 'assets/audio/blup_1.wav');
+    this.load.audio('pickup_sound', 'assets/audio/collect_point.wav');
     this.load.audio('ui_click', 'assets/audio/bip_1.wav');
     this.load.audio('jump_sound', 'assets/audio/squick_1.wav');
     this.load.audio('ui_execute', 'assets/audio/bip_execute.mp3');
     this.load.audio('ui_focus', 'assets/audio/ui_focus.mp3');
     this.load.audio('ui_erase', 'assets/audio/erase.mp3');
     this.load.audio('cam_slide', 'assets/audio/slide_1.mp3');
+    this.load.audio('path_bounce', 'assets/audio/bounce.wav');
   }
 
   create() {
