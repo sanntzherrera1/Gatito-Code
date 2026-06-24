@@ -348,6 +348,11 @@
 .if-select:disabled {
   opacity: .5;
 }
+.if-rule-sep {
+  height: 1px;
+  margin: 10px 0 2px;
+  background: rgba(90,58,26,.28);
+}
 #queue-for h3 {
   display: block;
   margin: 0 0 10px 0;

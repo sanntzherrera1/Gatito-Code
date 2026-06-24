@@ -99,6 +99,24 @@ export class PlayerView {
   }
 
   /**
+   * Reproduce el golpe de hacha (one-shot) hacia `dir` y resuelve al terminar,
+   * volviendo al frame idle correspondiente. Usado al talar un árbol.
+   */
+  playAxe(dir) {
+    return new Promise(resolve => {
+      this.scene.tweens.killTweensOf(this.sprite);
+      const animKey = `axe_${dir}`;
+      this.sprite.anims.play(animKey, true);
+      this.sprite.once('animationcomplete', anim => {
+        if (anim.key !== animKey) return;
+        this.sprite.anims.stop();
+        this.sprite.setFrame(PlayerView.getIdleFrameForDir(dir));
+        resolve();
+      });
+    });
+  }
+
+  /**
    * Tween a jump arc between two tile positions.
    */
   jumpTo(fromTx, fromTy, toTx, toTy) {

@@ -6,6 +6,8 @@ let slotsFunc1El;
 let slotsForEl;
 let ifConditionSelect;
 let ifActionSelect;
+let ifConditionSelect2;
+let ifActionSelect2;
 let forCountSelect;
 let dirsPanel;
 let runBtn;
@@ -21,6 +23,8 @@ export function initQueue() {
   slotsForEl = document.getElementById('slots-for');
   ifConditionSelect = document.getElementById('if-condition-select');
   ifActionSelect = document.getElementById('if-action-select');
+  ifConditionSelect2 = document.getElementById('if-condition-select-2');
+  ifActionSelect2 = document.getElementById('if-action-select-2');
   forCountSelect = document.getElementById('for-count-select');
   dirsPanel = document.getElementById('dirs');
   runBtn = document.getElementById('run');
@@ -148,6 +152,8 @@ export function initQueue() {
     GYM.forCount = 2;
     GYM.ifCondition = '';
     GYM.ifAction = '';
+    GYM.ifCondition2 = '';
+    GYM.ifAction2 = '';
     renderAllSlots();
   };
 
@@ -168,6 +174,8 @@ window.__setPanels = visible => {
     if (!visible) {
       GYM.ifCondition = '';
       GYM.ifAction = '';
+      GYM.ifCondition2 = '';
+      GYM.ifAction2 = '';
       renderIfSeleccionado();
     }
   };
@@ -241,11 +249,21 @@ function initIfPanel() {
     if (GYM.running) return;
     GYM.ifAction = ifActionSelect.value;
   });
+  ifConditionSelect2?.addEventListener('change', () => {
+    if (GYM.running) return;
+    GYM.ifCondition2 = ifConditionSelect2.value;
+  });
+  ifActionSelect2?.addEventListener('change', () => {
+    if (GYM.running) return;
+    GYM.ifAction2 = ifActionSelect2.value;
+  });
 }
 
 function renderIfSeleccionado() {
   if (ifConditionSelect) ifConditionSelect.value = GYM.ifCondition || '';
   if (ifActionSelect) ifActionSelect.value = GYM.ifAction || '';
+  if (ifConditionSelect2) ifConditionSelect2.value = GYM.ifCondition2 || '';
+  if (ifActionSelect2) ifActionSelect2.value = GYM.ifAction2 || '';
 }
 
 function initForPanel() {
@@ -260,12 +278,30 @@ function renderForSeleccionado() {
 }
 
 function initPanelesPlegables() {
-  document.querySelectorAll('[data-toggle-panel]').forEach(btn => {
+  const toggles = [...document.querySelectorAll('[data-toggle-panel]')];
+  // Estado inicial: los tres paneles arrancan cerrados.
+  toggles.forEach(btn => {
+    const panel = document.getElementById(btn.dataset.togglePanel);
+    if (!panel) return;
+    panel.classList.add('plegado');
+    btn.setAttribute('aria-expanded', 'false');
+  });
+  toggles.forEach(btn => {
     btn.addEventListener('click', () => {
       const panel = document.getElementById(btn.dataset.togglePanel);
       if (!panel) return;
       const plegado = panel.classList.toggle('plegado');
       btn.setAttribute('aria-expanded', String(!plegado));
+      // Acordeón: al abrir uno, se cierran los demás para que no queden todos abiertos.
+      if (!plegado) {
+        toggles.forEach(otro => {
+          if (otro === btn) return;
+          const otroPanel = document.getElementById(otro.dataset.togglePanel);
+          if (!otroPanel || otroPanel.classList.contains('plegado')) return;
+          otroPanel.classList.add('plegado');
+          otro.setAttribute('aria-expanded', 'false');
+        });
+      }
     });
   });
 }
@@ -280,6 +316,8 @@ function setRunning(on) {
   dirsPanel.querySelectorAll('button:not(.target-opt)').forEach(b => b.disabled = blocked);
   if (ifConditionSelect) ifConditionSelect.disabled = blocked;
   if (ifActionSelect) ifActionSelect.disabled = blocked;
+  if (ifConditionSelect2) ifConditionSelect2.disabled = blocked;
+  if (ifActionSelect2) ifActionSelect2.disabled = blocked;
   if (forCountSelect) forCountSelect.disabled = blocked;
   runBtn.disabled = blocked;
   clearBtn.disabled = blocked;

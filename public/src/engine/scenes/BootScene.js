@@ -22,6 +22,12 @@ export class BootScene extends Phaser.Scene {
       `${BASE}/Characters/Premium Charakter Spritesheet.png`,
       { frameWidth: 48, frameHeight: 48 }
     );
+    // Animación de caída de árbol (talar): 832x48 → 13 frames de 64x48.
+    this.load.spritesheet(
+      'tree_fall',
+      `${BASE}/Objects/Tree animations/tree_fall_animation_sprite_sheet.png`,
+      { frameWidth: 64, frameHeight: 48 }
+    );
     // Tilesets + level JSONs.
     preloadAssets(this);
     // Object spritesheets. Si el objeto define `frames` (atlas de rects propios dentro de una
@@ -105,6 +111,24 @@ export class BootScene extends Phaser.Scene {
     idle('idle_up',    [8, 9, 10, 11, 12, 13, 14, 15]);
     idle('idle_right', [16, 17, 18, 19, 20, 21, 22, 23]);
     idle('idle_left',  [24, 25, 26, 27, 28, 29, 30, 31]);
+
+    // Hacha (talar árboles): filas 16-19 del Premium sheet → frames 128-159. One-shot.
+    const axe = (key, frames) => this.anims.create({
+      key,
+      frames: this.anims.generateFrameNumbers('character_base', { frames }),
+      frameRate: 12, repeat: 0,
+    });
+    axe('axe_down',  [128, 129, 130, 131, 132, 133, 134, 135]);
+    axe('axe_up',    [136, 137, 138, 139, 140, 141, 142, 143]);
+    axe('axe_right', [144, 145, 146, 147, 148, 149, 150, 151]);
+    axe('axe_left',  [152, 153, 154, 155, 156, 157, 158, 159]);
+
+    // Caída del árbol al ser talado (one-shot).
+    this.anims.create({
+      key: 'tree_fall',
+      frames: this.anims.generateFrameNumbers('tree_fall', { start: 0, end: 12 }),
+      frameRate: 12, repeat: 0,
+    });
 
     // Definir sub-frames (atlas) para objetos con rects propios dentro de una hoja mixta.
     // Cada objeto grande/multi-tile se "saca" de su hoja sin re-cortar el PNG.

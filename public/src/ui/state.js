@@ -20,6 +20,8 @@ export const GYM = window.__GYM = {
   forCount: 2,
   ifCondition: '',
   ifAction: '',
+  ifCondition2: '',
+  ifAction2: '',
   running: false,
   locked: false,   // tras ganar/perder: bloquea agregar movimientos y ejecutar hasta reintentar
   onRun: null,

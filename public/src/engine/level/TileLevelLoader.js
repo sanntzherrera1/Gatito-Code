@@ -134,8 +134,22 @@ export function loadLevel(scene, levelKey) {
     }
   }
 
+  // Grilla de árboles talables (espejo de `rocks`): se marca la casilla del tronco
+  // de cada objeto cuyo def tenga `isTree` (los frutales group:'tree'). La solidez
+  // es independiente: un árbol bloquea solo si se colocó con el flag `solid`.
+  const treeObjKeys = new Set(OBJECTS.filter(o => o.isTree).map(o => o.key));
+  const trees = [];
+  for (let y = 0; y < rows; y++) {
+    trees.push(new Array(cols).fill(false));
+  }
+  for (const obj of objects) {
+    if (treeObjKeys.has(obj.key) && trees[obj.ty]) {
+      trees[obj.ty][obj.tx] = true;
+    }
+  }
+
   const weather = migrateWeather(lvl.weather);
-  const level = new Level(cols, rows, solid, spawn, objects, weather, rocks);
+  const level = new Level(cols, rows, solid, spawn, objects, weather, rocks, trees);
 
   return {
     map, floorLayer, pathLayer, wallsLayer, overlayLayer, topLayer, level, cols, rows,

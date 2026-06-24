@@ -2014,7 +2014,7 @@ export const OBJECTS = [
 
   // ── Nature: Trees with fruit ──
   { key: 'tree_full',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'none','color':'green'},
     label: 'Tree Full',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites.png',
@@ -2047,7 +2047,7 @@ export const OBJECTS = [
     { x: 48, y: 192, w: 48, h: 48, occupyW: 1, occupyH: 1 }
     ]},
   { key: 'tree_apple',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'apple','color':'green'},
     label: 'Tree Apple',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree apple sprites.png',
@@ -2080,7 +2080,7 @@ export const OBJECTS = [
     { x: 48, y: 192, w: 48, h: 48, occupyW: 1, occupyH: 1 }
     ]},
   { key: 'tree_orange',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'orange','color':'green'},
     label: 'Tree Orange',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree orange sprites.png',
@@ -2113,7 +2113,7 @@ export const OBJECTS = [
     { x: 48, y: 192, w: 48, h: 48, occupyW: 1, occupyH: 1 }
     ]},
   { key: 'tree_peach',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'peach','color':'green'},
     label: 'Tree Peach',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree peach sprites.png',
@@ -2146,7 +2146,7 @@ export const OBJECTS = [
     { x: 48, y: 192, w: 48, h: 48, occupyW: 1, occupyH: 1 }
     ]},
   { key: 'tree_pear',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'pear','color':'green'},
     label: 'Tree Pear',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree pear sprites.png',
@@ -2179,7 +2179,7 @@ export const OBJECTS = [
     { x: 48, y: 192, w: 48, h: 48, occupyW: 1, occupyH: 1 }
     ]},
   { key: 'tree_red',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'none','color':'red'},
     label: 'Tree Red',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites red.png',
@@ -2212,7 +2212,7 @@ export const OBJECTS = [
     { x: 48, y: 192, w: 48, h: 48, occupyW: 1, occupyH: 1 }
     ]},
   { key: 'tree_yellow',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'none','color':'yellow'},
     label: 'Tree Yellow',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites yellow.png',
@@ -2245,7 +2245,7 @@ export const OBJECTS = [
     { x: 48, y: 192, w: 48, h: 48, occupyW: 1, occupyH: 1 }
     ]},
   { key: 'tree_cherry',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'none','color':'cherry'},
     label: 'Tree Cherry',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites cherry.png',
@@ -2278,7 +2278,7 @@ export const OBJECTS = [
     { x: 48, y: 192, w: 48, h: 48, occupyW: 1, occupyH: 1 }
     ]},
   { key: 'tree_blue',
-    group: 'tree',
+    group: 'tree', isTree: true,
     variant: {'fruit':'none','color':'blue'},
     label: 'Tree Blue',
     url: 'assets/SproutLands-Sprites/Objects/Tree animations/tree sprites blue.png',
