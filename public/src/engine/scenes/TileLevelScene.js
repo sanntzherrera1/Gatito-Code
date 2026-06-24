@@ -423,6 +423,8 @@ export class TileLevelScene extends Phaser.Scene {
     const view = this.treeViews.get(key);
 
     // 1) Golpe de hacha del jugador (one-shot).
+    const chopIdx = Phaser.Math.Between(0, 2);
+    playSfx(this, `chop_wood_${chopIdx}`, 0.25);
     await this.playerView.playAxe(dir);
 
     // 2a) Frutal con fruta: solo se sacude, cae la fruta y queda pelado. No avanza.

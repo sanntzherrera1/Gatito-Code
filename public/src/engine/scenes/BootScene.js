@@ -75,6 +75,9 @@ export class BootScene extends Phaser.Scene {
     this.load.audio('ui_erase', 'assets/audio/erase.mp3');
     this.load.audio('drag_pick', 'assets/audio/rollover4.ogg');
     this.load.audio('drag_drop', 'assets/audio/rollover5.ogg');
+    this.load.audio('chop_wood_0', 'assets/audio/impact/impactWood_medium_000.ogg');
+    this.load.audio('chop_wood_1', 'assets/audio/impact/impactWood_medium_001.ogg');
+    this.load.audio('chop_wood_2', 'assets/audio/impact/impactWood_medium_004.ogg');
     this.load.audio('cam_slide', 'assets/audio/slide_1.mp3');
     this.load.audio('path_bounce', 'assets/audio/bounce.wav');
     this.load.audio('step_grass_0', 'assets/audio/impact/footstep_grass_000.ogg');
