@@ -65,15 +65,26 @@ export async function runIfTutorial(scene, signal) {
   backdrop.id = 'panel-backdrop';
   document.body.appendChild(backdrop);
 
-  const ifPanel = document.getElementById('queue-if-rule');
-  if (ifPanel) {
-    ifPanel.style.position = 'relative';
-    ifPanel.style.zIndex = '9002';
-  }
   window.__setIfPanel?.(true);
+<<<<<<< Updated upstream
   ifPanel?.classList.add('unlock-glow', 'unlock-layer');
   await showCard(t('if_tut.unlock'), signal);
   ifPanel?.classList.remove('unlock-glow', 'unlock-layer');
+=======
+  // Activar la pestaña SI dentro del panel de logica combinado.
+  document.querySelector('.logica-tab[data-logica-tab="if"]')?.click();
+  const logicaPanel = document.getElementById('queue-logica');
+  if (logicaPanel) {
+    logicaPanel.style.position = 'relative';
+    logicaPanel.style.zIndex = '9002';
+  }
+  logicaPanel?.classList.add('unlock-glow', 'unlock-layer');
+  await showCard(
+    `${ico('estrella')} ¡Desbloqueaste el <b>IF</b>!<br><br><b>SI</b> pasa algo, <b>ENTONCES</b> Gatito hace otra cosa.`,
+    signal,
+  );
+  logicaPanel?.classList.remove('unlock-glow', 'unlock-layer');
+>>>>>>> Stashed changes
   if (signal?.cancelled) return;
 
   // 3a. "SI pasa" → roca adelante
@@ -95,9 +106,9 @@ export async function runIfTutorial(scene, signal) {
   // 4. Payoff: con la regla activa, el gato salta la primera roca solo
   backdrop.classList.add('out');
   setTimeout(() => backdrop.remove(), 320);
-  if (ifPanel) {
-    ifPanel.style.position = '';
-    ifPanel.style.zIndex = '';
+  if (logicaPanel) {
+    logicaPanel.style.position = '';
+    logicaPanel.style.zIndex = '';
   }
   await panTo(scene, { x: 56, y: 88 }, 2.3, 600);
   if (signal?.cancelled) return;

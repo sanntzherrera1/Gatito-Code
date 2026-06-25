@@ -70,15 +70,13 @@ export async function runForTutorial(scene, signal) {
   document.body.appendChild(backdrop);
 
   window.__setForPanel?.(true);
-  const forPanel = document.getElementById('queue-for');
-  if (forPanel) {
-    forPanel.style.position = 'relative';
-    forPanel.style.zIndex = '9002';
-    // En mobile el panel FOR arranca plegado; lo desplegamos para que la
-    // auto-demostracion (desplegable + slots llenandose) sea visible completa.
-    forPanel.classList.remove('plegado');
-    forPanel.querySelector('.panel-toggle')?.setAttribute('aria-expanded', 'true');
-    // Con el FOR desplegado, los carteles del tutorial se corren a la derecha
+  // Activar la pestaña FOR dentro del panel de logica combinado.
+  click('.logica-tab[data-logica-tab="for"]');
+  const logicaPanel = document.getElementById('queue-logica');
+  if (logicaPanel) {
+    logicaPanel.style.position = 'relative';
+    logicaPanel.style.zIndex = '9002';
+    // Con el FOR visible, los carteles del tutorial se corren a la derecha
     // (via CSS body.for-open) para no quedar tapados por el panel.
     document.body.classList.add('for-open');
   }
@@ -91,10 +89,18 @@ export async function runForTutorial(scene, signal) {
     dirsPanel.style.position = 'relative';
     dirsPanel.style.zIndex = '9002';
   }
-  forPanel?.classList.add('unlock-glow', 'unlock-layer');
+  logicaPanel?.classList.add('unlock-glow', 'unlock-layer');
   forBtn?.classList.add('unlock-glow', 'unlock-layer');
+<<<<<<< Updated upstream
   await showCard(t('for_tut.unlock'), signal);
   forPanel?.classList.remove('unlock-glow', 'unlock-layer');
+=======
+  await showCard(
+    `${ico('estrella')} ¡Desbloqueaste el <b>FOR</b> (repetir)!<br><br>En vez de repetir a mano, le decís <b>qué</b> movimiento y <b>cuántas veces</b>.`,
+    signal,
+  );
+  logicaPanel?.classList.remove('unlock-glow', 'unlock-layer');
+>>>>>>> Stashed changes
   forBtn?.classList.remove('unlock-glow', 'unlock-layer');
   if (dirsPanel) {
     dirsPanel.style.position = '';
@@ -124,9 +130,9 @@ export async function runForTutorial(scene, signal) {
   // 4. Payoff: con el FOR, baja 3 veces solo
   backdrop.classList.add('out');
   setTimeout(() => backdrop.remove(), 320);
-  if (forPanel) {
-    forPanel.style.position = '';
-    forPanel.style.zIndex = '';
+  if (logicaPanel) {
+    logicaPanel.style.position = '';
+    logicaPanel.style.zIndex = '';
   }
   await panTo(scene, COLUMNA, 2.0, 600);
   if (signal?.cancelled) return;

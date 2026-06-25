@@ -65,11 +65,11 @@ export class CustomScene extends TileLevelScene {
         document.getElementById('level-dialog-box')?.classList.remove('intro-highlight');
         document.getElementById('if-condition-select')?.classList.remove('intro-highlight');
         document.getElementById('if-action-select')?.classList.remove('intro-highlight');
-        const ifPanel = document.getElementById('queue-if-rule');
-        if (ifPanel) {
-          ifPanel.classList.remove('unlock-glow', 'unlock-layer');
-          ifPanel.style.position = '';
-          ifPanel.style.zIndex = '';
+        const logicaPanel = document.getElementById('queue-logica');
+        if (logicaPanel) {
+          logicaPanel.classList.remove('unlock-glow', 'unlock-layer');
+          logicaPanel.style.position = '';
+          logicaPanel.style.zIndex = '';
         }
       });
       return;
@@ -99,11 +99,11 @@ export class CustomScene extends TileLevelScene {
         document.getElementById('for-count-select')?.classList.remove('intro-highlight');
         document.getElementById('slots-for')?.classList.remove('intro-highlight');
         document.querySelector('[data-dir="for"]')?.classList.remove('unlock-glow', 'unlock-layer');
-        const forPanel = document.getElementById('queue-for');
-        if (forPanel) {
-          forPanel.classList.remove('unlock-glow', 'unlock-layer');
-          forPanel.style.position = '';
-          forPanel.style.zIndex = '';
+        const logicaPanel = document.getElementById('queue-logica');
+        if (logicaPanel) {
+          logicaPanel.classList.remove('unlock-glow', 'unlock-layer');
+          logicaPanel.style.position = '';
+          logicaPanel.style.zIndex = '';
         }
         const dirsPanel = document.getElementById('dirs');
         if (dirsPanel) {
@@ -161,21 +161,21 @@ export class CustomScene extends TileLevelScene {
   // Nivel 9 (FOR): reubica el panel FOR a la columna izquierda (#panels), debajo
   // del D-pad. Guarda su posicion original para devolverlo al salir del nivel.
   _moveForPanelToLeft() {
-    const forPanel = document.getElementById('queue-for');
+    const logicaPanel = document.getElementById('queue-logica');
     const leftCol = document.getElementById('panels');
-    if (!forPanel || !leftCol) return;
-    this._forPanelHome = { parent: forPanel.parentNode, next: forPanel.nextSibling };
-    leftCol.appendChild(forPanel);
+    if (!logicaPanel || !leftCol) return;
+    this._forPanelHome = { parent: logicaPanel.parentNode, next: logicaPanel.nextSibling };
+    leftCol.appendChild(logicaPanel);
     document.body.classList.add('level-for');
   }
 
-  // Devuelve el panel FOR a su contenedor original (#right-panels) en la misma
-  // posicion en la que estaba, para no romper el layout de otros niveles.
+  // Devuelve el panel de logica a su contenedor original (#right-panels) en la
+  // misma posicion en la que estaba, para no romper el layout de otros niveles.
   _restoreForPanel() {
     document.body.classList.remove('level-for', 'for-open');
-    const forPanel = document.getElementById('queue-for');
-    if (forPanel && this._forPanelHome?.parent) {
-      this._forPanelHome.parent.insertBefore(forPanel, this._forPanelHome.next);
+    const logicaPanel = document.getElementById('queue-logica');
+    if (logicaPanel && this._forPanelHome?.parent) {
+      this._forPanelHome.parent.insertBefore(logicaPanel, this._forPanelHome.next);
     }
     this._forPanelHome = null;
   }

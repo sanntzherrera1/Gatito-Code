@@ -32,6 +32,7 @@ export class Nivel0Scene extends TileLevelScene {
       signal._cbs = [];
       unlockPanels();
       document.getElementById('intro-card')?.remove();
+      document.getElementById('panel-backdrop')?.remove();
       document.getElementById('dirs')?.classList.remove('intro-highlight', 'intro-zoom');
       document.getElementById('queue')?.classList.remove('intro-highlight', 'intro-zoom');
     });
@@ -48,9 +49,9 @@ export class Nivel0Scene extends TileLevelScene {
   // boton ƒ del panel de movimientos, su panel F1 y el switch Program/F1/FOR
   // (queda solo el programa principal). Se restauran al salir del nivel.
   _hideFunc1() {
+    window.__setFunc1Panel?.(false);
     const els = [
       document.querySelector('[data-dir="func1"]'),
-      document.getElementById('queue-func1'),
       document.getElementById('target-switch'),
     ];
     for (const el of els) {
@@ -58,6 +59,7 @@ export class Nivel0Scene extends TileLevelScene {
       el.style.display = 'none';
     }
     this.events.once('shutdown', () => {
+      window.__setFunc1Panel?.(true);
       for (const el of els) {
         if (!el) continue;
         el.style.display = '';

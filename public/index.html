@@ -80,6 +80,7 @@
         </div>
       </div>
 
+<<<<<<< Updated upstream
       <div class="sprout-panel panel-plegable" id="queue-func1">
         <button class="panel-toggle" type="button" data-toggle-panel="queue-func1" aria-expanded="true" aria-controls="queue-func1-content">
           <span data-i18n="panel.func1_title">FUNCION 1</span>
@@ -102,6 +103,29 @@
         </button>
         <div class="panel-cuerpo" id="queue-for-content">
           <label class="if-select-label" for="for-count-select" data-i18n="for.repeat">Repetir</label>
+=======
+      <div class="sprout-panel" id="queue-logica" data-activa="func1">
+        <div class="panel-header">
+          <h3 id="logica-titulo">Funcion 1</h3>
+          <div class="target-switch logica-switch" id="logica-switch" title="Cambiar entre Funcion 1, For y Si">
+            <button class="target-opt logica-tab active" type="button" data-logica-tab="func1">F1</button>
+            <button class="target-opt logica-tab" type="button" data-logica-tab="for">FOR</button>
+            <button class="target-opt logica-tab" type="button" data-logica-tab="if">SI</button>
+          </div>
+        </div>
+
+        <div class="logica-cuerpo logica-activo" id="queue-func1" data-logica-panel="func1">
+          <div class="slots f1-slots" id="slots-func1" style="margin-bottom: 12px; gap: 8px;">
+            <div class="slot"></div>
+            <div class="slot"></div>
+            <div class="slot"></div>
+          </div>
+          <button id="clear-func1" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label">BORRAR F1</span></button>
+        </div>
+
+        <div class="logica-cuerpo" id="queue-for" data-logica-panel="for">
+          <label class="if-select-label" for="for-count-select">Repetir</label>
+>>>>>>> Stashed changes
           <select id="for-count-select" class="if-select">
             <option value="2" data-i18n="for.times_2">2 veces</option>
             <option value="3" data-i18n="for.times_3">3 veces</option>
@@ -115,8 +139,8 @@
           </div>
           <button id="clear-for" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label" data-i18n="btn.clear_for">BORRAR FOR</span></button>
         </div>
-      </div>
 
+<<<<<<< Updated upstream
       <div class="sprout-panel panel-plegable" id="queue-if-rule">
         <button class="panel-toggle" type="button" data-toggle-panel="queue-if-rule" aria-expanded="true" aria-controls="queue-if-content">
           <span data-i18n="panel.if_title">SI</span>
@@ -124,6 +148,10 @@
         </button>
         <div class="panel-cuerpo" id="queue-if-content">
           <label class="if-select-label" for="if-condition-select" data-i18n="if.condition_label">Si pasa</label>
+=======
+        <div class="logica-cuerpo" id="queue-if-rule" data-logica-panel="if">
+          <label class="if-select-label" for="if-condition-select">Si pasa</label>
+>>>>>>> Stashed changes
           <select id="if-condition-select" class="if-select">
             <option value="" data-i18n="if.no_condition">sin condicion</option>
             <option value="rock-ahead" data-i18n="if.rock_ahead">roca adelante</option>

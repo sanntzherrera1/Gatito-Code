@@ -73,6 +73,8 @@ export class TileLevelScene extends Phaser.Scene {
       bus.onRestart = () => this.resetLevel();
     }
     window.__setPanels?.(true);
+    // Clase por nivel en <body> para estilos especificos (ej. layout del header).
+    if (this.levelKey) document.body.classList.add(`level-${this.levelKey}`);
     if (this.missionText) {
       window.__setMission?.(this.missionText);
     } else {
@@ -95,6 +97,7 @@ export class TileLevelScene extends Phaser.Scene {
       destroyWeather(this);
       window.__setPanels?.(false);
       window.__setMission?.(null);
+      if (this.levelKey) document.body.classList.remove(`level-${this.levelKey}`);
       // El #result-panel es independiente de #panels: hay que ocultarlo a mano al
       // dejar el nivel, si no el mensaje de "¡ganaste!" persiste en el siguiente.
       window.__hideResult?.();

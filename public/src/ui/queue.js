@@ -18,6 +18,18 @@ let trashZoneEl;
 let activeTarget = 'main';
 const uiSfx = (key) => window.__playUiSfx?.(key);
 
+// Panel de logica combinado: Funcion 1 / For / Si comparten un solo panel con
+// pestañas (como el switch del panel Movement). `logicaDisponible` indica que
+// pestañas existen en el nivel actual; `logicaActiva` cual se muestra.
+let logicaPanelEl;
+let logicaTituloEl;
+let logicaSwitchEl;
+const logicaDisponible = { func1: true, for: false, if: true };
+let logicaActiva = 'func1';
+const LOGICA_ORDEN = ['func1', 'for', 'if'];
+const LOGICA_TITULOS = { func1: 'Funcion 1', for: 'For', if: 'Si' };
+const LOGICA_IDS = { func1: 'queue-func1', for: 'queue-for', if: 'queue-if-rule' };
+
 export function initQueue() {
   slotsEl = document.getElementById('slots');
   slotsFunc1El = document.getElementById('slots-func1');
@@ -62,7 +74,7 @@ export function initQueue() {
   initJumpPicker(renderAllSlots);
   initIfPanel();
   initForPanel();
-  initPanelesPlegables();
+  initLogicaTabs();
 
   dirsPanel.querySelectorAll('button[data-dir]:not([data-dir="jump"])').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -168,8 +180,12 @@ export function initQueue() {
   };
 
 window.__setPanels = visible => {
-    document.getElementById('panels').style.display = visible ? 'flex' : 'none';
-    document.getElementById('right-panels').style.display = visible ? 'flex' : 'none';
+    // Se usa clase (no display inline) para que en el nivel FOR el CSS pueda
+    // aplicar display:contents a #panels en mobile y dejar que #queue-logica
+    // ocupe todo el ancho de la pantalla.
+    for (const id of ['panels', 'right-panels']) {
+      document.getElementById(id)?.classList.toggle('panels-visible', visible);
+    }
     if (!visible) {
       const missionBox = document.getElementById('mission');
       if (missionBox) missionBox.style.display = 'none';
@@ -177,10 +193,14 @@ window.__setPanels = visible => {
     setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
   };
 
+  // Muestra/oculta la pestaña FUNCION 1 dentro del panel de logica.
+  window.__setFunc1Panel = visible => {
+    logicaDisponible.func1 = !!visible;
+    actualizarLogica();
+  };
+
   window.__setIfPanel = visible => {
-    const panel = document.getElementById('queue-if-rule');
-    if (!panel) return;
-    panel.style.display = visible ? '' : 'none';
+    logicaDisponible.if = !!visible;
     if (!visible) {
       GYM.ifCondition = '';
       GYM.ifAction = '';
@@ -188,13 +208,13 @@ window.__setPanels = visible => {
       GYM.ifAction2 = '';
       renderIfSeleccionado();
     }
+    actualizarLogica();
   };
 
   window.__setForPanel = visible => {
-    const panel = document.getElementById('queue-for');
+    logicaDisponible.for = !!visible;
     const opt = document.querySelector('.target-opt[data-target="for"]');
     const forBtn = dirsPanel?.querySelector('button[data-dir="for"]');
-    if (panel) panel.style.display = visible ? 'flex' : 'none';
     if (opt) opt.style.display = visible ? 'flex' : 'none';
     if (forBtn) forBtn.style.display = visible ? 'flex' : 'none';
     if (!visible) {
@@ -204,6 +224,7 @@ window.__setPanels = visible => {
       renderForSeleccionado();
       renderAllSlots();
     }
+    actualizarLogica();
   };
 
   renderAllSlots();
@@ -287,15 +308,14 @@ function renderForSeleccionado() {
   if (forCountSelect) forCountSelect.value = String(GYM.forCount || 2);
 }
 
-function initPanelesPlegables() {
-  const toggles = [...document.querySelectorAll('[data-toggle-panel]')];
-  // Estado inicial: los tres paneles arrancan cerrados.
-  toggles.forEach(btn => {
-    const panel = document.getElementById(btn.dataset.togglePanel);
-    if (!panel) return;
-    panel.classList.add('plegado');
-    btn.setAttribute('aria-expanded', 'false');
+function initLogicaTabs() {
+  logicaPanelEl = document.getElementById('queue-logica');
+  logicaTituloEl = document.getElementById('logica-titulo');
+  logicaSwitchEl = document.getElementById('logica-switch');
+  logicaSwitchEl?.querySelectorAll('.logica-tab').forEach(tab => {
+    tab.addEventListener('click', () => activarLogica(tab.dataset.logicaTab));
   });
+<<<<<<< Updated upstream
   toggles.forEach(btn => {
     btn.addEventListener('click', () => {
       uiSfx();
@@ -323,8 +343,48 @@ function initPanelesPlegables() {
         const btn = panel.querySelector('.panel-toggle');
         if (btn) btn.setAttribute('aria-expanded', 'false');
       }
+=======
+  actualizarLogica();
+}
+
+// Cambia la pestaña visible del panel de logica. Ignora pestañas no disponibles.
+export function activarLogica(which) {
+  if (!logicaDisponible[which]) return;
+  logicaActiva = which;
+  actualizarLogica();
+}
+
+// Sincroniza el panel de logica con `logicaDisponible`/`logicaActiva`:
+// muestra/oculta el panel y las pestañas, marca la activa y enseña su contenido.
+function actualizarLogica() {
+  if (!logicaPanelEl) return;
+  // Si la pestaña activa ya no esta disponible, saltar a la primera disponible.
+  if (!logicaDisponible[logicaActiva]) {
+    logicaActiva = LOGICA_ORDEN.find(k => logicaDisponible[k]) || logicaActiva;
+  }
+  const disponibles = LOGICA_ORDEN.filter(k => logicaDisponible[k]);
+  // Sin pestañas disponibles → se oculta todo el panel.
+  logicaPanelEl.style.display = disponibles.length ? 'flex' : 'none';
+  logicaPanelEl.dataset.activa = logicaActiva;
+
+  // El switch solo tiene sentido si hay mas de una pestaña.
+  if (logicaSwitchEl) {
+    logicaSwitchEl.style.display = disponibles.length > 1 ? 'flex' : 'none';
+    logicaSwitchEl.querySelectorAll('.logica-tab').forEach(tab => {
+      const k = tab.dataset.logicaTab;
+      tab.style.display = logicaDisponible[k] ? '' : 'none';
+      tab.classList.toggle('active', k === logicaActiva);
+>>>>>>> Stashed changes
     });
   }
+
+  // Mostrar solo el contenido de la pestaña activa.
+  LOGICA_ORDEN.forEach(k => {
+    const el = document.getElementById(LOGICA_IDS[k]);
+    if (el) el.classList.toggle('logica-activo', k === logicaActiva && logicaDisponible[k]);
+  });
+
+  if (logicaTituloEl) logicaTituloEl.textContent = LOGICA_TITULOS[logicaActiva] || '';
 }
 
 function setRunning(on) {

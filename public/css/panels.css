@@ -7,6 +7,13 @@
   width: 100%;
   user-select: none;
 }
+/* Estado "visible" de los wrappers de paneles (lo activa el JS via __setPanels
+   con la clase, en vez de display inline, para que en el nivel FOR el CSS pueda
+   usar display:contents y dejar que #queue-logica ocupe todo el ancho). */
+#panels.panels-visible,
+#right-panels.panels-visible {
+  display: flex;
+}
 .panel {
   background: var(--bg-raised);
   border: 1px solid var(--border-dim);
@@ -94,6 +101,17 @@
   margin: 0;
   padding-bottom: 0;
   border-bottom: none;
+}
+
+/* Nivel 9 (FOR): el header del panel de movimiento apila el titulo MOVEMENT
+   arriba y el switch debajo, en lugar de quedar en horizontal. */
+body.level-for #dirs .panel-header {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 6px;
+}
+body.level-for #dirs .panel-header .target-switch {
+  align-self: center;
 }
 
 .target-switch {
@@ -270,13 +288,22 @@
   color: rgba(90,58,26,.45);
 }
 
-/* ─── Function 1 panel ─── */
-#queue-func1 {
-  display: flex;
+/* ─── Panel de logica combinado (Funcion 1 / For / Si) ─── */
+#queue-logica .logica-switch {
+  flex-wrap: nowrap;
+}
+.logica-cuerpo {
+  display: none;
   flex-direction: column;
   overflow: hidden;
 }
-#queue-for,
+.logica-cuerpo.logica-activo {
+  display: flex;
+}
+#queue-logica[data-activa="func1"] #logica-titulo { color: #4b688a; }
+#queue-logica[data-activa="for"]   #logica-titulo { color: #7a4a12; }
+#queue-logica[data-activa="if"]    #logica-titulo { color: #5a7f3a; }
+
 .target-opt[data-target="for"],
 .sprout-panel button[data-dir="for"] {
   display: none;
@@ -380,65 +407,6 @@
   text-shadow: none;
   font-size: 16px;
   text-align: left;
-}
-.panel-toggle {
-  width: 100%;
-  min-height: 28px;
-  justify-content: space-between !important;
-  gap: 8px !important;
-  padding: 0 0 8px !important;
-  margin: 0 0 8px !important;
-  border-bottom: 2px solid rgba(90,58,26,.15) !important;
-  color: var(--sprout-mid) !important;
-  font-family: 'SproutPixel', monospace !important;
-  font-size: 16px !important;
-  text-transform: uppercase;
-  line-height: 1;
-}
-#queue-func1 .panel-toggle {
-  color: #4b688a !important;
-  border-bottom-color: rgba(75,104,138,.2) !important;
-}
-#queue-for .panel-toggle {
-  color: #7a4a12 !important;
-  border-bottom-color: rgba(122,74,18,.22) !important;
-}
-#queue-if-rule .panel-toggle {
-  color: #5a7f3a !important;
-  border-bottom-color: rgba(90,127,58,.22) !important;
-}
-.panel-toggle-icon {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  color: rgba(90,58,26,.76);
-  transition: transform .16s ease;
-}
-.panel-cuerpo {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  max-height: 260px;
-  opacity: 1;
-  transition: max-height .18s ease, opacity .14s ease;
-}
-.panel-plegable.plegado {
-  gap: 0;
-}
-.panel-plegable.plegado .panel-cuerpo {
-  max-height: 0;
-  opacity: 0;
-  pointer-events: none;
-}
-.panel-plegable.plegado .panel-toggle {
-  margin-bottom: 0 !important;
-  padding-bottom: 0 !important;
-  border-bottom-color: transparent !important;
-}
-.panel-plegable.plegado .panel-toggle-icon {
-  transform: rotate(-90deg);
 }
 .if-select-label {
   font-size: 11px;
@@ -654,18 +622,16 @@
     font-size: 10px;
   }
 
-  /* Paneles plegables más compactos */
-  .panel-toggle {
-    min-height: 22px;
-    font-size: 12px !important;
-    padding: 0 0 3px !important;
-    margin: 0 0 3px !important;
-  }
-
 }
 
 /* ─── Mobile landscape ─── */
 @media (orientation: landscape) and (max-height: 500px) {
+  /* En landscape pequeno (ancho <768 matchea tambien la media portrait) NO
+     aplicamos el full-width del nivel FOR: #panels vuelve a flex, asi
+     #queue-logica queda en su columna y no se expande en horizontal. */
+  body.level-for #panels.panels-visible {
+    display: flex;
+  }
   .sprout-panel {
     padding: 6px 8px;
     gap: 1px;
@@ -714,7 +680,6 @@
     justify-content: center;
   }
   .sprout-panel h3 { font-size: 10px; }
-  .panel-toggle { font-size: 11px !important; min-height: 20px; }
 }
 
 /* ─── Tablet (768px–1099px) ─── */
@@ -735,7 +700,7 @@
   to   { opacity: 0; transform: translateY(10px) scale(.96); }
 }
 @media (max-width: 767px) {
-  body.level-for #panels #queue-for {
+  body.level-for #panels #queue-logica {
     margin-top: 4px;
   }
   /* Mientras el FOR esta desplegado (auto-demo del tutorial), el panel crece

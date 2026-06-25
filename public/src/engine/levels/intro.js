@@ -63,7 +63,10 @@ export function injectStyles() {
       color: #3d2008;
       font-size: 15px;
       text-align: center;
-      z-index: 9000;
+      /* El cartel es la capa mas importante: SIEMPRE por encima del backdrop
+         (8998) y de cualquier panel resaltado/elevado (9001-9002). Antes estaba
+         en 9000 y los paneles elevados lo tapaban. */
+      z-index: 9600;
       min-width: 250px;
       max-width: 420px;
       line-height: 1.55;
@@ -252,20 +255,32 @@ export async function runNivel0Intro(scene, missionText = null, signal = null, o
   if (signal?.cancelled) return;
 
   if (showPanelTutorial) {
+    // Oscurecer el resto: el backdrop entra para que solo el panel resaltado y
+    // el cartel queden legibles. El panel con .intro-zoom (z-index 9001) sube
+    // por encima del backdrop (8998), y el cartel (9600) por encima de todo.
+    const backdrop = document.createElement('div');
+    backdrop.id = 'panel-backdrop';
+    document.body.appendChild(backdrop);
+    const removeBackdrop = () => { backdrop.classList.add('out'); setTimeout(() => backdrop.remove(), 320); };
+    signal?._onCancel(() => backdrop.remove());
+
     // Panel de movimientos
     const dirsPanel = document.getElementById('dirs');
     dirsPanel?.classList.add('intro-highlight', 'intro-zoom');
     await showCard(t('intro.mission'), signal);
     dirsPanel?.classList.remove('intro-highlight', 'intro-zoom');
-    if (signal?.cancelled) return;
+    if (signal?.cancelled) { backdrop.remove(); return; }
 
     // Panel de programa
     await wait(scene, 200);
-    if (signal?.cancelled) return;
+    if (signal?.cancelled) { backdrop.remove(); return; }
     const queuePanel = document.getElementById('queue');
     queuePanel?.classList.add('intro-highlight', 'intro-zoom');
     await showCard(t('intro.queue'), signal);
     queuePanel?.classList.remove('intro-highlight', 'intro-zoom');
+
+    // Quitar el oscurecido suavemente
+    removeBackdrop();
   }
 
   if (missionText) window.__setMission?.(missionText);

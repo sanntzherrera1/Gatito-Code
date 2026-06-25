@@ -323,6 +323,34 @@ body.app-loading #boot-splash {
     grid-column: 1 / -1;
     grid-row: 2;
   }
+
+  /* ─── Nivel 9 (FOR): el panel logica (#queue-logica), que el JS reubica en la
+     columna izquierda (#panels), pasa a ocupar TODO el ancho en una fila propia
+     debajo. #panels se "disuelve" (display:contents) para que el D-pad (#dirs) y
+     el panel logica entren como items directos del grid del body. ─── */
+  body.level-for {
+    grid-template-rows: auto auto minmax(0, 1fr);
+  }
+  body.level-for #game-frame {
+    max-height: 55dvh;
+  }
+  body.level-for #panels.panels-visible {
+    display: contents;
+  }
+  body.level-for #dirs {
+    grid-column: 1;
+    grid-row: 2;
+  }
+  body.level-for #queue-logica {
+    grid-column: 1 / -1;
+    grid-row: 3;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    /* Reservamos espacio abajo para que la ultima instruccion no quede tapada
+       por #result-panel.visible (overlay fijo: bottom 8px + min-height 80px). */
+    margin-bottom: 100px;
+  }
+
   #hud {
     font-size: 11px;
     padding: 3px 8px;
