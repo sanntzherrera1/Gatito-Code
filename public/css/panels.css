@@ -156,6 +156,9 @@
   font-size: 10px;
   border-bottom: 2px solid rgba(90,58,26,.15);
 }
+.desktop-only-switch {
+  display: none;
+}
 /* ─── Direction & Queue buttons ─── */
 .sprout-panel button {
   background: none !important;
@@ -399,6 +402,7 @@
   border-bottom: 2px solid rgba(90,58,26,.15);
 }
 .logica-header h3 {
+  color: var(--border-bright);
   margin: 0;
   padding-bottom: 0;
   border-bottom: none;
@@ -780,6 +784,9 @@ body.for-open #intro-card.icard-out {
   #right-panels {
     flex-direction: column;
   }
+  .logica-stack {
+    flex: none;
+  }
   .sprout-panel {
     width: 100%;
     padding: 14px 16px;
@@ -848,10 +855,21 @@ body.for-open #intro-card.icard-out {
     display: flex;
     flex-direction: column;
   }
-  .queue-actions{
-    flex-direction: column;
-    align-items:flex-start;
+  .desktop-only-switch {
+    display: flex;
   }
+  .queue-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    grid-template-areas:
+      "run clear"
+      "restart restart";
+    gap: 4px;
+  }
+  .queue-actions #run { grid-area: run; }
+  .queue-actions #clear { grid-area: clear; }
+  .queue-actions #restart { grid-area: restart; }
+
   .if-rule-sep { display: block; }
   #panels, #right-panels, #editor-panel {
     /* min-width: 220px;
@@ -955,6 +973,9 @@ body.for-open #intro-card.icard-out {
     background: none !important;
     border: none !important;
     border-radius: 0 !important;
+  }
+  #queue .panel-toggle {
+    border-bottom: 1px solid rgba(90,58,26,.22);
   }
   #queue-func1 .panel-toggle {
     color: #4b688a !important;

@@ -26,16 +26,17 @@ let logicaTituloEl;
 let logicaSwitchEl;
 let ifTabSwitchEl;
 let ifRuleEl;
-const logicaDisponible = { func1: true, for: false, if: true };
-let logicaActiva = 'func1';
+const logicaDisponible = { main: true, func1: true, for: false, if: true };
+let logicaActiva = 'main';
 let ifActiva = 'if-1';
-const LOGICA_ORDEN = ['func1', 'for', 'if'];
-const LOGICA_TITULOS = { func1: 'Funcion', for: 'For', if: 'Si' };
-const LOGICA_IDS = { func1: 'queue-func1', for: 'queue-for', if: 'queue-if-rule' };
+const LOGICA_ORDEN = ['main', 'func1', 'for', 'if'];
+const LOGICA_TITULOS = { main: 'Programa', func1: 'Funcion', for: 'For', if: 'Si' };
+const LOGICA_IDS = { main: 'queue', func1: 'queue-func1', for: 'queue-for', if: 'queue-if-rule' };
 
-// A partir del nombre de tab (func1/for/if) devuelve el id del panel ple-
-// gable correspondiente, o null si no hay panel visible (caso 'main').
+// A partir del nombre de tab (main/func1/for/if) devuelve el id del panel ple-
+// gable correspondiente.
 function tabToPanelId(tab) {
+  if (tab === 'main') return 'queue';
   if (tab === 'func1') return 'queue-func1';
   if (tab === 'for')   return 'queue-for';
   if (tab === 'if')    return 'queue-if-rule';
@@ -54,8 +55,6 @@ export function initQueue() {
   dirsPanel = document.getElementById('dirs');
   runBtn = document.getElementById('run');
   clearBtn = document.getElementById('clear');
-  clearFunc1Btn = document.getElementById('clear-func1');
-  clearForBtn = document.getElementById('clear-for');
   trashZoneEl = document.getElementById('slot-trash-zone');
 
   trashZoneEl.addEventListener('dragover', e => {
@@ -82,8 +81,8 @@ export function initQueue() {
     } catch (err) {}
   });
 
-  initTargetSwitch();
   initJumpPicker(renderAllSlots);
+  initTargetSwitch();
   initIfPanel();
   initForPanel();
   initLogicaTabs();
@@ -133,23 +132,12 @@ export function initQueue() {
 
   clearBtn.addEventListener('click', () => {
     if (GYM.running) return;
-    if (GYM.queue.length) uiSfx('ui_erase');
-    GYM.queue.length = 0;
-    renderAllSlots();
-  });
-
-  clearFunc1Btn.addEventListener('click', () => {
-    if (GYM.running) return;
-    if (GYM.queueFunc1.length) uiSfx('ui_erase');
-    GYM.queueFunc1.length = 0;
-    renderAllSlots();
-  });
-
-  clearForBtn?.addEventListener('click', () => {
-    if (GYM.running) return;
-    if (GYM.queueFor.length) uiSfx('ui_erase');
-    GYM.queueFor.length = 0;
-    renderAllSlots();
+    const targetQueue = obtenerQueuePorTarget(activeTarget);
+    if (targetQueue && targetQueue.length) {
+      uiSfx('ui_erase');
+      targetQueue.length = 0;
+      renderAllSlots();
+    }
   });
 
   runBtn.addEventListener('click', async () => {
@@ -250,24 +238,33 @@ window.__setPanels = visible => {
 
 function initTargetSwitch() {
   const switchEl = document.getElementById('target-switch');
+  if (!switchEl) return;
   switchEl.querySelectorAll('.target-opt').forEach(opt => {
-    opt.addEventListener('click', () => { uiSfx(); activarTarget(opt.dataset.target); });
+    opt.addEventListener('click', () => { 
+      uiSfx(); 
+      // Al hacer clic en el switch de desktop, cambiamos el target
+      // y forzamos que se despliegue el acordeón en desktop.
+      activarTarget(opt.dataset.target); 
+      abrirPanelLogica(opt.dataset.target);
+    });
   });
 }
 
 function activarTarget(target) {
+  if (target === 'if') return;
   activeTarget = target;
+  
   const switchEl = document.getElementById('target-switch');
-  switchEl.querySelectorAll('.target-opt').forEach(o =>
-    o.classList.toggle('active', o.dataset.target === target));
+  if (switchEl) {
+    switchEl.querySelectorAll('.target-opt').forEach(o =>
+      o.classList.toggle('active', o.dataset.target === target)
+    );
+  }
+
   const func1Btn = dirsPanel.querySelector('[data-dir="func1"]');
   if (func1Btn) func1Btn.disabled = (target === 'func1');
   const forBtn = dirsPanel.querySelector('[data-dir="for"]');
   if (forBtn) forBtn.disabled = (target === 'for');
-
-  if (target === 'func1' || target === 'for') {
-    abrirPanelLogica(target);
-  }
 }
 
 function renderQueue(queue, container) {
@@ -363,6 +360,7 @@ function initLogicaTabs() {
 export function activarLogica(which) {
   if (!logicaDisponible[which]) return;
   logicaActiva = which;
+  activarTarget(which);
   actualizarLogica();
 }
 
@@ -452,6 +450,9 @@ function initPanelToggles() {
       }
       panel.classList.toggle('plegado');
       btn.setAttribute('aria-expanded', String(fuePlegado));
+      if (fuePlegado && panel.dataset.logicaPanel) {
+        activarTarget(panel.dataset.logicaPanel);
+      }
     });
   });
 }
@@ -502,8 +503,6 @@ function setRunning(on) {
   if (forCountSelect) forCountSelect.disabled = blocked;
   runBtn.disabled = blocked;
   clearBtn.disabled = blocked;
-  clearFunc1Btn.disabled = blocked;
-  if (clearForBtn) clearForBtn.disabled = blocked;
 }
 
 function setupDropZone(container, queue, queueId) {
@@ -580,7 +579,11 @@ function setupDropZone(container, queue, queueId) {
         slot.classList.add('dragging');
         const rect = slot.getBoundingClientRect();
         trashZoneEl.style.top = `${rect.top - 5}px`;
-        trashZoneEl.style.left = `${rect.right + 12}px`;
+        let leftPos = rect.right + 12;
+        if (leftPos + 50 > window.innerWidth) {
+          leftPos = rect.left - 62;
+        }
+        trashZoneEl.style.left = `${leftPos}px`;
         trashZoneEl.classList.add('visible');
       }, 0);
     });

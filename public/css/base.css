@@ -373,6 +373,7 @@ body.app-loading #boot-splash {
   }
   #panels-container {
     flex-direction: column;
+    justify-content: center;
     gap: 8px;
     flex: 1;
     max-width: 250px;
@@ -383,7 +384,7 @@ body.app-loading #boot-splash {
     -webkit-overflow-scrolling: auto;
   }
   #right-panels {
-    flex: 1;
+    flex: none;
     overflow-y: auto;
   }
   #hud {
