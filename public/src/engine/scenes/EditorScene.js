@@ -10,6 +10,7 @@ import {
 } from '../../services/Storage.js';
 import { createWeather, destroyWeather } from '../../engine/level/WeatherSystem.js';
 import { deriveAnimKey } from '../../engine/entities/WorldObjectView.js';
+import { setBackHandler } from '../../ui/back-gesture.js';
 
 const LAYERS = ['floor', 'path', 'walls', 'overlay', 'top'];
 const UNDO_CAP = 50;
@@ -234,6 +235,8 @@ export class EditorScene extends Phaser.Scene {
     this.keys.G.on('down',   () => { this.gridVisible = !this.gridVisible; this.grid.setVisible(this.gridVisible); });
     this.keys.P.on('down',   () => this.playTest());
     this.keys.ESC.on('down', () => this._handleEsc());
+
+    setBackHandler(this, () => this._handleEsc());
     this.keys.S.on('down',   (ev) => { if (!ev.ctrlKey) this.setMode(this.edMode === 'spawn' ? 'tile' : 'spawn'); });
     this.keys.I.on('down',   () => this.setMode(this.edMode === 'intro' ? 'tile' : 'intro'));
     this.input.keyboard.on('keydown', (ev) => {

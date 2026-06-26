@@ -1,11 +1,24 @@
 /* ─── Panels & Editor base (mobile-first) ─── */
-#panels, #right-panels, #editor-panel {
+/* Base = mobile portrait (≤767px) */
+#panels, #editor-panel {
   display: none;
   flex-direction: column;
   gap: 12px;
   min-width: 0;
   width: 100%;
   user-select: none;
+}
+#right-panels {
+  display: none;
+  flex-direction: row;
+  gap: 4px;
+  min-width: 0;
+  width: 100%;
+  user-select: none;
+}
+#right-panels > .sprout-panel {
+  flex: 1;
+  min-width: 0;
 }
 /* Estado "visible" de los wrappers de paneles (lo activa el JS via __setPanels
    con la clase, en vez de display inline, para que en el nivel FOR el CSS pueda
@@ -42,15 +55,16 @@
 }
 
 /* ─── Sprout Lands Panel (shared) ─── */
+/* Base = mobile compact */
 .sprout-panel {
   border: none;
   border-radius: 6px;
   width: 100%;
-  padding: 14px 16px;
+  padding: 6px 8px;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 0;
   overflow: hidden;
   background:
     linear-gradient(170deg, #dfc99e 0%, #c8a87a 40%, #b89564 100%);
@@ -77,9 +91,10 @@
     inset 0 1px 0 rgba(255,255,255,.25),
     inset 0 -1px 0 rgba(0,0,0,.1);
 }
+/* Base = mobile compact titles */
 .sprout-panel h3 {
   font-family: 'SproutPixel', monospace;
-  font-size: 14px;
+  font-size: 10px;
   text-transform: uppercase;
   color: var(--sprout-mid);
   text-shadow: 0 1px 0 rgba(255,255,255,.3);
@@ -103,17 +118,6 @@
   border-bottom: none;
 }
 
-/* Nivel 9 (FOR): el header del panel de movimiento apila el titulo MOVEMENT
-   arriba y el switch debajo, en lugar de quedar en horizontal. */
-body.level-for #dirs .panel-header {
-  flex-direction: column;
-  align-items: stretch;
-  gap: 6px;
-}
-body.level-for #dirs .panel-header .target-switch {
-  align-self: center;
-}
-
 .target-switch {
   display: flex;
   border-radius: 4px;
@@ -121,13 +125,14 @@ body.level-for #dirs .panel-header .target-switch {
   border: 1px solid rgba(90,58,26,.35);
   flex-shrink: 0;
 }
+/* Base = mobile compact target options */
 .target-opt {
   background: rgba(255,255,255,.12) !important;
   border: none !important;
   border-radius: 0 !important;
-  padding: 3px 8px !important;
+  padding: 2px 5px !important;
   font-family: 'SproutPixel', monospace !important;
-  font-size: 10px !important;
+  font-size: 9px !important;
   color: rgba(90,58,26,.5) !important;
   cursor: pointer;
   transition: background .12s ease, color .12s ease;
@@ -142,9 +147,11 @@ body.level-for #dirs .panel-header .target-switch {
 }
 #queue-func1 h3 { color: #4b688a; text-shadow: none; border-bottom-color: rgba(75,104,138,.2); }
 #queue-for h3 { color: #7a4a12; text-shadow: none; border-bottom-color: rgba(122,74,18,.22); }
+/* Base = mobile compact queue title */
 #queue > h3 {
-  margin: 0 0 10px 0;
-  padding-bottom: 6px;
+  margin: 0 0 2px 0;
+  padding-bottom: 2px;
+  font-size: 10px;
   border-bottom: 2px solid rgba(90,58,26,.15);
 }
 
@@ -193,13 +200,15 @@ body.level-for #dirs .panel-header .target-switch {
 .sprout-panel button:active:not(:disabled) .dir-icon { background-position: -32px -96px; }
 
 /* ─── Slots (sprout panel) ─── */
+/* Base = mobile compact slots */
 .sprout-panel .slot {
   background: rgba(255,255,255,.2) !important;
   border: 2px dashed rgba(90,58,26,.25) !important;
   border-radius: 4px;
   color: rgba(90,58,26,.45);
-  height: 34px !important;
-  margin-bottom: 4px;
+  height: 28px !important;
+  min-height: 28px;
+  margin-bottom: 1px;
   display: flex !important;
   align-items: center;
   justify-content: center;
@@ -215,9 +224,18 @@ body.level-for #dirs .panel-header .target-switch {
   color: var(--sprout-mid);
   justify-content: space-between !important;
   padding: 0 8px;
+  cursor: grab;
 }
 .sprout-panel .slot.filled:hover {
   box-shadow: inset 0 0 8px rgba(255,200,80,.15);
+}
+.sprout-panel .slot.filled:active { cursor: grabbing; }
+.sprout-panel .slot.dragging { opacity: 0.5; outline: 2px dashed #4b8b3b; }
+.sprout-panel .slot.drag-over {
+  background: rgba(255,200,80,.45) !important;
+  border-color: #a06020 !important;
+  border-style: solid !important;
+  box-shadow: inset 0 0 10px rgba(255,200,80,.15);
 }
 
 /* ─── Action icons ─── */
@@ -229,7 +247,17 @@ body.level-for #dirs .panel-header .target-switch {
 #restart .queue-icon { background-position: 0 -64px; color: var(--sprout-mid); font-size: 16px; font-weight: bold; }
 #restart:active:not(:disabled) .queue-icon { background-position: -32px -64px; }
 
-.dir-label, .queue-label {
+/* Base = mobile: labels hidden */
+.dir-label {
+  display: none;
+  font-size: 14px;
+  color: var(--sprout-dark);
+  font-family: 'SproutPixel', monospace;
+  text-transform: uppercase;
+}
+/* Base = mobile: queue labels hidden */
+.queue-label {
+  display: none;
   font-size: 14px;
   color: var(--sprout-dark);
   font-family: 'SproutPixel', monospace;
@@ -268,9 +296,20 @@ body.level-for #dirs .panel-header .target-switch {
 /* ─── Slots container ─── */
 .slots { display: flex; flex-direction: column; gap: 4px; }
 
-/* Wrapper de botones de accion del Program: transparente en desktop
-   (no altera el layout en columna), fila compacta en mobile. */
-.queue-actions { display: contents; }
+/* Wrapper de botones de accion del Program: fila compacta (solo iconos) en mobile */
+.queue-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 4px;
+  margin-top: 2px;
+}
+.queue-actions > button {
+  flex: 1;
+  min-width: 0;
+  min-height: 32px;
+  padding: 2px !important;
+  justify-content: center;
+}
 .slots.f1-slots { margin-bottom: 8px; gap: 6px; }
 
 .slot {
@@ -288,6 +327,32 @@ body.level-for #dirs .panel-header .target-switch {
   color: rgba(90,58,26,.45);
 }
 
+/* ─── D-pad #dirs: base = cruz clásica (mobile) ─── */
+#dirs {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-template-areas:
+    "header header header"
+    ".      up     ."
+    "left   .      right"
+    ".      down   ."
+    "func1  func1  forbtn";
+  gap: 1px;
+  padding: 4px 6px;
+}
+#dirs .panel-header  { grid-area: header; margin-bottom: 2px; padding-bottom: 2px; }
+#dirs button[data-dir="up"]    { grid-area: up; }
+#dirs button[data-dir="down"]  { grid-area: down; }
+#dirs button[data-dir="left"]  { grid-area: left; }
+#dirs button[data-dir="right"] { grid-area: right; }
+#dirs button[data-dir="func1"] { grid-area: func1; }
+#dirs button[data-dir="for"]   { grid-area: forbtn; }
+#dirs button[data-dir] {
+  justify-content: center;
+  min-height: 38px;
+  padding: 2px !important;
+}
+
 /* ─── Panel de logica combinado (Funcion 1 / For / Si) ─── */
 #queue-logica .logica-switch {
   flex-wrap: nowrap;
@@ -302,6 +367,22 @@ body.level-for #dirs .panel-header .target-switch {
 #queue-logica[data-activa="func1"] #logica-titulo { color: #4b688a; }
 #queue-logica[data-activa="for"]   #logica-titulo { color: #7a4a12; }
 #queue-logica[data-activa="if"]    #logica-titulo { color: #5a7f3a; }
+
+/* ─── Sub-switch IF-1 / IF-2 dentro del panel SI ─── */
+/* Base (mobile): el switch es visible y solo se muestra el if-block activo.
+   En desktop (≥1100px) se oculta el switch y se muestran ambos ifs. */
+#queue-if-rule .if-tab-switch {
+  margin-bottom: 6px;
+  align-self: stretch;
+}
+.if-block {
+  display: none;
+  flex-direction: column;
+}
+.if-block.if-block-active {
+  display: flex;
+}
+#queue-if-rule[data-activa-if="if-1"] .if-rule-sep, #queue-if-rule[data-activa-if="if-2"] .if-rule-sep { display: none; }
 
 .target-opt[data-target="for"],
 .sprout-panel button[data-dir="for"] {
@@ -327,92 +408,14 @@ body.level-for #dirs .panel-header .target-switch {
   font-size: 16px;
   text-align: left;
 }
+
+/* ─── IF / FOR selects (unificado, sin duplicaciones) ─── */
 .if-select-label {
   font-size: 11px;
   color: rgba(90,58,26,.85);
   font-family: 'SproutPixel', monospace;
   text-transform: uppercase;
   margin: 2px 0 4px;
-}
-.if-select {
-  width: 100%;
-  min-height: 34px;
-  appearance: none;
-  -webkit-appearance: none;
-  -moz-appearance: none;
-  background:
-    linear-gradient(180deg, rgba(247,231,198,.7) 0%, rgba(222,191,143,.82) 100%);
-  background-color: #d7b07b;
-  border: 1px solid rgba(90,58,26,.42);
-  border-radius: 4px;
-  color: var(--sprout-dark);
-  font-family: 'SproutPixel', monospace;
-  font-size: 12px;
-  padding: 6px 34px 6px 8px;
-  box-sizing: border-box;
-  margin-bottom: 10px;
-  box-shadow:
-    inset 0 1px 0 rgba(255,255,255,.28),
-    inset 0 -1px 0 rgba(0,0,0,.08);
-  background-image:
-    linear-gradient(180deg, rgba(247,231,198,.7) 0%, rgba(222,191,143,.82) 100%),
-    linear-gradient(45deg, transparent 50%, rgba(90,58,26,.75) 50%),
-    linear-gradient(135deg, rgba(90,58,26,.75) 50%, transparent 50%);
-  background-repeat: no-repeat;
-  background-position:
-    0 0,
-    calc(100% - 16px) 14px,
-    calc(100% - 11px) 14px;
-  background-size:
-    100% 100%,
-    5px 5px,
-    5px 5px;
-}
-.if-select:focus {
-  outline: none;
-  border-color: rgba(90,58,26,.55);
-  box-shadow: inset 0 0 0 1px rgba(255,200,80,.25);
-}
-.if-select option {
-  background: #d3ae7a;
-  color: #4a2e12;
-}
-.if-select option:checked {
-  background: #b98b52;
-  color: #2e1b09;
-}
-.if-select:disabled {
-  opacity: .5;
-}
-.if-rule-sep {
-  height: 1px;
-  margin: 10px 0 2px;
-  background: rgba(90,58,26,.28);
-}
-#queue-for h3 {
-  display: block;
-  margin: 0 0 10px 0;
-  height: auto;
-  color: #7a4a12;
-  text-shadow: none;
-  font-size: 16px;
-  text-align: left;
-}
-#queue-if-rule h3 {
-  display: block;
-  margin: 0 0 10px 0;
-  height: auto;
-  color: #5a7f3a;
-  text-shadow: none;
-  font-size: 16px;
-  text-align: left;
-}
-.if-select-label {
-  font-size: 11px;
-  color: rgba(90,58,26,.85);
-  font-family: 'SproutPixel', monospace;
-  text-transform: uppercase;
-  margin: 4px 0 4px;
 }
 .if-select {
   width: 100%;
@@ -455,20 +458,35 @@ body.level-for #dirs .panel-header .target-switch {
   background: #d3ae7a;
   color: #4a2e12;
 }
+.if-select option:checked {
+  background: #b98b52;
+  color: #2e1b09;
+}
 .if-select:disabled {
   opacity: .5;
 }
-.sprout-panel .slot.filled {
-  color: var(--sprout-mid);
-  border-style: solid;
-  border-color: rgba(90,58,26,.5);
-  background: rgba(255,200,80,.3) !important;
+.if-rule-sep {
+  height: 1px;
+  margin: 10px 0 2px;
+  background: rgba(90,58,26,.28);
 }
-.sprout-panel .slot.drag-over {
-  background: rgba(255,200,80,.45) !important;
-  border-color: #a06020 !important;
-  border-style: solid !important;
-  box-shadow: inset 0 0 10px rgba(255,200,80,.15);
+#queue-for h3 {
+  display: block;
+  margin: 0 0 10px 0;
+  height: auto;
+  color: #7a4a12;
+  text-shadow: none;
+  font-size: 16px;
+  text-align: left;
+}
+#queue-if-rule h3 {
+  display: block;
+  margin: 0 0 10px 0;
+  height: auto;
+  color: #5a7f3a;
+  text-shadow: none;
+  font-size: 16px;
+  text-align: left;
 }
 
 .var-label {
@@ -478,11 +496,6 @@ body.level-for #dirs .panel-header .target-switch {
   pointer-events: none;
   flex-shrink: 0;
 }
-.slot { position: relative; }
-.sprout-panel .slot.filled { cursor: grab; }
-.sprout-panel .slot.filled:active { cursor: grabbing; }
-.sprout-panel .slot.dragging { opacity: 0.5; outline: 2px dashed #4b8b3b; }
-
 
 .slot-trash-zone {
   position: fixed;
@@ -543,154 +556,10 @@ body.level-for #dirs .panel-header .target-switch {
   line-height: 1.6;
 }
 
-/* ─── Mobile (<768px): D-pad cruz + compactación ─── */
-@media (max-width: 767px) {
-  .sprout-panel {
-    padding: 6px 8px;
-    gap: 0;
-  }
-
-  /* D-pad cruz clásica */
-  #dirs {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas:
-      "header header header"
-      ".      up     ."
-      "left   .      right"
-      ".      down   ."
-      "func1  func1  forbtn";
-    gap: 1px;
-    padding: 4px 6px;
-  }
-  #dirs .panel-header  { grid-area: header; margin-bottom: 2px; padding-bottom: 2px; }
-  #dirs button[data-dir="up"]    { grid-area: up; }
-  #dirs button[data-dir="down"]  { grid-area: down; }
-  #dirs button[data-dir="left"]  { grid-area: left; }
-  #dirs button[data-dir="right"] { grid-area: right; }
-  #dirs button[data-dir="func1"] { grid-area: func1; }
-  #dirs button[data-dir="for"]   { grid-area: forbtn; }
-  #dirs button[data-dir] {
-    justify-content: center;
-    min-height: 38px;
-    padding: 2px !important;
-  }
-  #dirs .dir-label {
-    display: none;
-  }
-
-  /* Target switch compacto */
-  .target-opt {
-    padding: 2px 5px !important;
-    font-size: 9px !important;
-  }
-
-  /* Slots compactos */
-  .sprout-panel .slot {
-    height: 28px !important;
-    min-height: 28px;
-    margin-bottom: 1px;
-  }
-
-  /* Ocultar labels de botones de acción */
-  #queue .queue-label {
-    display: none;
-  }
-  /* Botones de accion en fila (solo iconos) para acortar el panel Program */
-  #queue .queue-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    margin-top: 2px;
-  }
-  #queue .queue-actions > button {
-    flex: 1;
-    min-width: 0;
-    min-height: 32px;
-    padding: 2px !important;
-    justify-content: center;
-  }
-
-  /* Títulos más compactos */
-  .sprout-panel h3 {
-    font-size: 10px;
-  }
-  #queue > h3 {
-    margin-bottom: 2px;
-    padding-bottom: 2px;
-    font-size: 10px;
-  }
-
-}
-
-/* ─── Mobile landscape ─── */
-@media (orientation: landscape) and (max-height: 500px) {
-  /* En landscape pequeno (ancho <768 matchea tambien la media portrait) NO
-     aplicamos el full-width del nivel FOR: #panels vuelve a flex, asi
-     #queue-logica queda en su columna y no se expande en horizontal. */
-  body.level-for #panels.panels-visible,
-  body.level-wide-mobile #panels.panels-visible {
-    display: flex;
-  }
-  .sprout-panel {
-    padding: 6px 8px;
-    gap: 1px;
-  }
-  #dirs {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    grid-template-areas:
-      "header header header"
-      ".      up     ."
-      "left   .      right"
-      ".      down   ."
-      "func1  func1  forbtn";
-    gap: 2px;
-    padding: 4px 6px;
-  }
-  #dirs .panel-header { grid-area: header; margin-bottom: 2px; padding-bottom: 2px; }
-  #dirs button[data-dir="up"]    { grid-area: up; }
-  #dirs button[data-dir="down"]  { grid-area: down; }
-  #dirs button[data-dir="left"]  { grid-area: left; }
-  #dirs button[data-dir="right"] { grid-area: right; }
-  #dirs button[data-dir="func1"] { grid-area: func1; }
-  #dirs button[data-dir="for"]   { grid-area: forbtn; }
-  #dirs button[data-dir] {
-    justify-content: center;
-    min-height: 36px;
-    padding: 2px !important;
-  }
-  #dirs .dir-label { display: none; }
-  .sprout-panel .slot {
-    height: 24px !important;
-    min-height: 24px;
-  }
-  #queue .queue-label { display: none; }
-  #queue .queue-actions {
-    display: flex;
-    flex-direction: row;
-    gap: 4px;
-    margin-top: 2px;
-  }
-  #queue .queue-actions > button {
-    flex: 1;
-    min-width: 0;
-    min-height: 28px;
-    padding: 2px !important;
-    justify-content: center;
-  }
-  .sprout-panel h3 { font-size: 10px; }
-}
-
-/* ─── Tablet (768px–1099px) ─── */
-@media (min-width: 768px) and (max-width: 1099px) {
-  .sprout-panel {
-    width: 100%;
-  }
-}
-
-/* ─── Nivel 9 (FOR): el panel FOR se mueve a la columna izquierda por JS
-   (body.level-for). Pequeño respiro entre el D-pad y el panel FOR. ─── */
+/* ─── Tutorial del FOR: cuando el panel esta desplegado (auto-demo) el cartel
+   centrado quedaria tapado por el panel FOR (que vive en la columna derecha
+   en #right-panels). Lo corremos a la izquierda del centro para que se lea
+   completo. ─── */
 @keyframes icard-fade-in {
   from { opacity: 0; transform: translateY(10px) scale(.96); }
   to   { opacity: 1; transform: translateY(0)    scale(1);   }
@@ -699,129 +568,21 @@ body.level-for #dirs .panel-header .target-switch {
   from { opacity: 1; transform: translateY(0)    scale(1);   }
   to   { opacity: 0; transform: translateY(10px) scale(.96); }
 }
-@media (max-width: 767px) {
-  body.level-for #panels #queue-logica,
-  body.level-wide-mobile #panels #queue-logica {
-    margin-top: 4px;
-  }
-  body.level-for #queue-if-rule,
-  body.level-wide-mobile #queue-if-rule {
-    gap: 2px;
-  }
-  body.level-for #queue-if-rule .if-select-label,
-  body.level-wide-mobile #queue-if-rule .if-select-label {
-    font-size: 9px;
-    margin: 1px 0 2px;
-  }
-  body.level-for #queue-if-rule .if-rule-sep,
-  body.level-wide-mobile #queue-if-rule .if-rule-sep {
-    margin: 5px 0 1px;
-  }
-  body.level-for #queue-if-rule .if-select,
-  body.level-wide-mobile #queue-if-rule .if-select {
-    min-height: 26px;
-    font-size: 10px;
-    margin-bottom: 4px;
-    padding: 4px 28px 4px 6px;
-    background-position:
-      0 0,
-      calc(100% - 14px) 11px,
-      calc(100% - 9px) 11px;
-  }
-  body.level-for #queue-for,
-  body.level-wide-mobile #queue-for {
-    gap: 5px;
-  }
-  body.level-for #queue-for .if-select-label,
-  body.level-wide-mobile #queue-for .if-select-label {
-    font-size: 10px;
-    margin: 2px 0 3px;
-  }
-  body.level-for #queue-for .if-select,
-  body.level-wide-mobile #queue-for .if-select {
-    min-height: 30px;
-    font-size: 11px;
-    margin-bottom: 6px;
-    padding: 5px 28px 5px 6px;
-    background-position:
-      0 0,
-      calc(100% - 14px) 12px,
-      calc(100% - 9px) 12px;
-  }
-  body.level-for #queue-for .slots.f1-slots,
-  body.level-wide-mobile #queue-for .slots.f1-slots {
-    margin-bottom: 6px !important;
-    gap: 6px !important;
-  }
-  body.level-for #queue-for .slot,
-  body.level-wide-mobile #queue-for .slot {
-    height: 26px !important;
-    min-height: 26px;
-  }
-  body.level-for #queue-for button.clear,
-  body.level-wide-mobile #queue-for button.clear {
-    min-height: 34px;
-    margin-top: 2px !important;
-    padding: 3px 6px 5px !important;
-    gap: 6px;
-  }
-  body.level-for #queue-for .queue-icon,
-  body.level-wide-mobile #queue-for .queue-icon {
-    width: 30px;
-    height: 30px;
-    background-size: 64px 256px;
-    font-size: 14px;
-  }
-  body.level-for #queue-for .queue-label,
-  body.level-wide-mobile #queue-for .queue-label {
-    font-size: 11px;
-  }
-  /* Mientras el FOR esta desplegado (auto-demo del tutorial), el panel crece
-     en la columna izquierda y taparia el cartel centrado. Lo corremos a la
-     derecha, fuera de la columna izquierda, para que se lea completo. */
-  body.level-for.for-open #intro-card {
-    left: auto;
-    right: 4px;
-    bottom: 8%;
-    transform: none;
-    min-width: 0;
-    max-width: 56vw;
-    animation: icard-fade-in .25s ease both !important;
-  }
-  body.level-for.for-open #intro-card.icard-out {
-    animation: icard-fade-out .2s ease forwards !important;
-  }
+/* Base = mobile: intro card ajustada para FOR */
+body.for-open #intro-card {
+  left: auto;
+  right: 4px;
+  bottom: 8%;
+  transform: none;
+  min-width: 0;
+  max-width: 56vw;
+  animation: icard-fade-in .25s ease both !important;
+}
+body.for-open #intro-card.icard-out {
+  animation: icard-fade-out .2s ease forwards !important;
 }
 
-/* ─── Desktop (≥1100px): tamaños originales ─── */
-@media (min-width: 1100px) {
-  #panels, #right-panels, #editor-panel {
-    min-width: 220px;
-    width: auto;
-  }
-  .sprout-panel {
-    width: 200px;
-  }
-  .sprout-panel button {
-    padding: 4px 2px !important;
-    min-height: auto;
-  }
-  .panel button, #editor-panel button {
-    padding: 8px 10px;
-    min-height: auto;
-  }
-  .slot {
-    min-height: 32px;
-  }
-  .sprout-panel .slot {
-    height: 34px !important;
-  }
-  #mission {
-    width: 200px;
-  }
-}
-
-/* Tooltip de advertencia de recursividad */
+/* ─── Tooltip de advertencia de recursividad ─── */
 .recursion-tooltip {
   position: fixed;
   transform: translateY(-50%);
@@ -889,4 +650,145 @@ body.level-for #dirs .panel-header .target-switch {
 }
 .recursion-tooltip.visible {
   opacity: 1;
+}
+
+/* ─── Mobile landscape ─── */
+@media (orientation: landscape) and (max-height: 500px) {
+  .sprout-panel {
+    padding: 6px 8px;
+    gap: 1px;
+  }
+  #dirs {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    grid-template-areas:
+      "header header header"
+      ".      up     ."
+      "left   .      right"
+      ".      down   ."
+      "func1  func1  forbtn";
+    gap: 2px;
+    padding: 4px 6px;
+  }
+  #dirs .panel-header { grid-area: header; margin-bottom: 2px; padding-bottom: 2px; }
+  #dirs button[data-dir="up"]    { grid-area: up; }
+  #dirs button[data-dir="down"]  { grid-area: down; }
+  #dirs button[data-dir="left"]  { grid-area: left; }
+  #dirs button[data-dir="right"] { grid-area: right; }
+  #dirs button[data-dir="func1"] { grid-area: func1; }
+  #dirs button[data-dir="for"]   { grid-area: forbtn; }
+  #dirs button[data-dir] {
+    justify-content: center;
+    min-height: 36px;
+    padding: 2px !important;
+  }
+  .sprout-panel .slot {
+    height: 24px !important;
+    min-height: 24px;
+  }
+  .queue-actions > button {
+    min-height: 28px;
+  }
+}
+
+/* ─── Tablet (≥768px) ─── */
+@media (min-width: 768px) {
+  #right-panels {
+    flex-direction: column;
+  }
+  .sprout-panel {
+    width: 100%;
+    padding: 14px 16px;
+    gap: 2px;
+  }
+  .sprout-panel h3 {
+    font-size: 14px;
+  }
+  .target-opt {
+    padding: 3px 8px !important;
+    font-size: 10px !important;
+  }
+  #queue > h3 {
+    margin: 0 0 10px 0;
+    padding-bottom: 6px;
+    font-size: 14px;
+  }
+  /* D-pad: lista vertical en tablet */
+  #dirs {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 14px 16px;
+  }
+  #dirs .panel-header { margin-bottom: 10px; padding-bottom: 6px; }
+  #dirs button[data-dir] {
+    justify-content: flex-start;
+    min-height: 44px;
+    padding: 10px 8px !important;
+  }
+  /* Labels visible */
+  .dir-label {
+    display: inline;
+  }
+  .queue-label {
+    display: inline;
+  }
+  /* Slots restaurados */
+  .sprout-panel .slot {
+    height: 34px !important;
+    min-height: 34px;
+    margin-bottom: 4px;
+  }
+  /* Queue actions: display contents (columna) */
+  .queue-actions {
+    display: contents;
+  }
+  /* Intro card FOR: no necesita override en tablet+ */
+  body.for-open #intro-card {
+    left: 50%;
+    right: auto;
+    bottom: 20px;
+    transform: translateX(-50%);
+    min-width: auto;
+    max-width: none;
+  }
+}
+
+/* ─── Desktop (≥1100px): tamaños originales ─── */
+@media (min-width: 1100px) {
+  .if-rule-sep { display: block; }
+  #panels, #right-panels, #editor-panel {
+    min-width: 220px;
+    width: auto;
+  }
+  .sprout-panel {
+    width: 200px;
+  }
+  .sprout-panel button {
+    padding: 4px 2px !important;
+    min-height: auto;
+  }
+  .panel button, #editor-panel button {
+    padding: 8px 10px;
+    min-height: auto;
+  }
+  .slot {
+    min-height: 32px;
+  }
+  .sprout-panel .slot {
+    height: 34px !important;
+  }
+  #mission {
+    width: 200px;
+  }
+  /* Desktop: ocultar el sub-switch IF-1/IF-2 y mostrar ambos ifs + separador. */
+  #queue-if-rule .if-tab-switch {
+    display: none;
+  }
+  .if-block {
+    display: flex;
+  }
+  #queue-if-rule .if-rule-sep {
+    display: block;
+  }
 }

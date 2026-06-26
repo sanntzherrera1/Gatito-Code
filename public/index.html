@@ -40,6 +40,7 @@
 
     <div id="hud"><div><b>Gatito</b> · <span data-i18n="hud.esc">Esc volver al menu</span></div></div>
 
+    <div id="panels-container">
     <div id="panels">
       <div class="sprout-panel" id="dirs">
         <div class="panel-header">
@@ -120,34 +121,43 @@
           <button id="clear-for" class="clear" style="margin-top: 10px;"><span class="queue-icon">✕</span><span class="queue-label" data-i18n="btn.clear_for">BORRAR FOR</span></button>
         </div>
 
-        <div class="logica-cuerpo" id="queue-if-rule" data-logica-panel="if">
-          <label class="if-select-label" for="if-condition-select" data-i18n="if.condition_label">Si pasa</label>
-          <select id="if-condition-select" class="if-select">
-            <option value="" data-i18n="if.no_condition">sin condicion</option>
-            <option value="rock-ahead" data-i18n="if.rock_ahead">roca adelante</option>
-            <option value="tree-ahead" data-i18n="if.tree_ahead">arbol adelante</option>
-          </select>
-          <label class="if-select-label" for="if-action-select" data-i18n="if.action_label">Hacer esto</label>
-          <select id="if-action-select" class="if-select">
-            <option value="" data-i18n="if.no_action">sin accion</option>
-            <option value="jump" data-i18n="if.jump">saltar</option>
-            <option value="cut" data-i18n="if.cut">cortar</option>
-          </select>
+        <div class="logica-cuerpo" id="queue-if-rule" data-logica-panel="if" data-activa-if="if-1">
+          <div class="target-switch if-tab-switch" id="if-tab-switch" title="Cambiar entre IF-1 e IF-2">
+            <button class="target-opt if-tab active" type="button" data-if-tab="if-1">IF-1</button>
+            <button class="target-opt if-tab" type="button" data-if-tab="if-2">IF-2</button>
+          </div>
+          <div class="if-block if-block-active" data-if-block="if-1">
+            <label class="if-select-label" for="if-condition-select" data-i18n="if.condition_label">Si pasa</label>
+            <select id="if-condition-select" class="if-select">
+              <option value="" data-i18n="if.no_condition">sin condicion</option>
+              <option value="rock-ahead" data-i18n="if.rock_ahead">roca adelante</option>
+              <option value="tree-ahead" data-i18n="if.tree_ahead">arbol adelante</option>
+            </select>
+            <label class="if-select-label" for="if-action-select" data-i18n="if.action_label">Hacer esto</label>
+            <select id="if-action-select" class="if-select">
+              <option value="" data-i18n="if.no_action">sin accion</option>
+              <option value="jump" data-i18n="if.jump">saltar</option>
+              <option value="cut" data-i18n="if.cut">cortar</option>
+            </select>
+          </div>
           <div class="if-rule-sep"></div>
-          <label class="if-select-label" for="if-condition-select-2" data-i18n="if.condition_label_2">Y si pasa</label>
-          <select id="if-condition-select-2" class="if-select">
-            <option value="" data-i18n="if.no_condition">sin condicion</option>
-            <option value="rock-ahead" data-i18n="if.rock_ahead">roca adelante</option>
-            <option value="tree-ahead" data-i18n="if.tree_ahead">arbol adelante</option>
-          </select>
-          <label class="if-select-label" for="if-action-select-2" data-i18n="if.action_label">Hacer esto</label>
-          <select id="if-action-select-2" class="if-select">
-            <option value="" data-i18n="if.no_action">sin accion</option>
-            <option value="jump" data-i18n="if.jump">saltar</option>
-            <option value="cut" data-i18n="if.cut">cortar</option>
-          </select>
+          <div class="if-block" data-if-block="if-2">
+            <label class="if-select-label" for="if-condition-select-2" data-i18n="if.condition_label_2">Y si pasa</label>
+            <select id="if-condition-select-2" class="if-select">
+              <option value="" data-i18n="if.no_condition">sin condicion</option>
+              <option value="rock-ahead" data-i18n="if.rock_ahead">roca adelante</option>
+              <option value="tree-ahead" data-i18n="if.tree_ahead">arbol adelante</option>
+            </select>
+            <label class="if-select-label" for="if-action-select-2" data-i18n="if.action_label">Hacer esto</label>
+            <select id="if-action-select-2" class="if-select">
+              <option value="" data-i18n="if.no_action">sin accion</option>
+              <option value="jump" data-i18n="if.jump">saltar</option>
+              <option value="cut" data-i18n="if.cut">cortar</option>
+            </select>
+          </div>
         </div>
       </div>
+    </div>
     </div>
 
     <div id="slot-trash-zone" class="slot-trash-zone">🗑️</div>
@@ -318,6 +328,7 @@
     <div id="ed-tile-hover-preview" class="ed-tile-hover-preview"></div>
 
     <div id="result-panel">
+      <button class="result-minimize" id="result-minimize" type="button" title="Minimizar">−</button>
       <div class="result-portrait" id="result-portrait"></div>
       <div class="result-bubble">
         <div class="result-message" id="result-message"></div>

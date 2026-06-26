@@ -11,6 +11,7 @@ import { getAllLevels, markLevelCompleted } from '../../services/Storage.js';
 import { animatePath } from '../../engine/level/PathAnimator.js';
 import { injectStyles } from '../levels/intro.js';
 import { playMusic, playSfx } from '../audio.js';
+import { setBackHandler } from '../../ui/back-gesture.js';
 
 /**
  * Gameplay scene driven by the program-queue d-pad.
@@ -133,6 +134,10 @@ export class TileLevelScene extends Phaser.Scene {
     this.keys.ESC.on('down', () => {
       if (!this.puedeSalirPorEscape()) return;
       this.exitToMenu();
+    });
+
+    setBackHandler(this, () => {
+      if (this.puedeSalirPorEscape()) this.exitToMenu();
     });
 
     this.grid = this.add.graphics().setDepth(100).setScrollFactor(0);

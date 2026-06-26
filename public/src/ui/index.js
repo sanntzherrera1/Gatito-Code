@@ -4,6 +4,7 @@ import { initEditor } from './editor-ui.js';
 import { initNameDialog } from './name-dialog.js';
 import { initMission } from './mission.js';
 import { initResult } from './result.js';
+import { initBackGesture } from './back-gesture.js';
 
 initQueue();
 initDialog();
@@ -11,6 +12,7 @@ initEditor();
 initNameDialog();
 initMission();
 initResult();
+initBackGesture();
 
 // Cursor "holding": mientras se mantiene presionado el mouse, body.mouse-held
 // cambia la patita por la variante que sostiene (ver css/base.css).

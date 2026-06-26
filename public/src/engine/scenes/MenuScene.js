@@ -3,6 +3,7 @@ import { getCustomLevels, addCustomLevel, createNewLevel, getAllLevels, getCompl
 import { playMusic, playSfx } from '../audio.js';
 import * as Settings from '../../services/Settings.js';
 import { t } from '../../services/i18n.js';
+import { setBackHandler } from '../../ui/back-gesture.js';
 
 export class MenuScene extends Phaser.Scene {
   constructor() { super('Menu'); }
@@ -53,6 +54,8 @@ export class MenuScene extends Phaser.Scene {
 
     this.input.keyboard.on('keydown-ESC',      () => this.showScreen('main'));
     this.input.keyboard.on('keydown-BACKSPACE',() => this.showScreen('main'));
+
+    setBackHandler(this, () => this.showScreen('main'));
 
     const initScreen = this.scene.settings.data?.screen ?? 'main';
     this.showScreen(initScreen);
@@ -118,15 +121,7 @@ export class MenuScene extends Phaser.Scene {
       scrollContainer.setMask(new Phaser.Display.Masks.GeometryMask(this, maskShape));
 
       const maxScroll = Math.max(0, CONTENT_H - SCROLL_H);
-      let scrollY = 0;
-
-      if (maxScroll > 0) {
-        this._scrollHandler = (e) => {
-          scrollY = Phaser.Math.Clamp(scrollY + (e.deltaY > 0 ? 15 : -15), 0, maxScroll);
-          scrollContainer.y = SCROLL_TOP - scrollY;
-        };
-        this.game.canvas.addEventListener('wheel', this._scrollHandler);
-      }
+      this._setupScroll(scrollContainer, SCROLL_TOP, SCROLL_H, CONTENT_H, 15);
 
       this.makeButton(bx, H - 18, t('menu.back'), () => this.showScreen('main'));
     } else if (screen === 'editor') {
@@ -171,15 +166,7 @@ export class MenuScene extends Phaser.Scene {
       scrollContainer.setMask(new Phaser.Display.Masks.GeometryMask(this, maskShape));
 
       const maxScroll = Math.max(0, CONTENT_H - SCROLL_H);
-      let scrollY = 0;
-
-      if (maxScroll > 0) {
-        this._scrollHandler = (e) => {
-          scrollY = Phaser.Math.Clamp(scrollY + (e.deltaY > 0 ? 15 : -15), 0, maxScroll);
-          scrollContainer.y = SCROLL_TOP - scrollY;
-        };
-        this.game.canvas.addEventListener('wheel', this._scrollHandler);
-      }
+      this._setupScroll(scrollContainer, SCROLL_TOP, SCROLL_H, CONTENT_H, 15);
 
       this.makeButton(bx, H - 18, t('menu.back_arrow'), () => this.showScreen('main'));
     } else if (screen === 'credits') {
@@ -229,15 +216,7 @@ export class MenuScene extends Phaser.Scene {
       scrollContainer.setMask(new Phaser.Display.Masks.GeometryMask(this, maskShape));
 
       const maxScroll = Math.max(0, CONTENT_H - SCROLL_H);
-      let scrollY = 0;
-
-      if (maxScroll > 0) {
-        this._scrollHandler = (e) => {
-          scrollY = Phaser.Math.Clamp(scrollY + (e.deltaY > 0 ? 10 : -10), 0, maxScroll);
-          scrollContainer.y = SCROLL_TOP - scrollY;
-        };
-        this.game.canvas.addEventListener('wheel', this._scrollHandler);
-      }
+      this._setupScroll(scrollContainer, SCROLL_TOP, SCROLL_H, CONTENT_H, 10);
 
       this.makeButton(bx, H - 18, t('menu.back_arrow'), () => this.showScreen('main'));
     } else if (screen === 'settings') {
@@ -298,6 +277,56 @@ export class MenuScene extends Phaser.Scene {
 
       this.makeButton(bx, H - 18, t('menu.back_arrow'), () => this.showScreen('main'));
     }
+  }
+
+  // Habilita el desplazamiento de un scrollContainer tanto con rueda del mouse
+  // como con tap-and-drag en mobile. El hitRect va DETRAS de los squares
+  // interactivos (depth -1) para que tocar un level/editor square dispare su
+  // pointerdown (click) y no el drag del scroll; el drag solo se inicia al
+  // tocar el area vacia entre squares.
+  _setupScroll(scrollContainer, scrollTop, scrollH, contentH, step) {
+    const maxScroll = Math.max(0, contentH - scrollH);
+    if (maxScroll <= 0) return;
+    let scrollY = 0;
+    const W = COLS * TILE;
+    const apply = (dy) => {
+      scrollY = Phaser.Math.Clamp(scrollY + dy, 0, maxScroll);
+      scrollContainer.y = scrollTop - scrollY;
+    };
+
+    // Mouse wheel / trackpad (desktop).
+    this._scrollHandler = (e) => apply(e.deltaY > 0 ? step : -step);
+    this.game.canvas.addEventListener('wheel', this._scrollHandler);
+
+    // Touch: hit-rect invisible que captura drags en el area visible.
+    // Manejamos pointerdown/pointermove a mano (en vez del evento `drag` de
+    // Phaser) porque el delta de `drag` se acumula contra el pointerdown
+    // original y eso resetea el scroll al volver a presionar.
+    const hitRect = this.add.rectangle(
+      W / 2,
+      scrollTop + scrollH / 2,
+      W,
+      scrollH,
+      0x000000, 0
+    );
+    hitRect.setInteractive({ useHandCursor: false });
+    hitRect.setDepth(-1);
+    this.dynamicGroup.add(hitRect);
+    let touchStartY = null;
+    let scrollYAtTouchStart = 0;
+    hitRect.on('pointerdown', (pointer) => {
+      touchStartY = pointer.y;
+      scrollYAtTouchStart = scrollY;
+    });
+    hitRect.on('pointermove', (pointer) => {
+      if (touchStartY === null) return;
+      const deltaY = pointer.y - touchStartY;
+      if (Math.abs(deltaY) < 4) return;
+      scrollY = Phaser.Math.Clamp(scrollYAtTouchStart - deltaY, 0, maxScroll);
+      scrollContainer.y = scrollTop - scrollY;
+    });
+    hitRect.on('pointerup',   () => { touchStartY = null; });
+    hitRect.on('pointerout',  () => { touchStartY = null; });
   }
 
   // Slider de volumen arrastrable (track marron + relleno verde + knob crema).

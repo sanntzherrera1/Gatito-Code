@@ -24,8 +24,11 @@ const uiSfx = (key) => window.__playUiSfx?.(key);
 let logicaPanelEl;
 let logicaTituloEl;
 let logicaSwitchEl;
+let ifTabSwitchEl;
+let ifRuleEl;
 const logicaDisponible = { func1: true, for: false, if: true };
 let logicaActiva = 'func1';
+let ifActiva = 'if-1';
 const LOGICA_ORDEN = ['func1', 'for', 'if'];
 const LOGICA_TITULOS = { func1: 'Funcion 1', for: 'For', if: 'Si' };
 const LOGICA_IDS = { func1: 'queue-func1', for: 'queue-for', if: 'queue-if-rule' };
@@ -75,6 +78,7 @@ export function initQueue() {
   initIfPanel();
   initForPanel();
   initLogicaTabs();
+  initIfTabSwitch();
 
   dirsPanel.querySelectorAll('button[data-dir]:not([data-dir="jump"])').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -182,9 +186,8 @@ export function initQueue() {
   };
 
 window.__setPanels = visible => {
-    // Se usa clase (no display inline) para que en el nivel FOR el CSS pueda
-    // aplicar display:contents a #panels en mobile y dejar que #queue-logica
-    // ocupe todo el ancho de la pantalla.
+    // Se usa clase (no display inline) para que el CSS pueda controlar la
+    // visibilidad de los paneles sin pisar reglas especificas de cada nivel.
     for (const id of ['panels', 'right-panels']) {
       document.getElementById(id)?.classList.toggle('panels-visible', visible);
     }
@@ -377,6 +380,33 @@ function actualizarLogica() {
   });
 
   if (logicaTituloEl) logicaTituloEl.textContent = LOGICA_TITULOS[logicaActiva] || '';
+}
+
+// Sub-switch IF-1 / IF-2 dentro del panel SI. En mobile solo se ve uno a la
+// vez; en desktop (>=1100px) el CSS oculta el switch y muestra ambos ifs.
+function initIfTabSwitch() {
+  ifTabSwitchEl = document.getElementById('if-tab-switch');
+  ifRuleEl = document.getElementById('queue-if-rule');
+  ifTabSwitchEl?.querySelectorAll('.if-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      const k = tab.dataset.ifTab;
+      if (!k) return;
+      ifActiva = k;
+      actualizarIfActiva();
+    });
+  });
+  actualizarIfActiva();
+}
+
+function actualizarIfActiva() {
+  if (!ifRuleEl) return;
+  ifRuleEl.dataset.activaIf = ifActiva;
+  ifTabSwitchEl?.querySelectorAll('.if-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.ifTab === ifActiva);
+  });
+  ifRuleEl.querySelectorAll('.if-block').forEach(block => {
+    block.classList.toggle('if-block-active', block.dataset.ifBlock === ifActiva);
+  });
 }
 
 function setRunning(on) {

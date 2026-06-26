@@ -36,6 +36,7 @@ const game = new Phaser.Game({
   physics: { default: 'arcade', arcade: { debug: false, gravity: { x: 0, y: 0 } } },
   scene: [BootScene, MenuScene, Nivel0Scene, GymScene, MainScene, Nivel3Scene, BosqueFloralScene, EditorScene, CustomScene],
 });
+window.__game = game;
 
 /* ── Forzar recalculo del canvas ante cambios de layout (resize / media queries) ── */
 let _resizeTimer = 0;

@@ -1,10 +1,18 @@
-let panel, portraitEl, messageEl, actionsEl;
+let panel, portraitEl, messageEl, actionsEl, minimizeEl;
 
 export function initResult() {
   panel = document.getElementById('result-panel');
   portraitEl = document.getElementById('result-portrait');
   messageEl = document.getElementById('result-message');
   actionsEl = document.getElementById('result-actions');
+  minimizeEl = document.getElementById('result-minimize');
+
+  minimizeEl?.addEventListener('click', () => {
+    window.__playUiSfx?.();
+    const isMinimized = panel.classList.toggle('minimized');
+    minimizeEl.textContent = isMinimized ? '+' : '−';
+    minimizeEl.title = isMinimized ? 'Expandir' : 'Minimizar';
+  });
 
   /**
    * @param {Object} opts
@@ -35,6 +43,12 @@ export function initResult() {
     // Tras ganar/perder se bloquea mover/agregar movimientos hasta reintentar.
     // En idle (juego activo) el input vuelve a estar disponible.
     window.__lockInput?.(state === 'win' || state === 'lose');
+
+    panel.classList.remove('minimized');
+    if (minimizeEl) {
+      minimizeEl.textContent = '−';
+      minimizeEl.title = 'Minimizar';
+    }
 
     requestAnimationFrame(() => panel.classList.add('visible'));
   };

@@ -14,7 +14,6 @@
     "start": "browser-sync start --server public --files \"public/**/*\""
   },
   "devDependencies": {
-    "@playwright/test": "^1.60.0",
     "browser-sync": "^3.0.4",
     "vitest": "^4.1.7"
   }

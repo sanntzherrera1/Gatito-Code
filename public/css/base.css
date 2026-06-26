@@ -72,17 +72,18 @@ textarea, [contenteditable="true"] {
   cursor: text !important;
 }
 
-/* ─── Mobile-first: columna vertical, compacto ─── */
+/* ─── Mobile-first: base = portrait (≤767px), flexbox column ─── */
 body {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  justify-content: flex-start;
-  min-height: 100vh;
-  gap: 8px;
-  padding: 4px;
+  justify-content: center;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  padding: 2px 0;
+  gap: 2px;
   box-sizing: border-box;
-  overflow-x: auto;
   background:
     radial-gradient(ellipse 80% 60% at 50% 50%, rgba(20, 30, 52, .6) 0%, transparent 70%),
     repeating-conic-gradient(rgba(255,255,255,.008) 0% 25%, transparent 0% 50%) 0 0 / 4px 4px,
@@ -251,10 +252,15 @@ body.app-loading #boot-splash {
 }
 
 /* ─── Game frame (responsive canvas container) ─── */
+/* Base = mobile portrait: full-width top, aspect-ratio 4:3 */
 #game-frame {
   width: 100%;
+  max-width: 100vw;
   min-width: 0;
-  max-width: 100%;
+  aspect-ratio: 4 / 3;
+  height: auto;
+  max-height: 70dvh;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -271,13 +277,15 @@ body.app-loading #boot-splash {
     0 0 80px -20px rgba(90,160,255,.08);
 }
 
+/* ─── HUD ─── */
+/* Base = mobile compact */
 #hud {
   position: fixed;
-  top: 8px; left: 8px;
-  font-size: 14px;
+  top: 4px; left: 4px;
+  font-size: 11px;
   background: rgba(9,12,16,.8);
   backdrop-filter: blur(6px);
-  padding: 6px 12px;
+  padding: 3px 8px;
   border-radius: 6px;
   border: 1px solid var(--border-dim);
   pointer-events: none;
@@ -286,114 +294,61 @@ body.app-loading #boot-splash {
 }
 #hud b { color: var(--accent-warm); }
 
-/* ─── Mobile portrait (<768px): grid 2 columnas bajo el canvas ─── */
-@media (max-width: 767px) {
-  body {
-    display: grid;
-    grid-template-columns: 2fr 3fr;
-    grid-template-rows: auto 1fr;
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
-    padding: 2px 0;
-    gap: 2px;
-  }
-  #game-frame {
-    grid-column: 1 / -1;
-    grid-row: 1;
-    width: 100vw;
-    max-width: 100vw;
-    aspect-ratio: 4 / 3;
-    height: auto;
-    max-height: 70dvh;
-  }
-  #panels {
-    grid-column: 1;
-    grid-row: 2;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  #right-panels {
-    grid-column: 2;
-    grid-row: 2;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  #editor-panel {
-    grid-column: 1 / -1;
-    grid-row: 2;
-  }
-
-  /* ─── Nivel 9 (FOR): el panel logica (#queue-logica), que el JS reubica en la
-     columna izquierda (#panels), pasa a ocupar TODO el ancho en una fila propia
-     debajo. #panels se "disuelve" (display:contents) para que el D-pad (#dirs) y
-     el panel logica entren como items directos del grid del body. ─── */
-  body.level-for,
-  body.level-wide-mobile {
-    grid-template-rows: auto auto minmax(0, 1fr);
-  }
-  body.level-wide-mobile #game-frame {
-    max-height: 55dvh;
-  }
-  body.level-for #game-frame {
-    max-height: 49dvh;
-  }
-  body.level-for #panels.panels-visible,
-  body.level-wide-mobile #panels.panels-visible {
-    display: contents;
-  }
-  body.level-for #dirs,
-  body.level-wide-mobile #dirs {
-    grid-column: 1;
-    grid-row: 2;
-  }
-  body.level-for #queue-logica,
-  body.level-wide-mobile #queue-logica {
-    grid-column: 1 / -1;
-    grid-row: 3;
-    min-height: 0;
-  }
-
-  #hud {
-    font-size: 11px;
-    padding: 3px 8px;
-    top: 4px;
-    left: 4px;
-  }
+/* ─── Panels container (wraps #panels + #right-panels) ─── */
+/* Base = mobile portrait: row, proporción 2:3 */
+#panels-container {
+  display: flex;
+  flex-direction: row;
+  gap: 2px;
+  flex: 1;
+  min-height: 0;
+}
+/* Ocultar cuando ningun panel hijo es visible (menu, editor) */
+#panels-container:not(:has(.panels-visible)) {
+  display: none;
 }
 
-/* ─── Mobile landscape: 3 columnas horizontales ─── */
+/* ─── Panel flex positions (mobile portrait base) ─── */
+#panels {
+  flex: 2;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#right-panels {
+  flex: 3;
+  min-height: 0;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+#editor-panel {
+  flex: 1;
+  min-height: 0;
+}
+
+/* ─── Mobile landscape: fila horizontal ─── */
 @media (orientation: landscape) and (max-height: 500px) {
   body {
-    display: grid;
-    grid-template-columns: auto 1fr 1fr;
-    grid-template-rows: 1fr;
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
+    flex-direction: row;
     padding: 4px;
     gap: 4px;
   }
   #game-frame {
-    grid-column: 1;
-    grid-row: 1;
+    width: auto;
+    max-width: none;
     max-height: 100dvh;
+    aspect-ratio: auto;
+    flex-shrink: 0;
+  }
+  #panels-container {
+    flex-direction: row;
+    gap: 4px;
   }
   #panels {
-    grid-column: 2;
-    grid-row: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
+    flex: 1;
   }
   #right-panels {
-    grid-column: 3;
-    grid-row: 1;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-  #editor-panel {
-    grid-column: 2 / -1;
-    grid-row: 1;
+    flex: 1;
   }
   #hud {
     font-size: 11px;
@@ -401,50 +356,55 @@ body.app-loading #boot-splash {
   }
 }
 
-/* ─── Tablet (768px–1099px): 2 columnas, canvas + paneles ─── */
-@media (min-width: 768px) and (max-width: 1099px) {
+/* ─── Tablet (≥768px): canvas izquierda, paneles apilados derecha ─── */
+@media (min-width: 768px) {
   body {
-    display: grid;
-    grid-template-columns: 1.5fr 1fr;
-    grid-template-rows: auto 1fr;
-    height: 100vh;
-    height: 100dvh;
-    overflow: hidden;
+    flex-direction: row;
     padding: 8px;
     gap: 8px;
   }
   #game-frame {
-    grid-column: 1;
-    grid-row: 1 / 3;
+    flex: 1.5;
+    width: auto;
+    max-width: none;
+    max-height: none;
+    aspect-ratio: auto;
     align-self: center;
   }
+  #panels-container {
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+  }
   #panels {
-    grid-column: 2;
-    grid-row: 1;
+    flex: none;
+    overflow-y: initial;
+    -webkit-overflow-scrolling: auto;
   }
   #right-panels {
-    grid-column: 2;
-    grid-row: 2;
+    flex: 1;
     overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
   }
-  #editor-panel {
-    grid-column: 2;
-    grid-row: 1 / 3;
+  #hud {
+    top: 8px; left: 8px;
+    font-size: 14px;
+    padding: 6px 12px;
   }
 }
 
 /* ─── Desktop (≥1100px): layout horizontal de 3 zonas ─── */
 @media (min-width: 1100px) {
   body {
-    display: flex;
-    flex-direction: row;
     align-items: center;
     justify-content: center;
     gap: 24px;
     padding: 16px 24px;
     height: auto;
-    overflow-x: auto;
+    overflow: auto;
+  }
+  /* Contenedor transparente: los paneles se posicionan como hijos directos de body */
+  #panels-container {
+    display: contents;
   }
   #game-frame {
     flex: 3 1 0;
@@ -452,6 +412,7 @@ body.app-loading #boot-splash {
     max-height: 98vh;
     order: 2;
     width: auto;
+    align-self: initial;
   }
   #panels      { order: 1; }
   #right-panels{ order: 3; }
