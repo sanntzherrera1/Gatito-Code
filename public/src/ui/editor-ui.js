@@ -479,6 +479,7 @@ function hideLayerPicker() {
 }
 
 function hideEditor() {
+  document.body.classList.remove('editor-active');
   edPanel.style.display = 'none';
   edPalette.innerHTML = '';
   document.getElementById('ed-tileset-tree').innerHTML = '';
@@ -498,6 +499,7 @@ function hideEditor() {
 
 function showEditor(cfg) {
   edCfg = cfg;
+  document.body.classList.add('editor-active');
   edPanel.style.display = 'flex';
   edTitle.textContent = `Editor — ${cfg.levelKey}`;
   updateStatusText();

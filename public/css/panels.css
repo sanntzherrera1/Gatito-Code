@@ -128,24 +128,26 @@
 }
 /* Base = mobile compact target options */
 .target-opt {
-  background: rgba(255,255,255,.12) !important;
+  background: rgba(255,255,255,.2) !important;
   border: none !important;
   border-radius: 0 !important;
   padding: 2px 5px !important;
   font-family: 'SproutPixel', monospace !important;
   font-size: 9px !important;
-  color: rgba(90,58,26,.5) !important;
+  font-weight: bold !important;
+  color: rgba(90,58,26,.75) !important;
   cursor: pointer;
   transition: background .12s ease, color .12s ease;
   line-height: 1.2;
   min-height: 44px;
 }
 .target-opt.active {
-  background: rgba(255,200,80,.35) !important;
-  color: var(--sprout-dark) !important;
+  background: #f2c75a !important;
+  color: #3b2308 !important;
+  box-shadow: inset 0 2px 4px rgba(255,255,255,0.4);
 }
 .target-opt:hover:not(.active) {
-  background: rgba(255,255,255,.2) !important;
+  background: rgba(255,255,255,.4) !important;
 }
 #queue-func1 h3 { color: #4b688a; text-shadow: none; border-bottom-color: rgba(75,104,138,.2); }
 #queue-for h3 { color: #7a4a12; text-shadow: none; border-bottom-color: rgba(122,74,18,.22); }
@@ -857,6 +859,10 @@ body.for-open #intro-card.icard-out {
   }
   .desktop-only-switch {
     display: flex;
+  }
+  .target-opt {
+    padding: 6px 12px !important;
+    font-size: 13px !important;
   }
   .queue-actions {
     display: grid !important;
