@@ -89,13 +89,14 @@ export class MenuScene extends Phaser.Scene {
       const completed = getCompletedLevels();
 
       const GRID_COLS = 3;
-      const SPACING = 42;
-      const START_X = (W - (GRID_COLS - 1) * SPACING) / 2;
+      const SPACING_X = 70;
+      const SPACING_Y = 50;
+      const START_X = (W - (GRID_COLS - 1) * SPACING_X) / 2;
       const SCROLL_TOP = 60;
       const SCROLL_BOTTOM = H - 40;
       const SCROLL_H = SCROLL_BOTTOM - SCROLL_TOP;
       const totalRows = Math.ceil(allLevels.length / GRID_COLS);
-      const CONTENT_H = totalRows * SPACING + 10;
+      const CONTENT_H = totalRows * SPACING_Y + 10;
 
       const scrollContainer = this.add.container(0, SCROLL_TOP);
       this.dynamicGroup.add(scrollContainer);
@@ -103,8 +104,8 @@ export class MenuScene extends Phaser.Scene {
       allLevels.forEach((level, i) => {
         const row = Math.floor(i / GRID_COLS);
         const col = i % GRID_COLS;
-        const x = START_X + col * SPACING;
-        const y = row * SPACING + 16;
+        const x = START_X + col * SPACING_X;
+        const y = row * SPACING_Y + 16;
 
         const isUnlocked = (i === 0) || completed.includes(allLevels[i - 1].key);
         const isCompleted = completed.includes(level.key);
@@ -133,7 +134,7 @@ export class MenuScene extends Phaser.Scene {
       this.makeButton(bx, 52, t('menu.new_level'), () => this.promptNewLevel(), 'accent');
 
       const sep = this.add.text(bx, 70, t('menu.existing'), {
-        fontFamily: "'Press Start 2P', monospace", fontSize: '5px', color: '#446',
+        fontFamily: "'Press Start 2P', monospace", fontSize: '7px', color: '#446',
       }).setOrigin(0.5);
       this.dynamicGroup.add(sep);
 
@@ -143,15 +144,16 @@ export class MenuScene extends Phaser.Scene {
       ];
 
       const GRID_COLS = 3;
-      const SPACING = 42;
-      const START_X = (W - (GRID_COLS - 1) * SPACING) / 2;
+      const SPACING_X = 70;
+      const SPACING_Y = 50;
+      const START_X = (W - (GRID_COLS - 1) * SPACING_X) / 2;
 
       const SCROLL_TOP = 78;
       const SCROLL_BOTTOM = H - 28;
       const SCROLL_H = SCROLL_BOTTOM - SCROLL_TOP;
 
       const totalRows = Math.ceil(allToEdit.length / GRID_COLS);
-      const CONTENT_H = totalRows * SPACING + 10;
+      const CONTENT_H = totalRows * SPACING_Y + 10;
 
       const scrollContainer = this.add.container(0, SCROLL_TOP);
       this.dynamicGroup.add(scrollContainer);
@@ -159,8 +161,8 @@ export class MenuScene extends Phaser.Scene {
       allToEdit.forEach((lv, i) => {
         const row = Math.floor(i / GRID_COLS);
         const col = i % GRID_COLS;
-        const x = START_X + col * SPACING;
-        const y = row * SPACING + 16;
+        const x = START_X + col * SPACING_X;
+        const y = row * SPACING_Y + 16;
         this._createEditorSquare(x, y, i, lv, scrollContainer);
       });
 
@@ -339,8 +341,11 @@ export class MenuScene extends Phaser.Scene {
       fontFamily: "'Press Start 2P', monospace", fontSize: '10px', color: '#ffffff', fontWeight: 'bold'
     }).setOrigin(0.5);
 
-    const txtName = this.add.text(0, size / 2 + 6, level.name, {
-      fontFamily: "'Press Start 2P', monospace", fontSize: '5px', color: isUnlocked ? '#8ef' : '#666',
+    const nameColor = !isUnlocked ? '#666' : level.tutorial ? '#f0c866' : '#8ef';
+    const nameKey = `level.name.${level.key}`;
+    const nameStr = t(nameKey) !== nameKey ? t(nameKey) : level.name;
+    const txtName = this.add.text(0, size / 2 + 8, nameStr, {
+      fontFamily: "'Press Start 2P', monospace", fontSize: '7px', color: nameColor,
     }).setOrigin(0.5);
 
     container.add([bg, txtNum, txtName]);
@@ -383,8 +388,10 @@ export class MenuScene extends Phaser.Scene {
       fontFamily: "'Press Start 2P', monospace", fontSize: '10px', color: '#ffcc66',
     }).setOrigin(0.5);
 
-    const txtEdit = this.add.text(0, size / 2 + 5, level.name, {
-      fontFamily: "'Press Start 2P', monospace", fontSize: '5px', color: '#aa8844',
+    const editNameKey = `level.name.${level.key}`;
+    const editNameStr = t(editNameKey) !== editNameKey ? t(editNameKey) : level.name;
+    const txtEdit = this.add.text(0, size / 2 + 8, editNameStr, {
+      fontFamily: "'Press Start 2P', monospace", fontSize: '7px', color: '#aa8844',
     }).setOrigin(0.5);
 
     container.add([bg, txtLabel, txtEdit]);

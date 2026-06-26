@@ -48,18 +48,18 @@ export const CUSTOM_LEVELS_KEY = 'gatito_custom_levels';
 export const PROGRESS_KEY = 'gatito_progress';
 
 export const BUILTIN_LEVELS = [
-  { key: 'nivel0', name: 'Nivel 0', scene: 'Nivel0' },
-  { key: 'gym',    name: 'Gym',     scene: 'Gym' },
-  { key: 'main',   name: 'Main',    scene: 'Main' },
-  { key: 'nivel3', name: 'Nivel 3', scene: 'Nivel3' },
-  { key: 'bosque_floral', name: 'Bosque Floral', scene: 'BosqueFloral' },
-  { key: 'remanso_otonal', name: 'Remanso Otoñal', scene: 'Custom' },
-  { key: 'if',     name: 'IF',      scene: 'Custom' },
-  { key: 'si_2',   name: 'SI 2',    scene: 'Custom' },
-  { key: 'jardin_tutorial', name: 'Jardin Tutorial', scene: 'Custom' },
-  { key: 'for',    name: 'FOR',     scene: 'Custom' },
-  { key: 'si_1',   name: 'SI 1',    scene: 'Custom' },
-  { key: 'si_3',   name: 'SI 3',    scene: 'Custom' },
+  { key: 'nivel0', name: 'Casa',     scene: 'Nivel0' },
+  { key: 'gym',    name: 'Jardin',   scene: 'Gym' },
+  { key: 'main',   name: 'Huerta',   scene: 'Main' },
+  { key: 'nivel3', name: 'Funcion',  scene: 'Nivel3',       tutorial: true },
+  { key: 'bosque_floral', name: 'Bosque', scene: 'BosqueFloral' },
+  { key: 'remanso_otonal', name: 'Otoño', scene: 'Custom' },
+  { key: 'if',     name: 'Rocas',    scene: 'Custom',       tutorial: true },
+  { key: 'si_2',   name: 'Puente',   scene: 'Custom',       tutorial: true },
+  { key: 'jardin_tutorial', name: 'Pradera', scene: 'Custom', tutorial: true },
+  { key: 'for',    name: 'Repetir',  scene: 'Custom',       tutorial: true },
+  { key: 'si_1',   name: 'Sendero',  scene: 'Custom',       tutorial: true },
+  { key: 'si_3',   name: 'Troncos',  scene: 'Custom',       tutorial: true },
 ];
 
 export function getCustomLevels() {
