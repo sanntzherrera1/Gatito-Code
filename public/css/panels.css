@@ -629,7 +629,8 @@ body.level-for #dirs .panel-header .target-switch {
   /* En landscape pequeno (ancho <768 matchea tambien la media portrait) NO
      aplicamos el full-width del nivel FOR: #panels vuelve a flex, asi
      #queue-logica queda en su columna y no se expande en horizontal. */
-  body.level-for #panels.panels-visible {
+  body.level-for #panels.panels-visible,
+  body.level-wide-mobile #panels.panels-visible {
     display: flex;
   }
   .sprout-panel {
@@ -700,8 +701,81 @@ body.level-for #dirs .panel-header .target-switch {
   to   { opacity: 0; transform: translateY(10px) scale(.96); }
 }
 @media (max-width: 767px) {
-  body.level-for #panels #queue-logica {
+  body.level-for #panels #queue-logica,
+  body.level-wide-mobile #panels #queue-logica {
     margin-top: 4px;
+  }
+  body.level-for #queue-if-rule,
+  body.level-wide-mobile #queue-if-rule {
+    gap: 2px;
+  }
+  body.level-for #queue-if-rule .if-select-label,
+  body.level-wide-mobile #queue-if-rule .if-select-label {
+    font-size: 9px;
+    margin: 1px 0 2px;
+  }
+  body.level-for #queue-if-rule .if-rule-sep,
+  body.level-wide-mobile #queue-if-rule .if-rule-sep {
+    margin: 5px 0 1px;
+  }
+  body.level-for #queue-if-rule .if-select,
+  body.level-wide-mobile #queue-if-rule .if-select {
+    min-height: 26px;
+    font-size: 10px;
+    margin-bottom: 4px;
+    padding: 4px 28px 4px 6px;
+    background-position:
+      0 0,
+      calc(100% - 14px) 11px,
+      calc(100% - 9px) 11px;
+  }
+  body.level-for #queue-for,
+  body.level-wide-mobile #queue-for {
+    gap: 5px;
+  }
+  body.level-for #queue-for .if-select-label,
+  body.level-wide-mobile #queue-for .if-select-label {
+    font-size: 10px;
+    margin: 2px 0 3px;
+  }
+  body.level-for #queue-for .if-select,
+  body.level-wide-mobile #queue-for .if-select {
+    min-height: 30px;
+    font-size: 11px;
+    margin-bottom: 6px;
+    padding: 5px 28px 5px 6px;
+    background-position:
+      0 0,
+      calc(100% - 14px) 12px,
+      calc(100% - 9px) 12px;
+  }
+  body.level-for #queue-for .slots.f1-slots,
+  body.level-wide-mobile #queue-for .slots.f1-slots {
+    margin-bottom: 6px !important;
+    gap: 6px !important;
+  }
+  body.level-for #queue-for .slot,
+  body.level-wide-mobile #queue-for .slot {
+    height: 26px !important;
+    min-height: 26px;
+  }
+  body.level-for #queue-for button.clear,
+  body.level-wide-mobile #queue-for button.clear {
+    min-height: 34px;
+    margin-top: 2px !important;
+    padding: 3px 6px 5px !important;
+    gap: 6px;
+  }
+  body.level-for #queue-for .queue-icon,
+  body.level-wide-mobile #queue-for .queue-icon {
+    width: 30px;
+    height: 30px;
+    background-size: 64px 256px;
+    font-size: 14px;
+  }
+  body.level-for #queue-for .queue-label,
+  body.level-wide-mobile #queue-for .queue-label {
+    font-size: 11px;
   }
   /* Mientras el FOR esta desplegado (auto-demo del tutorial), el panel crece
      en la columna izquierda y taparia el cartel centrado. Lo corremos a la

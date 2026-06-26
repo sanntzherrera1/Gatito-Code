@@ -15,6 +15,7 @@ function getLevelCopy(key) {
 
 const IF_LEVELS = ['if', 'si_2'];
 const FOR_LEVELS = ['for', 'si_1', 'si_3'];
+const WIDE_LOGIC_MOBILE_LEVELS = ['if', 'si_2', 'si_1', 'si_3'];
 
 export class CustomScene extends TileLevelScene {
   constructor() {
@@ -42,11 +43,13 @@ export class CustomScene extends TileLevelScene {
     super.create();
 
     this.events.once('shutdown', () => {
+      this._teardownWideLogicMobile();
       window.__setIfPanel?.(true);
       window.__setForPanel?.(false);
     });
 
     if (this.levelKey === 'if') {
+      this._setupWideLogicMobile();
       window.__setIfPanel?.(false);
       window.__setForPanel?.(false);
       lockPanels();
@@ -114,6 +117,10 @@ export class CustomScene extends TileLevelScene {
       return;
     }
 
+    if (WIDE_LOGIC_MOBILE_LEVELS.includes(this.levelKey)) {
+      this._setupWideLogicMobile();
+    }
+
     if (IF_LEVELS.includes(this.levelKey)) {
       window.__setIfPanel?.(true);
       window.__setForPanel?.(false);
@@ -161,22 +168,75 @@ export class CustomScene extends TileLevelScene {
   // Nivel 9 (FOR): reubica el panel FOR a la columna izquierda (#panels), debajo
   // del D-pad. Guarda su posicion original para devolverlo al salir del nivel.
   _moveForPanelToLeft() {
+    this._moveLogicPanelToLeft('level-for');
+  }
+
+  _moveLogicPanelToLeft(bodyClass) {
     const logicaPanel = document.getElementById('queue-logica');
     const leftCol = document.getElementById('panels');
     if (!logicaPanel || !leftCol) return;
-    this._forPanelHome = { parent: logicaPanel.parentNode, next: logicaPanel.nextSibling };
-    leftCol.appendChild(logicaPanel);
-    document.body.classList.add('level-for');
+    if (!this._logicPanelHome) {
+      this._logicPanelHome = { parent: logicaPanel.parentNode, next: logicaPanel.nextSibling };
+    }
+    if (logicaPanel.parentNode !== leftCol) {
+      leftCol.appendChild(logicaPanel);
+    }
+    document.body.classList.add(bodyClass);
   }
 
   // Devuelve el panel de logica a su contenedor original (#right-panels) en la
   // misma posicion en la que estaba, para no romper el layout de otros niveles.
   _restoreForPanel() {
-    document.body.classList.remove('level-for', 'for-open');
-    const logicaPanel = document.getElementById('queue-logica');
-    if (logicaPanel && this._forPanelHome?.parent) {
-      this._forPanelHome.parent.insertBefore(logicaPanel, this._forPanelHome.next);
+    this._restoreLogicPanel('level-for', true);
+  }
+
+  _restoreLogicPanel(bodyClass, clearForOpen = false) {
+    document.body.classList.remove(bodyClass);
+    if (clearForOpen) {
+      document.body.classList.remove('for-open');
     }
-    this._forPanelHome = null;
+    const logicaPanel = document.getElementById('queue-logica');
+    if (logicaPanel && this._logicPanelHome?.parent) {
+      this._logicPanelHome.parent.insertBefore(logicaPanel, this._logicPanelHome.next);
+    }
+    this._logicPanelHome = null;
+  }
+
+  _setupWideLogicMobile() {
+    if (this._wideLogicMediaQuery) {
+      this._syncWideLogicMobile?.();
+      return;
+    }
+    const mq = window.matchMedia('(max-width: 767px)');
+    const sync = () => {
+      if (mq.matches) {
+        this._moveLogicPanelToLeft('level-wide-mobile');
+      } else {
+        this._restoreLogicPanel('level-wide-mobile');
+      }
+    };
+    this._wideLogicMediaQuery = mq;
+    this._syncWideLogicMobile = sync;
+    if (typeof mq.addEventListener === 'function') {
+      mq.addEventListener('change', sync);
+    } else if (typeof mq.addListener === 'function') {
+      mq.addListener(sync);
+    }
+    sync();
+  }
+
+  _teardownWideLogicMobile() {
+    const mq = this._wideLogicMediaQuery;
+    const sync = this._syncWideLogicMobile;
+    if (mq && sync) {
+      if (typeof mq.removeEventListener === 'function') {
+        mq.removeEventListener('change', sync);
+      } else if (typeof mq.removeListener === 'function') {
+        mq.removeListener(sync);
+      }
+    }
+    this._wideLogicMediaQuery = null;
+    this._syncWideLogicMobile = null;
+    this._restoreLogicPanel('level-wide-mobile');
   }
 }
