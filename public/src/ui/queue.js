@@ -106,6 +106,7 @@ export function initQueue() {
   dirsPanel.querySelectorAll('button[data-dir]:not([data-dir="jump"])').forEach(btn => {
     btn.setAttribute('draggable', 'true');
     btn.addEventListener('dragstart', e => {
+      if (btn.disabled) { e.preventDefault(); return; }
       uiSfx('drag_pick');
       e.dataTransfer.setData('text/plain', btn.dataset.dir);
       e.dataTransfer.effectAllowed = 'all';
@@ -176,6 +177,7 @@ export function initQueue() {
     GYM.ifAction = '';
     GYM.ifCondition2 = '';
     GYM.ifAction2 = '';
+    _recursionWarned.clear();
     renderAllSlots();
   };
 
@@ -189,6 +191,7 @@ window.__setPanels = visible => {
     if (!visible) {
       const missionBox = document.getElementById('mission');
       if (missionBox) missionBox.style.display = 'none';
+      limpiarTooltipRecursion();
     }
     setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
   };
@@ -242,6 +245,10 @@ function activarTarget(target) {
   const switchEl = document.getElementById('target-switch');
   switchEl.querySelectorAll('.target-opt').forEach(o =>
     o.classList.toggle('active', o.dataset.target === target));
+  const func1Btn = dirsPanel.querySelector('[data-dir="func1"]');
+  if (func1Btn) func1Btn.disabled = (target === 'func1');
+  const forBtn = dirsPanel.querySelector('[data-dir="for"]');
+  if (forBtn) forBtn.disabled = (target === 'for');
 }
 
 function renderQueue(queue, container) {
@@ -316,6 +323,21 @@ function initLogicaTabs() {
     tab.addEventListener('click', () => activarLogica(tab.dataset.logicaTab));
   });
   actualizarLogica();
+
+  // Interceptar drops recursivos sobre cualquier parte del panel de logica.
+  if (logicaPanelEl) {
+    logicaPanelEl.addEventListener('dragover', e => e.preventDefault());
+    logicaPanelEl.addEventListener('drop', e => {
+      const dataStr = e.dataTransfer.getData('text/plain');
+      let dir = dataStr;
+      try { const p = JSON.parse(dataStr); if (p.dir) dir = p.dir; } catch {}
+      if (dir && !esComandoPermitidoEnQueue(dir, logicaActiva)) {
+        e.preventDefault();
+        e.stopPropagation();
+        mostrarTooltipRecursion(dir, logicaActiva);
+      }
+    });
+  }
 }
 
 // Cambia la pestaña visible del panel de logica. Ignora pestañas no disponibles.
@@ -407,7 +429,10 @@ function setupDropZone(container, queue, queueId) {
         dir = dataStr;
       }
 
-      if (!dir || !esComandoPermitidoEnQueue(dir, queueId)) return;
+      if (!dir || !esComandoPermitidoEnQueue(dir, queueId)) {
+        mostrarTooltipRecursion(dir, queueId);
+        return;
+      }
 
       const maxAllowed = obtenerMaximoQueue(queue);
 
@@ -481,5 +506,40 @@ function obtenerMaximoQueue(queue) {
 function esComandoPermitidoEnQueue(dir, queueId) {
   if (dir === 'if-rock-jump' || dir === 'if-navigate') return false;
   if (dir === 'for' && queueId === 'for') return false;
+  if (dir === 'func1' && queueId === 'func1') return false;
   return true;
+}
+
+let _recursionWarned = new Set();
+let _activeTooltip = null;
+function limpiarTooltipRecursion() {
+  if (_activeTooltip) { _activeTooltip.remove(); _activeTooltip = null; }
+}
+function mostrarTooltipRecursion(dir, queueId) {
+  if (dir !== queueId) return;
+  if (_recursionWarned.has(queueId)) return;
+  const panel = document.getElementById('queue-logica');
+  if (!panel || !panel.offsetParent) return;
+  _recursionWarned.add(queueId);
+  limpiarTooltipRecursion();
+  const rect = panel.getBoundingClientRect();
+  const key = `recursion.${queueId}`;
+  const fallback = queueId === 'func1'
+    ? 'No podes poner Funcion 1 dentro de si misma, eso generaria un bucle infinito.'
+    : 'No podes poner FOR dentro de si mismo, eso generaria un bucle infinito.';
+  const tr = window.__t?.(key);
+  const text = (tr && tr !== key) ? tr : fallback;
+  const panelOnRight = rect.left > window.innerWidth / 2;
+  const tip = document.createElement('div');
+  tip.className = `recursion-tooltip ${panelOnRight ? 'tooltip-left' : 'tooltip-right'}`;
+  tip.textContent = text;
+  tip.style.top = `${rect.top + rect.height / 2}px`;
+  tip.style.left = panelOnRight ? `${rect.left - 10}px` : `${rect.right + 10}px`;
+  _activeTooltip = tip;
+  document.body.appendChild(tip);
+  setTimeout(() => { tip.classList.add('visible'); }, 10);
+  setTimeout(() => {
+    tip.classList.remove('visible');
+    setTimeout(() => { if (_activeTooltip === tip) { tip.remove(); _activeTooltip = null; } }, 400);
+  }, 5000);
 }

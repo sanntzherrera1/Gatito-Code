@@ -295,7 +295,6 @@ body.level-for #dirs .panel-header .target-switch {
 .logica-cuerpo {
   display: none;
   flex-direction: column;
-  overflow: hidden;
 }
 .logica-cuerpo.logica-activo {
   display: flex;
@@ -820,4 +819,74 @@ body.level-for #dirs .panel-header .target-switch {
   #mission {
     width: 200px;
   }
+}
+
+/* Tooltip de advertencia de recursividad */
+.recursion-tooltip {
+  position: fixed;
+  transform: translateY(-50%);
+  background: #f5e6c8;
+  color: #4a2c0a;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 7px;
+  line-height: 1.6;
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 3px solid #c8a96e;
+  width: max-content;
+  max-width: 200px;
+  white-space: normal;
+  text-align: left;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+.recursion-tooltip.tooltip-left {
+  transform: translate(-100%, -50%);
+  box-shadow: -2px 2px 0 #c8a96e;
+}
+.recursion-tooltip.tooltip-left::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  border: 7px solid transparent;
+  border-left-color: #c8a96e;
+}
+.recursion-tooltip.tooltip-left::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 100%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-left-color: #f5e6c8;
+  margin-left: -1px;
+}
+.recursion-tooltip.tooltip-right {
+  box-shadow: 2px 2px 0 #c8a96e;
+}
+.recursion-tooltip.tooltip-right::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  border: 7px solid transparent;
+  border-right-color: #c8a96e;
+}
+.recursion-tooltip.tooltip-right::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  right: 100%;
+  transform: translateY(-50%);
+  border: 5px solid transparent;
+  border-right-color: #f5e6c8;
+  margin-right: -1px;
+}
+.recursion-tooltip.visible {
+  opacity: 1;
 }

@@ -272,6 +272,8 @@ export const STRINGS = {
     'bosque_prueba.welcome': 'Sobrevive al frio bosque.',
     'bosque_floral.mission': 'Recoge las flores del bosque encantado',
     'bosque_floral.welcome': '¡Bienvenido al Bosque Floral! Usa la Funcion para recorrer el sendero.',
+    'recursion.func1': '¡Ojo! No podes poner Funcion 1 dentro de si misma, eso generaria un bucle infinito.',
+    'recursion.for': '¡Ojo! No podes poner FOR dentro de si mismo, eso generaria un bucle infinito.',
   },
 
   en: {
@@ -547,5 +549,7 @@ export const STRINGS = {
     'bosque_prueba.welcome': 'Survive the cold forest.',
     'bosque_floral.mission': 'Collect the flowers from the enchanted forest.',
     'bosque_floral.welcome': 'Welcome to the Floral Forest! Use the Function to walk the path.',
+    'recursion.func1': 'Be careful! You can\'t put Function 1 inside itself, that would create an infinite loop.',
+    'recursion.for': 'Be careful! You can\'t put FOR inside itself, that would create an infinite loop.',
   },
 };
