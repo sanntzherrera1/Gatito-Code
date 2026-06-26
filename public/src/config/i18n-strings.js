@@ -123,9 +123,9 @@ export const STRINGS = {
     // ── TileLevelScene ──
     'level.idle': '¡A jugar! Arma tu programa y presiona Ejecutar.',
     'level.help': 'ayuda',
-    'level.show_path': 'mostrar camino',
-    'level.hide_path': 'Ocultar camino guia',
-    'level.show_path_title': 'Mostrar camino guia',
+    'level.show_path': 'mostrar caminos',
+    'level.hide_path': 'Ocultar caminos',
+    'level.show_path_title': 'Mostrar caminos',
 
     // ── Editor ──
     'editor.title': 'Editor',
@@ -398,9 +398,9 @@ export const STRINGS = {
     // ── TileLevelScene ──
     'level.idle': 'Let\'s play! Build your program and press Run.',
     'level.help': 'help',
-    'level.show_path': 'show path',
-    'level.hide_path': 'Hide path guide',
-    'level.show_path_title': 'Show path guide',
+    'level.show_path': 'show paths',
+    'level.hide_path': 'Hide paths',
+    'level.show_path_title': 'Show paths',
 
     // ── Editor ──
     'editor.title': 'Editor',

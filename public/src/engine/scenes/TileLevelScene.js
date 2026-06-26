@@ -166,7 +166,7 @@ export class TileLevelScene extends Phaser.Scene {
   }
 
   _runPathAnimation() {
-    animatePath(this, { onComplete: this.onPathAnimationComplete });
+    animatePath(this, { sound: false, onComplete: this.onPathAnimationComplete });
   }
 
   _addRepeatPathButton() {
